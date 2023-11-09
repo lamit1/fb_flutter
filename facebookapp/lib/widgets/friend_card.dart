@@ -1,4 +1,4 @@
-import 'package:fb_app/config/pallete.dart';
+import 'package:fb_app/core/pallete.dart';
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 
@@ -18,7 +18,7 @@ class FriendCard extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 40.0,
-              backgroundImage: NetworkImage(friend.imageUrl),
+              backgroundImage: NetworkImage(friend.imageUrl!),
             ),
             const SizedBox(
               width: 10.0,
@@ -28,7 +28,7 @@ class FriendCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    friend.name,
+                    friend.name!,
                     style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
                     textAlign: TextAlign.start,
                   ),
