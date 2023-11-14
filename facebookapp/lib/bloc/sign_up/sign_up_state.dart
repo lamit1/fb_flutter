@@ -16,6 +16,7 @@ class SignUpSuccess extends SignUpState {
   List<Object> get props => [];
 }
 
+
 class SignUpFailure extends SignUpState {
   final String error;
 

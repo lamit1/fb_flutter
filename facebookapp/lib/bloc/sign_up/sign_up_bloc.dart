@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:fb_app/firebase_service.dart';
+import 'package:fb_app/services/api_services.dart';
 import 'package:meta/meta.dart';
 
 part 'sign_up_event.dart';
@@ -13,12 +14,15 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   }
 
   void _onSignUpButtonPressed(SignUpButtonPressed event, Emitter<SignUpState> emit) async {
-    print("Loading!");
     emit(SignUpLoading());
     try {
-      final user = await signUpUser(event.email, event.password);
-      if (user!=null) {
-        emit(SignUpSuccess()); // If login is successful
+      final message = await APIService().signUp(event.email, event.password);
+      if (message=="1000") {
+        emit(SignUpSuccess());
+      } else if (message == "9996") {
+        emit(SignUpFailure(error: "User existed!"));
+      } else  {
+        emit(SignUpFailure(error: "Invalid password!"));
       }
     } catch (error) {
       if (error is Exception) {

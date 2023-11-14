@@ -1,12 +1,13 @@
 import 'package:fb_app/screens/home_screen.dart';
 import 'package:fb_app/screens/loading_screen.dart';
+import 'package:fb_app/screens/login_screens/otp_screen.dart';
 import 'package:fb_app/services/api_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/login/login_bloc.dart';
-import '../models/user_model.dart';
+import '../../bloc/login/login_bloc.dart';
+import '../../models/user_model.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -154,9 +155,7 @@ class _LoginPageState extends State<LoginPage> {
           return LoadingScreen();
         } else if (state is LoginSuccess) {
           Future.microtask(() {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => HomeScreen()),
-            );
+            Navigator.pushReplacementNamed(context, "/otp", arguments: [_emailController.text]);
           });
           return const Scaffold(body: Text("Login success"));
         } else if (state is LoginFailure) {
