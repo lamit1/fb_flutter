@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Facebook Login',
       debugShowCheckedModeBanner: false,
-      initialRoute: "/home",
+      initialRoute: "/change_info",
       theme: ThemeData(
         primaryColor: Palette.facebookBlue,
       ),
