@@ -5,8 +5,8 @@ class Storage {
   void saveToken(String token) async {
     await storage.write(key: "token", value: token);
   }
-  void getToken() async {
-    await storage.read(key: "token");
+  Future<String?> getToken() async {
+    return await storage.read(key: "token");
   }
   void deleteToken() async {
     await storage.delete(key: "token");

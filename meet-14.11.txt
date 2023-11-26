@@ -1,0 +1,16 @@
+-Link drive các bài thực hành: https://drive.google.com/drive/folders/1JQlibsZigbb3OdJHsM6tUp_BpmLwblBw
+-Các screen còn thiếu:
+	+ Đổi mật khẩu. ( Làm giống facebook) (Đức anh)
+	+ Đăng bài. ( bài 11) (Nhiều ảnh, căn bố cục, icon)  (Tùng)
+	+ Sửa bài. (Bài 4)
+	+ Xóa bài (Bài 3)
+	+ Trang cá nhân. ( bài 10) (Đạt)
+	+ Chat messenger. ( bài 11)
+	+ Nạp tiền. ( Chưa có) (Đức anh)
+	+ Phần comment. ( bài 4)
+	+ Video. ( bài 7)
+	+ Tìm kiếm. ( bài 6)
+	+ Báo cáo. ( bài 4)
+	+ Cài đặt (bài 8)
+- Các api còn thiếu:
+	+ Từ 8->11. (Minh)

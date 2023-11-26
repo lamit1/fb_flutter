@@ -1,7 +1,7 @@
 import 'package:fb_app/screens/home_screen.dart';
 import 'package:fb_app/screens/loading_screen.dart';
 import 'package:fb_app/screens/login_screens/otp_screen.dart';
-import 'package:fb_app/services/api_services.dart';
+import 'package:fb_app/services/api/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:fb_app/firebase_service.dart';
-import 'package:fb_app/services/api_services.dart';
+import 'package:fb_app/services/api/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
@@ -17,7 +17,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     try {
       // For example, you can call the AuthenticationRepository to log in the user.
       //User with non-firebase login api call
-      final user = await APIService().login(event.email, event.password);
+      final user = await Auth().login(event.email, event.password);
       //Use with firebase login api call
       // final user = await login(event.email, event.password);
       if (user!=null) {
