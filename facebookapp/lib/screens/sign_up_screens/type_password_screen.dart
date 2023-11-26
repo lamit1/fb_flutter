@@ -3,7 +3,7 @@
 import 'package:fb_app/screens/sign_up_screens/sign_up_success_screen.dart';
 import 'package:flutter/material.dart';
 
-import '../../services/api_services.dart';
+import '../../services/api/auth.dart';
 
 class PasswordScreen extends StatefulWidget {
   @override
@@ -38,7 +38,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
             ),
           )
       );
-      String? code = await APIService().signUp(email,_passwordController.text);
+      String? code = await Auth().signUp(email,_passwordController.text);
       Navigator.pop(context);
       if(code == "1000") {
         Navigator.pushReplacement(

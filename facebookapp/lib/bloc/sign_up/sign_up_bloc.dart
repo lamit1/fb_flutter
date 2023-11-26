@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:fb_app/firebase_service.dart';
-import 'package:fb_app/services/api_services.dart';
+import 'package:fb_app/services/api/auth.dart';
 import 'package:meta/meta.dart';
 
 part 'sign_up_event.dart';
@@ -16,7 +16,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   void _onSignUpButtonPressed(SignUpButtonPressed event, Emitter<SignUpState> emit) async {
     emit(SignUpLoading());
     try {
-      final message = await APIService().signUp(event.email, event.password);
+      final message = await Auth().signUp(event.email, event.password);
       if (message=="1000") {
         emit(SignUpSuccess());
       } else if (message == "9996") {

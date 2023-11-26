@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import 'package:fb_app/core/pallete.dart';
-import 'package:fb_app/services/api_services.dart';
+import 'package:fb_app/services/api/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -150,7 +150,7 @@ class _OTPScreenState extends State<OTPScreen> {
                                           ),
                                         ));
                                 // TODO: Intergrate verify OTP
-                                String? code = await APIService()
+                                String? code = await Auth()
                                     .checkVerifyCode(email, otp);
                                 Navigator.pop(context);
                                 if (code == "1000") {
@@ -215,7 +215,7 @@ class _OTPScreenState extends State<OTPScreen> {
                                             ),
                                           ));
                                   // TODO: Call the verify_code api
-                                  String? code = await APIService()
+                                  String? code = await Auth()
                                       .getVerifyCode(email.toString());
                                   Navigator.pop(context);
                                   if (code == "1000") {
