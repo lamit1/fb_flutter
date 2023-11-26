@@ -1,6 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data';
-import 'package:fb_app/core/pallete.dart';
+import 'package:fb_app/services/api/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,7 +14,7 @@ class ChangeInfoScreen extends StatefulWidget {
 
 class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
   late TextEditingController _usernameController;
-  late File? _avatar;
+  File? _avatar;
 
   @override
   void initState() {
@@ -45,11 +44,8 @@ class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
 
   Future<void> _submitForm() async {
     final String username = _usernameController.text;
-    // TODO: Perform the form data submission with username and avatar
-    print('Username: $username');
-    if (_avatar != null) {
-      print('Avatar path: ${_avatar!.path}');
-    }
+    File submitAvatar = _avatar as File;
+    await ProfileAPI().changeProfileAfterSignup(username, submitAvatar);
   }
 
   @override
@@ -71,6 +67,7 @@ class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
                       _avatar!,
                       width: imageWidth,
                       height: imageWidth,
+                      fit: BoxFit.cover,
                     ),
                   const SizedBox(height: 16.0),
                   Row(
@@ -86,13 +83,13 @@ class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
                             ),
                           )
                       ),
-                      SizedBox(width: 15,),
+                      const SizedBox(width: 15,),
                       ElevatedButton(
                         onPressed: _pickImage,
                         style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.all(10), // Adjust padding as needed
+                          padding: const EdgeInsets.all(10), // Adjust padding as needed
                         ),
-                        child: Icon(Icons.image, size: 36), // Adjust size as needed
+                        child: const Icon(Icons.image, size: 36), // Adjust size as needed
                       ),
                     ],
                   ),
@@ -101,10 +98,10 @@ class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _submitForm,
-                child: SizedBox(
+                child: const SizedBox(
                     width: double.infinity,
                     height: 50,
-                    child: Center(child: const Text('Continue'))
+                    child: Center(child: Text('Continue'))
                 ),
               ),
             ],

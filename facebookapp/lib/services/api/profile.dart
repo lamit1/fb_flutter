@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'dart:io';
 import 'package:fb_app/models/user_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
@@ -64,7 +64,8 @@ class ProfileAPI {
     String username,
     File avatar,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
+    //TODO: Change to formDataCall
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/change_profile_after_signup",
       requestType: RequestType.POST,
