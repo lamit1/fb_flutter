@@ -1,5 +1,6 @@
 import 'package:fb_app/bloc/sign_up/sign_up_bloc.dart';
 import 'package:fb_app/core/pallete.dart';
+import 'package:fb_app/screens/TestScreen.dart';
 import 'package:fb_app/screens/forgot_password_screen.dart';
 import 'package:fb_app/screens/home_screen.dart';
 import 'package:fb_app/screens/loading_screen.dart';
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Facebook Login',
       debugShowCheckedModeBanner: false,
-      initialRoute: "/change_info",
+      initialRoute: "/test",
       theme: ThemeData(
         primaryColor: Palette.facebookBlue,
       ),
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         "/type_password": (BuildContext context) => PasswordScreen(),
         "/forgot_password": (BuildContext context) => ForgotPasswordScreen(),
         "/change_info": (BuildContext context) => ChangeInfoScreen(),
+        "/test": (BuildContext context) => TestScreen(),
       },
     );
   }

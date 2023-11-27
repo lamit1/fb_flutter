@@ -45,7 +45,8 @@ class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
   Future<void> _submitForm() async {
     final String username = _usernameController.text;
     File submitAvatar = _avatar as File;
-    await ProfileAPI().changeProfileAfterSignup(username, submitAvatar);
+    var response = await ProfileAPI().changeProfileAfterSignup(username, submitAvatar);
+    print(response);
   }
 
   @override

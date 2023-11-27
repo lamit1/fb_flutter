@@ -55,7 +55,7 @@ class _NotificationCardState extends State<NotificationCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${onlineUsers[0].name} has liked your post",
+                        "${onlineUsers[0].username} has liked your post",
                         style: const TextStyle(
                             fontWeight: FontWeight.w400, fontSize: 14),
                       ),
