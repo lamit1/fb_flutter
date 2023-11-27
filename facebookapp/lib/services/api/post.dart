@@ -1,4 +1,5 @@
-import 'dart:html';
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:fb_app/models/post_model.dart';
 import 'package:fb_app/models/video_model.dart';
 import 'package:fb_app/services/dio_client.dart';
@@ -10,7 +11,7 @@ class PostAPI {
 
   Future<Post?> getPost(String id) async {
     String? deviceId = await getDeviceUUID();
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/get_post",
@@ -42,17 +43,18 @@ class PostAPI {
     String status,
     String autoAccept,
   ) async {
-    String? token = Storage().getToken() as String?;
-    var response = await DioClient().apiCall(
+    String? token = await Storage().getToken();
+    FormData data = FormData.fromMap({
+      "username": images,
+      "avatar": video,
+      "described": described,
+      "status": status,
+      "auto_accept": autoAccept,
+    });
+    var response = await DioClient().formDataCall(
       url: "https://it4788.catan.io.vn/add_post",
       requestType: RequestType.POST,
-      body: {
-        "image": images,
-        "video": video,
-        "described": described,
-        "status": status,
-        "auto_accept": autoAccept,
-      },
+      formData: data,
       header: {'Authorization': 'Bearer $token'},
     );
     return response.data['code'];
@@ -68,20 +70,21 @@ class PostAPI {
     String imageDel,
     String imageSort,
   ) async {
-    String? token = Storage().getToken() as String?;
-    var response = await DioClient().apiCall(
+    String? token = await Storage().getToken();
+    FormData data = FormData.fromMap({
+      "image": images,
+      "video": video,
+      "described": described,
+      "status": status,
+      "auto_accept": autoAccept,
+      "id": id,
+      "image_del": imageDel,
+      "image_sort": imageSort,
+    });
+    var response = await DioClient().formDataCall(
       url: "https://it4788.catan.io.vn/edit_post",
       requestType: RequestType.POST,
-      body: {
-        "image": images,
-        "video": video,
-        "described": described,
-        "status": status,
-        "auto_accept": autoAccept,
-        "id": id,
-        "image_del": imageDel,
-        "image_sort": imageSort,
-      },
+      formData: data,
       header: {'Authorization': 'Bearer $token'},
     );
     return response.data['code'];
@@ -92,7 +95,7 @@ class PostAPI {
     String subject,
     String details,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/report_post",
       requestType: RequestType.POST,
@@ -109,7 +112,7 @@ class PostAPI {
   Future<String?> deletePost(
     String id,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/delete_post",
       requestType: RequestType.POST,
@@ -132,7 +135,7 @@ class PostAPI {
     String count,
   ) async {
     String? deviceId = await getDeviceUUID();
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/get_list_posts",
@@ -181,7 +184,7 @@ class PostAPI {
     String count,
   ) async {
     String? deviceId = await getDeviceUUID();
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/get_list_videos",

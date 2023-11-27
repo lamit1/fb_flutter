@@ -10,7 +10,7 @@ class CommentAPI {
     String type,
   ) async {
     String? deviceId = await getDeviceUUID();
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/feel",
@@ -29,7 +29,7 @@ class CommentAPI {
     String index,
     String count,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/get_mark_comment",
       requestType: RequestType.POST,
@@ -52,7 +52,7 @@ class CommentAPI {
     String index,
     String count,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/get-list-feels",
       requestType: RequestType.POST,
@@ -78,7 +78,7 @@ class CommentAPI {
     String markId,
     String type,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/settings/set_mark_comment",
       requestType: RequestType.POST,

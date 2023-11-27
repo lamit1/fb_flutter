@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:fb_app/models/user_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
@@ -9,12 +10,14 @@ class ProfileAPI {
 
   Future<User?> getUserInfo(String userId) async {
     String? deviceId = await getDeviceUUID();
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/get_user_info",
       requestType: RequestType.POST,
-      body: {"userId": userId},
+      body: {
+        "user_id": userId,
+      },
       header: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 200) {
@@ -41,20 +44,21 @@ class ProfileAPI {
     File coverImage,
     String link,
   ) async {
-    String? token = Storage().getToken() as String?;
-    var response = await DioClient().apiCall(
+    String? token = await Storage().getToken();
+    FormData data = FormData.fromMap({
+      "username": username,
+      "description": description,
+      "avatar": avatar,
+      "address": address,
+      "city": city,
+      "country": country,
+      "coverImage": coverImage,
+      "link": link,
+    });
+    var response = await DioClient().formDataCall(
       url: "https://it4788.catan.io.vn/set_user_info",
       requestType: RequestType.POST,
-      body: {
-        "username": username,
-        "description": description,
-        "avatar": avatar,
-        "address": address,
-        "city": city,
-        "country": country,
-        "coverImage": coverImage,
-        "link": link,
-      },
+      formData: data,
       header: {'Authorization': 'Bearer $token'},
     );
     return response.data['code'];
@@ -65,11 +69,14 @@ class ProfileAPI {
     File avatar,
   ) async {
     String? token = await Storage().getToken();
-    //TODO: Change to formDataCall
-    var response = await DioClient().apiCall(
+    FormData data = FormData.fromMap({
+      "username": username,
+      "avatar": avatar,
+    });
+    var response = await DioClient().formDataCall(
       url: "https://it4788.catan.io.vn/change_profile_after_signup",
       requestType: RequestType.POST,
-      body: {"username": username, "avatar": avatar},
+      formData: data,
       header: {'Authorization': 'Bearer $token'},
     );
     return response.data['code'];

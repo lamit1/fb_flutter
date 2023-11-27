@@ -31,7 +31,7 @@ class Auth {
 
   Future<String?> logOut() async {
     String? deviceId = await getDeviceUUID();
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
         url: "https://it4788.catan.io.vn/logout",
@@ -82,7 +82,7 @@ class Auth {
 
   Future<String?> changePassword(String password, String newPassword) async {
     String? deviceId = await getDeviceUUID();
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
         url: "https://it4788.catan.io.vn/change_pasword",
