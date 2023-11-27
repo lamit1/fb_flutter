@@ -10,7 +10,7 @@ class SearchAPI {
     String coins,
   ) async {
     String? deviceId = await getDeviceUUID();
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/settings/buy_coins",
@@ -25,7 +25,7 @@ class SearchAPI {
   }
 
   Future<Object?> getPushSettings() async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/settings/get_push_settings",
       requestType: RequestType.POST,
@@ -42,7 +42,7 @@ class SearchAPI {
     String devtype,
     String devtoken,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/settings/set_devtoken",
       requestType: RequestType.POST,
@@ -68,7 +68,7 @@ class SearchAPI {
     String vibrantOn,
     String ledOn,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/settings/set_push_settings",
       requestType: RequestType.POST,

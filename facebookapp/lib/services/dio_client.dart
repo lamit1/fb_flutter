@@ -76,5 +76,59 @@ class DioClient {
     }
   }
 
-}
+  Future<Response<dynamic>> formDataCall({
+    required String url,
+    required RequestType requestType,
+    Map<String, dynamic>? queryParameters,
+    FormData? formData,
+    Map<String, String>? header,
+    RequestOptions? requestOptions,
+  }) async {
+    try {
+      late Response result;
 
+      switch (requestType) {
+        case RequestType.GET:
+          {
+            Options options = Options(headers: header);
+            result = await dio.get(url,
+                queryParameters: queryParameters, options: options);
+            break;
+          }
+        case RequestType.POST:
+          {
+            Options options = Options(headers: header);
+            result = await dio.post(url, data: formData, options: options, queryParameters: queryParameters);
+            break;
+          }
+        case RequestType.DELETE:
+          {
+            Options options = Options(headers: header);
+            result =
+            await dio.delete(url, data: queryParameters, options: options);
+            break;
+          }
+        case RequestType.PUT:
+          {
+            Options options = Options(headers: header);
+            result = await dio.put(url, data: formData, options: options);
+            break;
+          }
+        case RequestType.PATCH:
+          {
+            Options options = Options(headers: header);
+            result = await dio.patch(url, data: formData, options: options);
+            break;
+          }
+      }
+
+      return result;
+    } on DioException catch (error) {
+      if (error.response != null && error.response!.statusCode == 400) {
+        return error.response!;
+      }
+      rethrow;
+    }
+  }
+
+}

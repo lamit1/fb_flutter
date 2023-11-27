@@ -12,7 +12,7 @@ class SearchAPI {
     String count,
   ) async {
     String? deviceId = await getDeviceUUID();
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/search",
@@ -36,7 +36,7 @@ class SearchAPI {
     String index,
     String count,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/get_saved_search",
       requestType: RequestType.POST,
@@ -57,7 +57,7 @@ class SearchAPI {
     String searchId,
     String all,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/del_saved_search",
       requestType: RequestType.POST,

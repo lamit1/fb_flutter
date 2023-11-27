@@ -1,6 +1,5 @@
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
-import 'package:fb_app/utils/get_device_uuid.dart';
 
 class FriendAPI {
   final DioClient dio = DioClient();
@@ -9,7 +8,7 @@ class FriendAPI {
     String index,
     String count,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/get_requested_friends",
       requestType: RequestType.POST,
@@ -31,7 +30,7 @@ class FriendAPI {
     String count,
     String userId,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/get_user_friends",
       requestType: RequestType.POST,
@@ -53,7 +52,7 @@ class FriendAPI {
     String index,
     String count,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/get_suggested_friends",
       requestType: RequestType.POST,
@@ -73,7 +72,7 @@ class FriendAPI {
   Future<String?> setRequestFriend(
     String userId,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/set_request_friend",
       requestType: RequestType.POST,
@@ -89,7 +88,7 @@ class FriendAPI {
     String userId,
     String isAccept,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/set_accept_friend",
       requestType: RequestType.POST,

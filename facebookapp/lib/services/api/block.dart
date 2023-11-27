@@ -9,7 +9,7 @@ class BlockAPI {
     String userId,
   ) async {
     String? deviceId = await getDeviceUUID();
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/set_block",
@@ -26,7 +26,7 @@ class BlockAPI {
     String index,
     String count,
   ) async {
-    String? token = Storage().getToken() as String?;
+    String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/get_list_blocks",
       requestType: RequestType.POST,
