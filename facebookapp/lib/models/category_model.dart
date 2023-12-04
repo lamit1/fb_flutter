@@ -8,4 +8,17 @@ class Category {
     required this.name,
     required this.hasName,
   });
+
+  factory Category.fromJson(Map<String, dynamic> json) {
+    return Category(
+      id: json['id'] as String?,
+      name: json['name'] as String?,
+      hasName: json['hasName'] as String?,
+    );
+  }
+
+  @override
+  String toString() {
+    return "$id, $name, $hasName";
+  }
 }

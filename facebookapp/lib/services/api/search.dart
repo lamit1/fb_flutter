@@ -1,3 +1,5 @@
+import 'package:fb_app/models/saved_search_model.dart';
+import 'package:fb_app/models/search_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
 import 'package:fb_app/utils/get_device_uuid.dart';
@@ -5,7 +7,7 @@ import 'package:fb_app/utils/get_device_uuid.dart';
 class SearchAPI {
   final DioClient dio = DioClient();
 
-  Future<Object?> search(
+  Future<List<Search>?> search(
     String userId,
     String keyword,
     String index,
@@ -26,13 +28,19 @@ class SearchAPI {
       header: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 200) {
-      return response.data['data'];
+      var responseData = response.data['data'];
+      List<Search> list = [];
+      for (var item in responseData) {
+        Search temp = Search.fromJson(item);
+        list.add(temp);
+      }
+      return list;
     } else {
       return null;
     }
   }
 
-  Future<Object?> getSavedSearch(
+  Future<List<SavedSearch>?> getSavedSearch(
     String index,
     String count,
   ) async {
@@ -47,7 +55,13 @@ class SearchAPI {
       header: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 200) {
-      return response.data['data'];
+      var responseData = response.data['data'];
+      List<SavedSearch> list = [];
+      for (var item in responseData) {
+        SavedSearch temp = SavedSearch.fromJson(item);
+        list.add(temp);
+      }
+      return list;
     } else {
       return null;
     }

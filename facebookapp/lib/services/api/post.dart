@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:fb_app/models/post_model.dart';
+import 'package:fb_app/models/post_detail_model.dart';
 import 'package:fb_app/models/video_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
@@ -9,7 +9,7 @@ import 'package:fb_app/utils/get_device_uuid.dart';
 class PostAPI {
   final DioClient dio = DioClient();
 
-  Future<Post?> getPost(String id) async {
+  Future<PostDetail?> getPost(String id) async {
     String? deviceId = await getDeviceUUID();
     String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
@@ -21,20 +21,20 @@ class PostAPI {
     );
     if (response.statusCode == 200) {
       var responseData = response.data['data'];
-      Post post = Post.fromJson(responseData);
-      return post;
+      PostDetail port = PostDetail.fromJson(responseData);
+      return port;
     } else {
       return null;
     }
   }
 
   Future<String?> addPost(
-    List<File> images,
-    File video,
-    String described,
-    String status,
-    String autoAccept,
-  ) async {
+      List<File> images,
+      File video,
+      String described,
+      String status,
+      String autoAccept,
+      ) async {
     String? token = await Storage().getToken();
     FormData data = FormData.fromMap({
       "username": images,
@@ -53,15 +53,15 @@ class PostAPI {
   }
 
   Future<String?> editPost(
-    List<File> images,
-    File video,
-    String described,
-    String status,
-    String autoAccept,
-    String id,
-    String imageDel,
-    String imageSort,
-  ) async {
+      List<File> images,
+      File video,
+      String described,
+      String status,
+      String autoAccept,
+      String id,
+      String imageDel,
+      String imageSort,
+      ) async {
     String? token = await Storage().getToken();
     FormData data = FormData.fromMap({
       "image": images,
@@ -83,10 +83,10 @@ class PostAPI {
   }
 
   Future<String?> reportPost(
-    String id,
-    String subject,
-    String details,
-  ) async {
+      String id,
+      String subject,
+      String details,
+      ) async {
     String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/report_post",
@@ -102,8 +102,8 @@ class PostAPI {
   }
 
   Future<String?> deletePost(
-    String id,
-  ) async {
+      String id,
+      ) async {
     String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/delete_post",
@@ -116,16 +116,16 @@ class PostAPI {
     return response.data['code'];
   }
 
-  Future<List<Post>?> getListPosts(
-    String userId,
-    String inCampaign,
-    String campaignId,
-    String latitude,
-    String longitude,
-    String lastId,
-    String index,
-    String count,
-  ) async {
+  Future<List<PostDetail>?> getListPosts(
+      String userId,
+      String inCampaign,
+      String campaignId,
+      String latitude,
+      String longitude,
+      String lastId,
+      String index,
+      String count,
+      ) async {
     String? deviceId = await getDeviceUUID();
     String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
@@ -146,27 +146,27 @@ class PostAPI {
     );
     if (response.statusCode == 200) {
       var responseData = response.data['data'];
-      List<Post> postList = [];
-      for (var postData in responseData) {
-        Post post = Post.fromJson(postData);
-        postList.add(post);
+      List<PostDetail> portList = [];
+      for (var item in responseData) {
+        PostDetail port = PostDetail.fromJson(item);
+        portList.add(port);
       }
-      return postList;
+      return portList;
     } else {
       return null;
     }
   }
 
-  Future<List<Video>?> getListVideos(
-    String userId,
-    String inCampaign,
-    String campaignId,
-    String latitude,
-    String longitude,
-    String lastId,
-    String index,
-    String count,
-  ) async {
+  Future<List<PostDetail>?> getListVideos(
+      String userId,
+      String inCampaign,
+      String campaignId,
+      String latitude,
+      String longitude,
+      String lastId,
+      String index,
+      String count,
+      ) async {
     String? deviceId = await getDeviceUUID();
     String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
@@ -187,12 +187,12 @@ class PostAPI {
     );
     if (response.statusCode == 200) {
       var responseData = response.data['data'];
-      List<Video> videoList = [];
-      for (var videoData in responseData) {
-        Video video = Video.fromJson(videoData);
-        videoList.add(video);
+      List<PostDetail> portList = [];
+      for (var item in responseData) {
+        PostDetail port = PostDetail.fromJson(item);
+        portList.add(port);
       }
-      return videoList;
+      return portList;
     } else {
       return null;
     }

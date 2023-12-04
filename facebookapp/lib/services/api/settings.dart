@@ -1,3 +1,4 @@
+import 'package:fb_app/models/push_setting_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
 import 'package:fb_app/utils/get_device_uuid.dart';
@@ -24,7 +25,7 @@ class SearchAPI {
     return response.data['code'];
   }
 
-  Future<Object?> getPushSettings() async {
+  Future<PushSetting?> getPushSettings() async {
     String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/settings/get_push_settings",
@@ -32,7 +33,9 @@ class SearchAPI {
       header: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 200) {
-      return response.data['data'];
+      var responseData = response.data['data'];
+      PushSetting list = PushSetting.fromJson(responseData);
+      return list;
     } else {
       return null;
     }
