@@ -10,7 +10,7 @@ import 'package:fb_app/screens/sign_up_screens/sign_up_screen.dart';
 import 'package:fb_app/screens/sign_up_screens/type_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:fb_app/screens/add_post_screen.dart';
 import 'bloc/login/login_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -30,20 +30,24 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Facebook Login',
       debugShowCheckedModeBanner: false,
-      initialRoute: "/home",
+      initialRoute: "/add_post_screen",
       theme: ThemeData(
         primaryColor: Palette.facebookBlue,
       ),
+      // routes: {
+      //   "/login": (BuildContext context) =>
+      //       BlocProvider(create: (context) => LoginBloc(), child: LoginPage()),
+      //   "/home": (BuildContext context) => HomeScreen(),
+      //   "/sign_up": (BuildContext context) => SignUpScreen(),
+      //   "/otp": (BuildContext context) => OTPScreen(),
+      //   "/loading": (BuildContext context) => LoadingScreen(),
+      //   "/type_password": (BuildContext context) => PasswordScreen(),
+      //   "/forgot_password": (BuildContext context) => ForgotPasswordScreen(),
+      //   "/change_info": (BuildContext context) => ChangeInfoScreen(),
+      //   "/add_post_screen": (BuildContext context) => AddPostScreen(),
+      // },
       routes: {
-        "/login": (BuildContext context) =>
-            BlocProvider(create: (context) => LoginBloc(), child: LoginPage()),
-        "/home": (BuildContext context) => HomeScreen(),
-        "/sign_up": (BuildContext context) => SignUpScreen(),
-        "/otp": (BuildContext context) => OTPScreen(),
-        "/loading": (BuildContext context) => LoadingScreen(),
-        "/type_password": (BuildContext context) => PasswordScreen(),
-        "/forgot_password": (BuildContext context) => ForgotPasswordScreen(),
-        "/change_info": (BuildContext context) => ChangeInfoScreen(),
+        "/add_post_screen": (BuildContext context) => AddPostScreen(),
       },
     );
   }
