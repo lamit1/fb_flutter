@@ -21,15 +21,7 @@ class PostAPI {
     );
     if (response.statusCode == 200) {
       var responseData = response.data['data'];
-      Post post = Post(
-        user: responseData['username'],
-        caption: responseData['avatar'],
-        timeAgo: responseData['timeAgo'],
-        imageUrl: responseData['imageUrl'],
-        likes: responseData['likes'],
-        comments: responseData['comments'],
-        shares: responseData['shares'],
-      );
+      Post post = Post.fromJson(responseData);
       return post;
     } else {
       return null;
@@ -156,15 +148,7 @@ class PostAPI {
       var responseData = response.data['data'];
       List<Post> postList = [];
       for (var postData in responseData) {
-        Post post = Post(
-          user: postData['username'],
-          caption: postData['avatar'],
-          timeAgo: postData['timeAgo'],
-          imageUrl: postData['imageUrl'],
-          likes: postData['likes'],
-          comments: postData['comments'],
-          shares: postData['shares'],
-        );
+        Post post = Post.fromJson(postData);
         postList.add(post);
       }
       return postList;
@@ -205,15 +189,7 @@ class PostAPI {
       var responseData = response.data['data'];
       List<Video> videoList = [];
       for (var videoData in responseData) {
-        Video video = Video(
-          user: videoData['username'],
-          caption: videoData['avatar'],
-          timeAgo: videoData['timeAgo'],
-          videoUrl: videoData['videoUrl'],
-          likes: videoData['likes'],
-          comments: videoData['comments'],
-          shares: videoData['shares'],
-        );
+        Video video = Video.fromJson(videoData);
         videoList.add(video);
       }
       return videoList;

@@ -54,7 +54,7 @@ class CommentAPI {
   ) async {
     String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
-      url: "https://it4788.catan.io.vn/get-list-feels",
+      url: "https://it4788.catan.io.vn/get_list_feels",
       requestType: RequestType.POST,
       body: {
         "id": id,
