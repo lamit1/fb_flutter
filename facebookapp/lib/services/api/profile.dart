@@ -20,18 +20,10 @@ class ProfileAPI {
       },
       header: {'Authorization': 'Bearer $token'},
     );
-    if (response.statusCode == 200) {
       var responseData = response.data['data'];
-      User user = User(
-        name: responseData['username'],
-        imageUrl: responseData['avatar'],
-        coins: responseData['coins'],
-        active: responseData['active'],
-      );
+      print(responseData);
+      User user = User.fromJson(responseData);
       return user;
-    } else {
-      return null;
-    }
   }
 
   Future<String?> setUserInfo(

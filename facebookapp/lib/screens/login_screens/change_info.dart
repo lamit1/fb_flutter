@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'package:fb_app/services/api/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ChangeInfoScreen extends StatefulWidget {
   const ChangeInfoScreen({Key? key}) : super(key: key);
@@ -11,71 +14,104 @@ class ChangeInfoScreen extends StatefulWidget {
 
 class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
   late TextEditingController _usernameController;
-  late File? _avatar = File("/assets/avatar.png");
+  File? _avatar;
 
   @override
   void initState() {
     super.initState();
     _usernameController = TextEditingController();
+    _initAvatar();
+  }
+
+  Future<void> _initAvatar() async {
+    final ByteData data = await rootBundle.load('assets/avatar.png');
+    final File file = File('${(await getTemporaryDirectory()).path}/avatar.png');
+    await file.writeAsBytes(data.buffer.asUint8List());
+    setState(() {
+      _avatar = file;
+    });
   }
 
   Future<void> _pickImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-
+    final ByteData data = await rootBundle.load('assets/avatar.png');
+    final File file = File('${(await getTemporaryDirectory()).path}/avatar.png');
+    await file.writeAsBytes(data.buffer.asUint8List());
     setState(() {
-      _avatar = pickedFile != null ? File(pickedFile.path) : null;
+      _avatar = pickedFile != null ? File(pickedFile.path) : file;
     });
   }
 
   Future<void> _submitForm() async {
     final String username = _usernameController.text;
-
-    // TODO: Perform the form data submission with username and avatar
-    // For example, you can use Dio or another HTTP client to send the data.
-
-    print('Username: $username');
-    if (_avatar != null) {
-      print('Avatar path: ${_avatar!.path}');
-    }
+    File submitAvatar = _avatar as File;
+    var response = await ProfileAPI().changeProfileAfterSignup(username, submitAvatar);
+    print(response);
   }
 
   @override
   Widget build(BuildContext context) {
+    double imageWidth = 400;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Change Info'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(labelText: 'Username'),
-            ),
-            const SizedBox(height: 16.0),
-            if (_avatar != null)
-              Image.file(
-                _avatar!,
-                height: 100,
-                width: 100,
-                fit: BoxFit.cover,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Column(
+                children: [
+                  if (_avatar != null)
+                    Image.file(
+                      _avatar!,
+                      width: imageWidth,
+                      height: imageWidth,
+                      fit: BoxFit.cover,
+                    ),
+                  const SizedBox(height: 16.0),
+                  Row(
+                    children: [
+                      const Expanded(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              labelText: 'Enter your username',
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 2, color: Colors.blue),
+                              ),
+                            ),
+                          )
+                      ),
+                      const SizedBox(width: 15,),
+                      ElevatedButton(
+                        onPressed: _pickImage,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.all(10), // Adjust padding as needed
+                        ),
+                        child: const Icon(Icons.image, size: 36), // Adjust size as needed
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _pickImage,
-              child: const Text('Pick Image'),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _submitForm,
-              child: const Text('Submit'),
-            ),
-          ],
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: _submitForm,
+                child: const SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: Center(child: Text('Continue'))
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+
 
   @override
   void dispose() {

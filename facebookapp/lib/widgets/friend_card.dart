@@ -28,7 +28,7 @@ class FriendCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    friend.name!,
+                    friend.username!,
                     style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
                     textAlign: TextAlign.start,
                   ),

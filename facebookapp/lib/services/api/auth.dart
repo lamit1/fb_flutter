@@ -17,7 +17,7 @@ class Auth {
     if (resp.statusCode == 200) {
       var response = resp.data['data'];
       User user = User(
-        name: response['username'],
+        username: response['username'],
         imageUrl: response['avatar'],
         coins: response['coins'],
         active: response['active'],
