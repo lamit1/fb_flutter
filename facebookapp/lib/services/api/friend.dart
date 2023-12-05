@@ -1,10 +1,12 @@
+import 'package:fb_app/models/friend_model.dart';
+import 'package:fb_app/models/suggested_friends_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
 
 class FriendAPI {
   final DioClient dio = DioClient();
 
-  Future<Object?> getRequestedFriends(
+  Future<List<Friend>?> getRequestedFriends(
     String index,
     String count,
   ) async {
@@ -19,13 +21,19 @@ class FriendAPI {
       header: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 200) {
-      return response.data['data'];
+      var responseData = response.data['data'];
+      List<Friend> list = [];
+      for (var item in responseData['request']) {
+        Friend temp = Friend.fromJson(item);
+        list.add(temp);
+      }
+      return list;
     } else {
       return null;
     }
   }
 
-  Future<Object?> getUserFriends(
+  Future<List<Friend>?> getUserFriends(
     String index,
     String count,
     String userId,
@@ -42,13 +50,19 @@ class FriendAPI {
       header: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 200) {
-      return response.data['data'];
+      var responseData = response.data['data'];
+      List<Friend> list = [];
+      for (var item in responseData['friends']) {
+        Friend temp = Friend.fromJson(item);
+        list.add(temp);
+      }
+      return list;
     } else {
       return null;
     }
   }
 
-  Future<Object?> getSuggestedFriends(
+  Future<List<SuggestedFriend>?> getSuggestedFriends(
     String index,
     String count,
   ) async {
@@ -63,7 +77,13 @@ class FriendAPI {
       header: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 200) {
-      return response.data['data'];
+      var responseData = response.data['data'];
+      List<SuggestedFriend> list = [];
+      for (var item in responseData['list_users']) {
+        SuggestedFriend temp = SuggestedFriend.fromJson(item);
+        list.add(temp);
+      }
+      return list;
     } else {
       return null;
     }
@@ -95,6 +115,36 @@ class FriendAPI {
       body: {
         "user_id": userId,
         "is_accept": isAccept,
+      },
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return response.data['code'];
+  }
+
+  Future<String?> unfriend(
+      String userId,
+      ) async {
+    String? token = await Storage().getToken();
+    var response = await DioClient().apiCall(
+      url: "https://it4788.catan.io.vn/unfriend",
+      requestType: RequestType.POST,
+      body: {
+        "user_id": userId,
+      },
+      header: {'Authorization': 'Bearer $token'},
+    );
+    return response.data['code'];
+  }
+
+  Future<String?> delRequestFriend(
+      String userId,
+      ) async {
+    String? token = await Storage().getToken();
+    var response = await DioClient().apiCall(
+      url: "https://it4788.catan.io.vn/del_request_friend",
+      requestType: RequestType.POST,
+      body: {
+        "user_id": userId,
       },
       header: {'Authorization': 'Bearer $token'},
     );
