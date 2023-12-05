@@ -59,10 +59,10 @@ class _HomeScreenState extends State<HomeScreen> {
       body: PageView(
           controller: _pageController,
           children: [
-            PostScreen(key: PageStorageKey('postScreen')),
-            AddFriendScreen(key: PageStorageKey('addFriendScreen')),
-            NotificationScreen(key: PageStorageKey('notificationScreen')),
-            MenuScreen(key: PageStorageKey('menuScreen')),
+            PostScreen(key: const PageStorageKey('postScreen')),
+            const AddFriendScreen(key: PageStorageKey('addFriendScreen')),
+            const NotificationScreen(key: PageStorageKey('notificationScreen')),
+            const MenuScreen(key: PageStorageKey('menuScreen')),
           ]
       ),
       bottomNavigationBar: BottomNavigationBar(

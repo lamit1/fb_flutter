@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:fb_app/firebase_service.dart';
 import 'package:fb_app/services/api/auth.dart';
 import 'package:meta/meta.dart';
 

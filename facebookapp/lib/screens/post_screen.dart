@@ -25,9 +25,9 @@ class _PostScreenState extends State<PostScreen> {
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-              return PostWidget(post: posts[index]);
+              return PostWidget(post: posts[0]);
             },
-            childCount: posts.length,
+            childCount: 1,
           ),
         ),
       ],
