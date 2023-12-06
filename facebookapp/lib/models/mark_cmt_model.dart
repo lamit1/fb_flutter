@@ -6,7 +6,7 @@ class MarkComments {
   final String makeContent;
   final String typeOfMark;
   final User poster;
-  final Cmt comments;
+  final Comment comments;
 
   const MarkComments({
     required this.id,
@@ -22,7 +22,7 @@ class MarkComments {
       makeContent: json['makeContent'] as String,
       typeOfMark: json['typeOfMark'] as String,
       poster: User.fromJson(json['poster']),
-      comments: Cmt.fromJson(json['comments']),
+      comments: Comment.fromJson(json['comments']),
     );
   }
 

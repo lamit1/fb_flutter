@@ -1,5 +1,4 @@
 import 'package:fb_app/core/pallete.dart';
-import 'package:fb_app/data/data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +25,7 @@ class _NotificationCardState extends State<NotificationCard> {
                     children: [
                       // Avatar Image
                       CircleAvatar(
-                        backgroundImage: NetworkImage(onlineUsers[0].imageUrl!),
+                        backgroundImage: NetworkImage("onlineUsers[0].imageUrl!"),
                         radius: 30.0,
                       ),
                       Positioned(
@@ -55,7 +54,7 @@ class _NotificationCardState extends State<NotificationCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${onlineUsers[0].username} has liked your post",
+                        "${"onlineUsers[0].username"} has liked your post",
                         style: const TextStyle(
                             fontWeight: FontWeight.w400, fontSize: 14),
                       ),

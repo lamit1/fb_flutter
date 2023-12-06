@@ -18,7 +18,7 @@ class FriendCard extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 40.0,
-              backgroundImage: NetworkImage(friend.imageUrl!),
+              backgroundImage: NetworkImage("img link"),
             ),
             const SizedBox(
               width: 10.0,
@@ -28,7 +28,7 @@ class FriendCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    friend.username!,
+                    "username",
                     style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
                     textAlign: TextAlign.start,
                   ),

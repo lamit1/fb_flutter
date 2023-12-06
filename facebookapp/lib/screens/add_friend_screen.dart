@@ -1,7 +1,7 @@
+import 'package:fb_app/models/user_model.dart';
 import 'package:fb_app/widgets/friend_card.dart';
 import 'package:flutter/material.dart';
 
-import '../data/data.dart';
 
 class AddFriendScreen extends StatefulWidget {
   const AddFriendScreen({super.key});
@@ -13,7 +13,7 @@ class AddFriendScreen extends StatefulWidget {
 class _AddFriendScreenState extends State<AddFriendScreen> {
   final ScrollController _scrollController = ScrollController(keepScrollOffset: true);
   int visibleFriendsCount = 5;
-  int maxVisibleFriendCount = onlineUsers.length;
+  int maxVisibleFriendCount = 12;
   void loadMoreFriends() {
     setState(() {
       visibleFriendsCount+=5;
@@ -29,11 +29,11 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
           delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
               if (index < visibleFriendsCount) {
-                return FriendCard(friend: onlineUsers[index]);
+                return FriendCard(friend: User());
               } else if (index == visibleFriendsCount && index != maxVisibleFriendCount) {
                 return Column(
                   children: [
-                    FriendCard(friend: onlineUsers[index]),
+                    FriendCard(friend: User()),
                     ElevatedButton(
                       onPressed: loadMoreFriends,
                       child: const Padding(

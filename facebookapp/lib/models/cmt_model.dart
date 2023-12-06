@@ -1,18 +1,18 @@
 import 'package:fb_app/models/user_model.dart';
 
-class Cmt {
+class Comment {
   final String content;
   final User poster;
   final String created;
 
-  const Cmt({
+  const Comment({
     required this.content,
     required this.poster,
     required this.created,
   });
 
-  factory Cmt.fromJson(Map<String, dynamic> json) {
-    return Cmt(
+  factory Comment.fromJson(Map<String, dynamic> json) {
+    return Comment(
       content: json['content'] as String,
       created: json['created'] as String,
       poster: User.fromJson(json['poster']),

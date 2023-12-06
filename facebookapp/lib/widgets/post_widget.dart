@@ -27,20 +27,20 @@ class PostWidget extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 20.0,
-                      backgroundImage: NetworkImage(post.user.imageUrl!),
+                      backgroundImage: NetworkImage("url"),
                     ),
                     const SizedBox(width: 8.0),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          post.user.username!,
+                          "username",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          post.timeAgo,
+                          "post.timeAgo",
                           style: const TextStyle(
                             color: Colors.grey,
                           ),
@@ -61,10 +61,10 @@ class PostWidget extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(post.caption),
+            child: Text("post.caption"),
           ),
-          if (post.imageUrls != null && post.imageUrls!.isNotEmpty)
-            _buildImageSection(post.imageUrls!, postContext),
+          if (true)
+            _buildImageSection(["123","123"], postContext),
           const Divider(height: 10.0, thickness: 1.0),
           Padding(
             padding: const EdgeInsets.all(10.0),
@@ -87,7 +87,7 @@ class PostWidget extends StatelessWidget {
                           const SizedBox(
                             width: 10.0,
                           ),
-                          Text(post.likes.toString()),
+                          Text("post.likes.toString()"),
                         ],
                       ),
                     ),
@@ -108,7 +108,7 @@ class PostWidget extends StatelessWidget {
                           const SizedBox(
                             width: 10.0,
                           ),
-                          Text(post.comments.toString()),
+                          Text("comment"),
                         ],
                       ),
                     ),
@@ -132,7 +132,7 @@ class PostWidget extends StatelessWidget {
                           const SizedBox(
                             width: 10.0,
                           ),
-                          Text(post.likes.toString()),
+                          Text("123"),
                         ],
                       ),
                     ),

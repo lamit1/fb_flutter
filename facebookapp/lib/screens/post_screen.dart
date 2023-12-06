@@ -1,5 +1,6 @@
-import 'package:fb_app/data/data.dart';
 import 'package:flutter/widgets.dart';
+import '../models/post_model.dart';
+import '../models/user_model.dart';
 import '../widgets/create_post_container.dart';
 import '../widgets/post_widget.dart';
 
@@ -20,12 +21,12 @@ class _PostScreenState extends State<PostScreen> {
       controller: _scrollController,
       slivers: [
         SliverToBoxAdapter(
-          child: CreatePostContainer(currentUser: currentUser),
+          child: CreatePostContainer(currentUser: User()),
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-              return PostWidget(post: posts[0]);
+              // return PostWidget(post: Post(id: '1', name: '2', created: '3', described: '4', feel: '5', commentMark: '6', isFelt: '1',));
             },
             childCount: 1,
           ),

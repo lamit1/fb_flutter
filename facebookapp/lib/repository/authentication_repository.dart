@@ -7,7 +7,7 @@ import '../models/user_model.dart';
 
 class AuthenticationRepository {
   Future<User?> login(String email, String password) async {
-    return await Auth().login(email, password);
+    await Auth().login(email, password);
   }
   Future<String?> signUp(String email, String password) async {
     return await Auth().signUp(email,password);
