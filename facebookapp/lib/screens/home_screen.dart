@@ -5,6 +5,7 @@ import 'package:fb_app/screens/notifications_screen.dart';
 import 'package:fb_app/screens/post_screen.dart';
 import 'package:fb_app/widgets/circle_button.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'menu_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,14 +18,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
   int _selectedIndex = 0;
 
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_){
-
-      // Add Your Code here.
-
-    });
-  }
 
   @override
   void dispose() {
@@ -33,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    String? uid = ModalRoute.of(context)!.settings.arguments as String?;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -59,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: PageView(
           controller: _pageController,
           children: [
-            PostScreen(key: const PageStorageKey('postScreen')),
+            PostScreen(key: const PageStorageKey('postScreen'), uid: uid, ),
             const AddFriendScreen(key: PageStorageKey('addFriendScreen')),
             const NotificationScreen(key: PageStorageKey('notificationScreen')),
             const MenuScreen(key: PageStorageKey('menuScreen')),

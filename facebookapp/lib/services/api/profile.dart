@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:fb_app/models/user_model.dart';
+import 'package:fb_app/models/user_info_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
 import 'package:fb_app/utils/get_device_uuid.dart';
@@ -8,7 +8,7 @@ import 'package:fb_app/utils/get_device_uuid.dart';
 class ProfileAPI {
   final DioClient dio = DioClient();
 
-  Future<List<User>?> getUserInfo(String userId) async {
+  Future<UserInfo> getUserInfo(String userId) async {
     String? deviceId = await getDeviceUUID();
     String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
@@ -21,12 +21,8 @@ class ProfileAPI {
       header: {'Authorization': 'Bearer $token'},
     );
     var responseData = response.data['data'];
-    List<User> userList = [];
-    for (var item in responseData) {
-      User user = User.fromJson(item);
-      userList.add(user);
-    }
-    return userList;
+    UserInfo user = UserInfo.fromJson(responseData);
+    return user;
   }
 
   Future<String?> setUserInfo(

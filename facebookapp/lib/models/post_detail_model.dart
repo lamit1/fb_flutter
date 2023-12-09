@@ -27,9 +27,16 @@ class PostDetail {
   final String canRate;
   final String url;
   final List<String> message;
+  final String feel;
+  final String commentMark;
+  final String isFelt;
+
 
   const PostDetail({
     required this.id,
+    required this.commentMark,
+    required this.feel,
+    required this.isFelt,
     required this.name,
     required this.created,
     required this.described,
@@ -94,6 +101,9 @@ class PostDetail {
       canRate: json['can_rate'] as String,
       url: json['url'] as String,
       message: json['message'] as List<String>,
+      commentMark: json['comment_mark'] as String,
+      feel:  json['feel'] as String,
+      isFelt: json['is_felt'] as String
     );
   }
 

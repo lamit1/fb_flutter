@@ -17,9 +17,7 @@ class Auth {
     if (resp.statusCode == 200) {
       var response = resp.data['data'];
       Storage().saveToken(response['token']);
-      return response.data['code'];
-    } else {
-      return null;
+      return response['id'];
     }
   }
 

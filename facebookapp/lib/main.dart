@@ -10,12 +10,15 @@ import 'package:fb_app/screens/sign_up_screens/sign_up_screen.dart';
 import 'package:fb_app/screens/sign_up_screens/type_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 
 import 'bloc/login/login_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
+  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  print("Position: " + position.toString());
 }
 
 class MyApp extends StatelessWidget {

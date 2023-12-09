@@ -154,8 +154,9 @@ class _LoginPageState extends State<LoginPage> {
         } else if (state is LoginLoading) {
           return LoadingScreen();
         } else if (state is LoginSuccess) {
+          String uid = state.uid;
           Future.microtask(() {
-            Navigator.pushReplacementNamed(context, "/otp", arguments: [_emailController.text]);
+            Navigator.pushReplacementNamed(context, "/home", arguments: uid);
           });
           return const Scaffold(body: Text("Login success"));
         } else if (state is LoginFailure) {

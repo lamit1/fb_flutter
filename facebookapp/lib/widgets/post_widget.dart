@@ -1,12 +1,13 @@
 
 import 'package:fb_app/core/pallete.dart';
+import 'package:fb_app/models/post_detail_model.dart';
 import 'package:fb_app/widgets/comment_box.dart';
-import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:multi_image_layout/multi_image_layout.dart';
 import '../models/post_model.dart';
 
 class PostWidget extends StatelessWidget {
-  final Post post;
+  final PostDetail post;
 
   PostWidget({required this.post});
 
@@ -23,25 +24,25 @@ class PostWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
+                 Row(
                   children: [
                     CircleAvatar(
                       radius: 20.0,
-                      backgroundImage: NetworkImage("url"),
+                      backgroundImage: NetworkImage(post.user.avatar ?? "/assets/avatar.png"),
                     ),
-                    const SizedBox(width: 8.0),
+                    SizedBox(width: 8.0),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "username",
-                          style: const TextStyle(
+                          post.user.name ?? "Username",
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          "post.timeAgo",
-                          style: const TextStyle(
+                          DateFormat('dd/MM/yyyy').format(DateTime.parse(post.created)),
+                          style: TextStyle(
                             color: Colors.grey,
                           ),
                         ),
@@ -59,8 +60,8 @@ class PostWidget extends StatelessWidget {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
             child: Text("post.caption"),
           ),
           if (true)
@@ -79,12 +80,12 @@ class PostWidget extends StatelessWidget {
                       },
                       style: const ButtonStyle(
                           foregroundColor: MaterialStatePropertyAll(Colors.grey)),
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           // TODO: Intergrate the true
-                          const Icon(Icons.thumb_up, color: true ? null : Palette.facebookBlue,),
-                          const SizedBox(
+                          Icon(Icons.thumb_up, color: true ? null : Palette.facebookBlue,),
+                          SizedBox(
                             width: 10.0,
                           ),
                           Text("post.likes.toString()"),
@@ -101,11 +102,11 @@ class PostWidget extends StatelessWidget {
                         print("Press Comment!");
                         _showCommentDialog(postContext);
                       },
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.comment),
-                          const SizedBox(
+                          Icon(Icons.comment),
+                          SizedBox(
                             width: 10.0,
                           ),
                           Text("comment"),
@@ -124,12 +125,12 @@ class PostWidget extends StatelessWidget {
                       },
                       style: const ButtonStyle(
                           foregroundColor: MaterialStatePropertyAll(Colors.grey)),
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           // TODO: Intergrate the true
-                          const Icon(Icons.share, color: true ? null : Palette.facebookBlue,),
-                          const SizedBox(
+                          Icon(Icons.share, color: true ? null : Palette.facebookBlue,),
+                          SizedBox(
                             width: 10.0,
                           ),
                           Text("123"),

@@ -1,10 +1,11 @@
 import 'package:fb_app/core/pallete.dart';
+import 'package:fb_app/models/user_info_model.dart';
 import 'package:flutter/material.dart';
 
 import '../models/user_model.dart';
 
 class CreatePostContainer extends StatelessWidget {
-  final User currentUser;
+  final UserInfo currentUser;
 
   const CreatePostContainer({super.key, required this.currentUser});
 
@@ -21,7 +22,7 @@ class CreatePostContainer extends StatelessWidget {
                 CircleAvatar(
                   radius: 20.0,
                   backgroundColor: Colors.grey[200],
-                  backgroundImage: NetworkImage("currentUser.imageUrl!"),
+                  backgroundImage: NetworkImage(currentUser.avatar ?? "/assets/avatar.png"),
                 ),
                 const SizedBox(
                   width: 8.0,

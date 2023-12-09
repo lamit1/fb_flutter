@@ -14,20 +14,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   void _onLoginButtonPressed(LoginButtonPressed event, Emitter<LoginState> emit) async {
     emit(LoginLoading());
     try {
-      // For example, you can call the AuthenticationRepository to log in the user.
-      //User with non-firebase login api call
-      final user = await Auth().login(event.email, event.password);
-      //Use with firebase login api call
-      // final user = await login(event.email, event.password);
-      if (user!=null) {
-        emit(LoginSuccess()); // If login is successful
+      final String? id = await Auth().login(event.email, event.password);
+      if (id!=null) {
+        emit(LoginSuccess(uid: id,));
       }
     } catch (error) {
-      if (error is Exception) {
-        emit(LoginFailure(error: error.toString()));
-      } else {
-        emit(LoginFailure(error: "An unexpected error occurred."));
-      }
+      emit(LoginFailure(error: "An unexpected error occurred. $error"));
     }
   }
 }
