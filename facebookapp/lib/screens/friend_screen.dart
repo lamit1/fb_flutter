@@ -20,7 +20,7 @@ class _FriendScreenState extends State<FriendScreen>
   ScrollController(keepScrollOffset: true);
   late List<Friend> friend;
   late List<Friend> reqFriend;
-  late List<SuggestedFriend> sugFriend;
+  late List<Friend> sugFriend;
   int visibleFriendsCount = 5;
 
   void loadMoreFriends() {
@@ -84,7 +84,7 @@ class _FriendScreenState extends State<FriendScreen>
 
   void loadSugFriends() async {
     try {
-      List<SuggestedFriend>? fetchedSugFriends =
+      List<Friend>? fetchedSugFriends =
       await FriendAPI().getSuggestedFriends(
         '0',
         '100',
@@ -97,6 +97,13 @@ class _FriendScreenState extends State<FriendScreen>
     } catch (error) {
       Logger().d('Error loading friends: $error');
     }
+  }
+
+  void reloadFriendList() {
+    // Reload the list of friends here
+    loadSugFriends();
+    loadReqFriends();
+    loadFriends();
   }
 
   void _handleTabChange() {
@@ -195,7 +202,7 @@ class _FriendScreenState extends State<FriendScreen>
                 return Container();
               }
               if (index < visibleFriendsCount) {
-                return FriendCard(friend: friends[index], tag: tag);
+                return FriendCard(friend: friends[index], tag: tag, reloadFriendList: reloadFriendList);
               } else if (index == visibleFriendsCount &&
                   index != maxVisibleFriendCount) {
                 return Column(
@@ -230,7 +237,7 @@ class _FriendScreenState extends State<FriendScreen>
     );
   }
 
-  Widget _buildSuggestedFriendsList(List<SuggestedFriend> friends, String tag) {
+  Widget _buildSuggestedFriendsList(List<Friend> friends, String tag) {
     int maxVisibleFriendCount = friends.length;
     return CustomScrollView(
       controller: _scrollController,
@@ -240,14 +247,7 @@ class _FriendScreenState extends State<FriendScreen>
                 (BuildContext context, int index) {
               if (index >= friends.length) return Container();
               if (index < visibleFriendsCount) {
-                Friend friend = Friend(
-                  id: friends[index].userId,
-                  username: friends[index].username,
-                  avatar: friends[index].avatar,
-                  sameFriends: friends[index].sameFriends,
-                  created: '',
-                );
-                return FriendCard(friend: friend, tag: tag);
+                return FriendCard(friend: friends[index], tag: tag, reloadFriendList: reloadFriendList);
               } else if (index == visibleFriendsCount &&
                   index != maxVisibleFriendCount) {
                 return Column(
@@ -289,7 +289,7 @@ class _FriendScreenState extends State<FriendScreen>
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-              return FriendCard(friend: friends[index], tag: tag);
+              return FriendCard(friend: friends[index], tag: tag, reloadFriendList: reloadFriendList);
             },
             childCount: friends.length,
           ),

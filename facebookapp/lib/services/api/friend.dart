@@ -1,8 +1,6 @@
 import 'package:fb_app/models/friend_model.dart';
-import 'package:fb_app/models/suggested_friends_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
-import 'package:logger/logger.dart';
 
 class FriendAPI {
   final DioClient dio = DioClient();
@@ -63,7 +61,7 @@ class FriendAPI {
     }
   }
 
-  Future<List<SuggestedFriend>?> getSuggestedFriends(
+  Future<List<Friend>?> getSuggestedFriends(
     String index,
     String count,
   ) async {
@@ -79,9 +77,9 @@ class FriendAPI {
     );
     if (response.statusCode == 200) {
       var responseData = response.data['data'];
-      List<SuggestedFriend> list = [];
+      List<Friend> list = [];
       for (var item in responseData) {
-        SuggestedFriend temp = SuggestedFriend.fromJson(item);
+        Friend temp = Friend.fromJson(item);
         list.add(temp);
       }
       return list;
