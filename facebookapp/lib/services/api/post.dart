@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:fb_app/models/post_detail_model.dart';
+import 'package:fb_app/models/post_model.dart';
 import 'package:fb_app/models/video_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
@@ -110,7 +111,7 @@ class PostAPI {
     return response.data['code'];
   }
 
-  Future<List<PostDetail>?> getListPosts(String userId,
+  Future<List<Post>?> getListPosts(String userId,
       String inCampaign,
       String campaignId,
       String latitude,
@@ -140,27 +141,18 @@ class PostAPI {
       );
 
       if (response.statusCode == 200) {
-        var responseData = response.data['data'];
-        Logger().d("POSTS: ${responseData['post'][0]}");
-        Logger().d("POSTS: ${PostDetail.fromJson(responseData['post'][0])}");
-
-        List<PostDetail>? postList = (responseData['post'])
-            .map((x) => PostDetail.fromJson(x))
-            .toList();
-        return postList;
+          var responseData = response.data['data'];
+          Logger().d("NULL POSTS: ${(responseData['post'][0])}" );
+          List<Post>? postList = (responseData['post'] as List)
+              .map((x) => Post.fromJson(x))
+              .toList();
+          return postList;
         }
         return null;
     } catch (error) {
-      // Handle exceptions, e.g., log or throw an exception
       Logger().e("Error getting list of posts: $error");
       return null;
     }
-  }
-
-  List<PostDetail> parsePosts(String jsonData) {
-    Logger().d("List json is $jsonData");
-    final List<dynamic> jsonList = json.decode(jsonData);
-    return jsonList.map((json) => PostDetail.fromJson(json)).toList();
   }
 
   Future<List<PostDetail>?> getListVideos(String userId,

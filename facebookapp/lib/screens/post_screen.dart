@@ -19,7 +19,7 @@ class PostScreen extends StatefulWidget {
 class _PostScreenState extends State<PostScreen> {
   final ScrollController _scrollController = ScrollController(keepScrollOffset: true);
   late UserInfo user;
-  late List<PostDetail> posts;
+  late List<Post> posts;
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class _PostScreenState extends State<PostScreen> {
 
   void loadPosts() async {
     try {
-      List<PostDetail>? fetchedPosts = await PostAPI().getListPosts(
+      List<Post>? fetchedPosts = await PostAPI().getListPosts(
         widget.uid!,
         '1',
         '1',
@@ -52,7 +52,6 @@ class _PostScreenState extends State<PostScreen> {
         "0",
         "10"
       );
-      Logger().d("Load post called! $fetchedPosts");
       if (fetchedPosts != null) {
         setState(() {
           posts = fetchedPosts;
@@ -78,7 +77,7 @@ class _PostScreenState extends State<PostScreen> {
                 (BuildContext context, int index) {
               return PostWidget(post: posts[index]);
             },
-            childCount: 1,
+            childCount: 5,
           ),
         ),
       ],

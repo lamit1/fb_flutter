@@ -17,8 +17,6 @@ import 'bloc/login/login_bloc.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
-  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  print("Position: " + position.toString());
 }
 
 class MyApp extends StatelessWidget {

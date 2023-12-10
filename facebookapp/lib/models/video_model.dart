@@ -3,14 +3,14 @@ class Video {
   final String? thumb;
 
   const Video({
-    required this.url,
-    required this.thumb,
+    this.url,
+    this.thumb,
   });
 
   factory Video.fromJson(Map<String, dynamic> json) {
     return Video(
-      url: json['url'] as String,
-      thumb: json['thumb'] as String,
+      url: json['url'] ?? "",
+      thumb: json['thumb'] ?? "",
     );
   }
 

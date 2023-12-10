@@ -2,18 +2,20 @@
 import 'package:fb_app/core/pallete.dart';
 import 'package:fb_app/models/post_detail_model.dart';
 import 'package:fb_app/widgets/comment_box.dart';
+import 'package:fb_app/widgets/video_post.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_image_layout/multi_image_layout.dart';
 import '../models/post_model.dart';
 
 class PostWidget extends StatelessWidget {
-  final PostDetail post;
+  final Post post;
 
   PostWidget({required this.post});
 
 
   @override
   Widget build(BuildContext postContext) {
+    print(post.image);
     return Card(
       margin: const EdgeInsets.all(8.0),
       child: Column(
@@ -28,20 +30,20 @@ class PostWidget extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 20.0,
-                      backgroundImage: NetworkImage(post.user.avatar ?? "/assets/avatar.png"),
+                      backgroundImage: NetworkImage(post.user?.avatar ?? "/assets/avatar.png"),
                     ),
                     SizedBox(width: 8.0),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          post.user.name ?? "Username",
+                          post.user?.name ?? "Username",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          DateFormat('dd/MM/yyyy').format(DateTime.parse(post.created)),
+                          DateFormat('dd/MM/yyyy').format(DateTime.parse(post.created ?? "01/01/1970")),
                           style: TextStyle(
                             color: Colors.grey,
                           ),
@@ -60,12 +62,12 @@ class PostWidget extends StatelessWidget {
               ],
             ),
           ),
-          const Padding(
+           Padding(
             padding: EdgeInsets.all(8.0),
-            child: Text("post.caption"),
+            child: Text(post.described!),
           ),
           if (true)
-            _buildImageSection(["123","123"], postContext),
+            _buildImageSection(post.image!.map((i) => i.url!).toList(), postContext),
           const Divider(height: 10.0, thickness: 1.0),
           Padding(
             padding: const EdgeInsets.all(10.0),
@@ -80,7 +82,7 @@ class PostWidget extends StatelessWidget {
                       },
                       style: const ButtonStyle(
                           foregroundColor: MaterialStatePropertyAll(Colors.grey)),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           // TODO: Intergrate the true
@@ -88,7 +90,7 @@ class PostWidget extends StatelessWidget {
                           SizedBox(
                             width: 10.0,
                           ),
-                          Text("post.likes.toString()"),
+                          Text(post.feel.toString()),
                         ],
                       ),
                     ),
@@ -102,14 +104,14 @@ class PostWidget extends StatelessWidget {
                         print("Press Comment!");
                         _showCommentDialog(postContext);
                       },
-                      child: const Row(
+                      child:  Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.comment),
                           SizedBox(
                             width: 10.0,
                           ),
-                          Text("comment"),
+                          Text(post.commentMark!),
                         ],
                       ),
                     ),
@@ -130,10 +132,6 @@ class PostWidget extends StatelessWidget {
                         children: [
                           // TODO: Intergrate the true
                           Icon(Icons.share, color: true ? null : Palette.facebookBlue,),
-                          SizedBox(
-                            width: 10.0,
-                          ),
-                          Text("123"),
                         ],
                       ),
                     ),
@@ -149,11 +147,23 @@ class PostWidget extends StatelessWidget {
 
   Widget _buildImageSection(List<String> imageUrls, BuildContext context) {
     double imageWidth = MediaQuery.of(context).size.width;
-    return MultiImageViewer(
-      images: imageUrls.map((url) => ImageModel(imageUrl: url)).toList(),
-      width: imageWidth,
-    );
+
+    // Check if there is a video
+    if (post.video != null && post.video!.url != null) {
+      // If there is a video, display it
+      return VideoPlayerWidget(videoUrl: post.video!.url!);
+    } else if (imageUrls.isNotEmpty) {
+      // If there are images, display them
+      return MultiImageViewer(
+        images: imageUrls.map((url) => ImageModel(imageUrl: url)).toList(),
+        width: imageWidth,
+      );
+    } else {
+      // If there are neither images nor videos, return an empty container
+      return Container();
+    }
   }
+
   Future _showCommentDialog(BuildContext context) {
     return showModalBottomSheet(
       context: context,
