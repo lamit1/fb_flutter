@@ -1,6 +1,6 @@
 
 import 'package:fb_app/core/pallete.dart';
-import 'package:fb_app/screens/add_friend_screen.dart';
+import 'package:fb_app/screens/friend_screen.dart';
 import 'package:fb_app/screens/notifications_screen.dart';
 import 'package:fb_app/screens/post_screen.dart';
 import 'package:fb_app/widgets/circle_button.dart';
@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
           controller: _pageController,
           children: [
             PostScreen(key: const PageStorageKey('postScreen'), uid: uid, ),
-            const AddFriendScreen(key: PageStorageKey('addFriendScreen')),
+            FriendScreen(key: const PageStorageKey('FriendScreen'), uid: uid, ),
             const NotificationScreen(key: PageStorageKey('notificationScreen')),
             const MenuScreen(key: PageStorageKey('menuScreen')),
           ]

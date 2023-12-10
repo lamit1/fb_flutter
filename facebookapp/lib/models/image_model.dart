@@ -3,14 +3,14 @@ class Image {
   final String? url;
 
   const Image({
-    required this.id,
-    required this.url,
+    this.id,
+    this.url,
   });
 
   factory Image.fromJson(Map<String, dynamic> json) {
     return Image(
-      id: json['id'] as String,
-      url: json['url'] as String,
+      id: json['id'] as String?,
+      url: json['url'] as String?,
     );
   }
 

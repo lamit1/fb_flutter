@@ -2,6 +2,7 @@ import 'package:fb_app/models/friend_model.dart';
 import 'package:fb_app/models/suggested_friends_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
+import 'package:logger/logger.dart';
 
 class FriendAPI {
   final DioClient dio = DioClient();
@@ -23,7 +24,7 @@ class FriendAPI {
     if (response.statusCode == 200) {
       var responseData = response.data['data'];
       List<Friend> list = [];
-      for (var item in responseData['request']) {
+      for (var item in responseData['requests']) {
         Friend temp = Friend.fromJson(item);
         list.add(temp);
       }
@@ -79,7 +80,7 @@ class FriendAPI {
     if (response.statusCode == 200) {
       var responseData = response.data['data'];
       List<SuggestedFriend> list = [];
-      for (var item in responseData['list_users']) {
+      for (var item in responseData) {
         SuggestedFriend temp = SuggestedFriend.fromJson(item);
         list.add(temp);
       }

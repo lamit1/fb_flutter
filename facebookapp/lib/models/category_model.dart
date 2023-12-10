@@ -4,9 +4,9 @@ class Category {
   final String? hasName;
 
   const Category({
-    required this.id,
-    required this.name,
-    required this.hasName,
+    this.id,
+    this.name,
+    this.hasName,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) {
