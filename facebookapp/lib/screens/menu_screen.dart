@@ -1,4 +1,5 @@
 import 'package:fb_app/screens/login_screens/login_screen.dart';
+import 'package:fb_app/screens/profile.dart';
 import 'package:fb_app/widgets/menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -18,7 +19,12 @@ class _MenuScreenState extends State<MenuScreen> {
         SliverList(
             delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                  if (index == 0) return  MenuItem(icon: Icons.person, text: "Profile", function: (){},);
+                  if (index == 0) return  MenuItem(icon: Icons.person, text: "Profile", function: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Profile()),
+                    );
+                  },);
                   if (index == 1) return  MenuItem(icon: Icons.payment, text: "Deposit", function: (){},);
                   if (index == 2) return  MenuItem(icon: Icons.settings, text: "Settings", function: (){},);
                   if (index == 3) return  MenuItem(icon: Icons.history, text: "History", function: (){},);

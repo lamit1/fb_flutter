@@ -35,6 +35,9 @@ class _FriendScreenState extends State<FriendScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    friend = [];
+    reqFriend = [];
+    sugFriend = [];
     loadFriends();
     loadReqFriends();
     loadSugFriends();
