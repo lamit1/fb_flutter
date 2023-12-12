@@ -8,6 +8,7 @@ import 'package:fb_app/screens/login_screens/login_screen.dart';
 import 'package:fb_app/screens/login_screens/otp_screen.dart';
 import 'package:fb_app/screens/sign_up_screens/sign_up_screen.dart';
 import 'package:fb_app/screens/sign_up_screens/type_password_screen.dart';
+import 'package:fb_app/screens/video_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fb_app/screens/add_post_screen.dart';
@@ -47,7 +48,8 @@ class MyApp extends StatelessWidget {
       //   "/add_post_screen": (BuildContext context) => AddPostScreen(),
       // },
       routes: {
-        "/add_post_screen": (BuildContext context) => AddPostScreen(),
+        // "/add_post_screen": (BuildContext context) => AddPostScreen(),
+        "/add_post_screen": (BuildContext context) => VideoScreen(),
       },
     );
   }

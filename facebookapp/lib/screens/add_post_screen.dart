@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:video_player/video_player.dart';
 
 class AddPostScreen extends StatefulWidget {
   const AddPostScreen({Key? key}) : super(key: key);
@@ -12,6 +14,22 @@ class AddPostScreen extends StatefulWidget {
 class _AddPostScreenState extends State<AddPostScreen> {
   List<Uint8List> _images = [];
   final TextEditingController captionController = TextEditingController();
+  File? video;
+  VideoPlayerController? videocontroller;
+
+  _selectVideo() async {
+    final videopicked = await ImagePicker().pickVideo(source: ImageSource.gallery);
+    if (videopicked != null) {
+      video = File(videopicked.path);
+      videocontroller = VideoPlayerController.file(video!)
+        ..initialize().then((_) {
+          setState(() {});
+          videocontroller!.play();
+          videocontroller!.setLooping(true);
+        });
+    }
+  }
+
 
   _selectImages(BuildContext context) async {
     final ImagePicker _picker = ImagePicker();
@@ -25,11 +43,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
       );
 
       setState(() {
-        _images = files;
+        _images.addAll(files);
       });
     }
   }
-
 
   void _removeImage(int index) {
     setState(() {
@@ -82,7 +99,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.grey),
-                        onPressed: () {},
+                        onPressed: () {
+                          _selectVideo();
+                        },
                         icon: Icon(Icons.add),
                         label: Row(
                           children: [
@@ -175,8 +194,71 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   );
                 },
               ),
-            )
-                : SizedBox.shrink(),
+            ) : SizedBox.shrink(),
+            video == null
+                ? SizedBox.shrink()
+                : ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 400, maxWidth: 300),
+              child: Stack(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {});
+                      videocontroller!.value.isPlaying
+                          ? videocontroller!.pause()
+                          : videocontroller!.play();
+                    },
+                    child: AspectRatio(
+                      aspectRatio: videocontroller!.value.aspectRatio,
+                      child: VideoPlayer(videocontroller!),
+                    ),
+                  ),
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            videocontroller!.value.isPlaying
+                                ? Icons.pause
+                                : Icons.play_arrow,
+                            size: 50,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              videocontroller!.value.isPlaying
+                                  ? videocontroller!.pause()
+                                  : videocontroller!.play();
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: -10,
+                    right: -10,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.delete,
+                        size: 20,
+                        color: Colors.red,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          // Add logic to delete the video
+                          videocontroller!.pause();
+                          videocontroller!.dispose();
+                          videocontroller = null;
+                          video = null;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
