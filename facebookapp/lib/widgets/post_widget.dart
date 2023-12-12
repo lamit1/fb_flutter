@@ -177,7 +177,7 @@ class PostWidget extends StatelessWidget {
           maxChildSize: 0.9,
           initialChildSize: 0.9,
           builder: (context, scrollController) =>
-              CommentBottomSheet(scrollController: scrollController,),
+              CommentBottomSheet(scrollController: scrollController, id: post.id),
         );
       },
     );

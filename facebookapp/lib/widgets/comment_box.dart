@@ -1,47 +1,52 @@
 import 'package:fb_app/core/pallete.dart';
+import 'package:fb_app/models/mark_cmt_model.dart';
+import 'package:fb_app/services/api/comment.dart';
 import 'package:fb_app/widgets/comment_sheet.dart';
+import 'package:fb_app/widgets/reply_box.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import '../models/cmt_model.dart';
+
 class CommentBottomSheet extends StatefulWidget {
   final ScrollController scrollController;
-  CommentBottomSheet({super.key, required this.scrollController});
+  final String? id; // Add id parameter
+
+  CommentBottomSheet({Key? key, required this.scrollController, this.id}) : super(key: key);
+
   @override
   State<CommentBottomSheet> createState() => _CommentBottomSheetState();
 }
 
+
 class _CommentBottomSheetState extends State<CommentBottomSheet> {
   final _key = GlobalKey<FormState>();
   final TextEditingController commentController = TextEditingController();
+  late List<MarkComments>? marks;
 
-  List filedata = [
-    {
-      'name': 'Chuks Okwuenu',
-      'pic': 'https://picsum.photos/300/30',
-      'message': 'I love to code',
-      'date': '2021-01-01 12:00:00'
-    },
-    {
-      'name': 'Biggi Man',
-      'pic': 'https://www.adeleyeayodeji.com/img/IMG_20200522_121756_834_2.jpg',
-      'message': 'Very cool',
-      'date': '2021-01-01 12:00:00'
-    },
-    {
-      'name': 'Tunde Martins',
-      'pic': 'assets/img/userpic.jpg',
-      'message': 'Very cool',
-      'date': '2021-01-01 12:00:00'
-    },
-    {
-      'name': 'Biggi Man',
-      'pic': 'https://picsum.photos/300/30',
-      'message': 'Very cool',
-      'date': '2021-01-01 12:00:00'
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadComments();
+  }
+
+  Future<void> _loadComments() async {
+    try {
+      List<MarkComments>? marksData = await CommentAPI().getMarkComment("1", "0", "10");
+      if (marksData != null) {
+        setState(() {
+          marks=marksData;
+        });
+      }
+    } catch (error) {
+      // Handle error if necessary
+      print("Error loading comments: $error");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(marks![0]);
     return Container(
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)),
@@ -49,7 +54,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       clipBehavior: Clip.antiAlias,
       child: Scaffold(
         body: CommentBox(
-          userImage: CommentBox.commentImageParser(imageURLorPath: "assets/avatar.png"), // Pass the filedata parameter
+          userImage: CommentBox.commentImageParser(imageURLorPath: "assets/avatar.png"),
           labelText: 'Write a comment...',
           errorText: 'Comment cannot be blank',
           withBorder: false,
@@ -65,20 +70,20 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
           // backgroundColor: Palette.facebookBlue,
           textColor: Colors.grey,
           sendWidget: const Icon(Icons.send_sharp, size: 30, color: Palette.facebookBlue),
-          child: commentChild(filedata),
+          child: commentChild(marks),
         ),
       ),
     );
   }
 
-  Widget commentChild(data,) {
+  Widget commentChild(List<MarkComments>? marks) {
     return SingleChildScrollView(
         controller: widget.scrollController,
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
             children: [
-              for (var i = 0; i < data.length; i++)
+              for (var i = 0; i < marks!.length; i++)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5.0, 15.0, 2.0, 0.0),
                   child: Column(
@@ -89,9 +94,11 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CircleAvatar(
+                              CircleAvatar(
                               radius: 32,
-                              child: Image.network(data[i]['pic'])
+                              backgroundImage: marks[i].poster!.avatar != null
+                                  ? NetworkImage(marks[i].poster!.avatar!)
+                                  : const AssetImage("assets/avatar.png") as ImageProvider<Object>,
                             ),
                             const SizedBox(width: 10,),
                             Expanded(
@@ -109,8 +116,8 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             RichText(
-                                                text: TextSpan(text: data[i]['name'],
-                                                  style: const TextStyle(fontSize: 20, color: Colors.black),
+                                                text: TextSpan(text: marks[i].poster!.name,
+                                                  style: const TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.w700),
                                                     recognizer: TapGestureRecognizer()
                                                       ..onTap = (){
                                                   //TODO: Implement the redirect to user profile
@@ -120,7 +127,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                             ),
                                             const SizedBox(height: 10,),
                                             RichText(
-                                                text: TextSpan(text: data[i]['date'],
+                                                text: TextSpan(text: marks[i].created,
                                                     style: const TextStyle(fontSize: 10, color: Colors.black),
                                                     recognizer: TapGestureRecognizer()
                                                       ..onTap = (){
@@ -131,7 +138,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                             const SizedBox(height: 10,),
 
                                             RichText(
-                                                text: TextSpan(text: data[i]['message'],
+                                                text: TextSpan(text: marks[i].markContent,
                                                   style: const TextStyle(fontSize: 14, color: Colors.black),
                                                 )
                                             ),
@@ -178,19 +185,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.all(10),
-                        child: RichText(
-                            text: TextSpan(
-                              text: "View more 3 reply...",
-                              style: const TextStyle(fontSize: 12, color: Colors.black),
-                              recognizer: TapGestureRecognizer()..onTap = (){
-                              // TODO: Implement add reply
-                              }
-                            ),
-
-                        ),
-                      )
+                      RepliesBox(comments: marks[i].comments)
                     ],
                   ),
                 )
@@ -198,6 +193,29 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
           ),
         ),
       );
+  }
+  void showReplyComments(List<Comment> replyComments) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            children: [
+              // Display reply comments here
+              for (var comment in replyComments)
+                ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(comment.poster!.avatar!) ?? AssetImage("assets/avatar.png") as ImageProvider,
+                  ),
+                  title: Text(comment.poster!.name!),
+                  subtitle: Text(comment.content!),
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
 

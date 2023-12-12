@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
   final String videoUrl;
@@ -12,80 +13,107 @@ class VideoPlayerWidget extends StatefulWidget {
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   late VideoPlayerController _controller;
+  ChewieController? _chewieController;
   bool isPlaying = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(
-      widget.videoUrl,
-    )..initialize().then((_) {
-      setState(() {});
+    _initializeVideoPlayer();
+  }
+
+  Future<void> _initializeVideoPlayer() async {
+    _controller = VideoPlayerController.networkUrl(
+      Uri.parse(widget.videoUrl),
+    );
+
+    await _controller.initialize(
+    );
+
+    setState(() {
+      _chewieController = ChewieController(
+        videoPlayerController: _controller,
+        autoPlay: true,
+        looping: true,
+        showControls: false,
+        allowFullScreen: true,
+        materialProgressColors: ChewieProgressColors(backgroundColor: Colors.red,bufferedColor: Colors.red,
+            handleColor: Colors.blue,playedColor: Colors.orange),
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_controller.value.isInitialized) {
-      return CircularProgressIndicator(); // Or any loading indicator
+    if (_chewieController == null) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     }
-    return Column(
-      children: [
-        Container(
-          width: 500,
-          height: 400,
-          child: VideoPlayer(_controller),
-        ),
-        SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-              onPressed: () {
-                setState(() {
-                  isPlaying ? _controller.pause() : _controller.play();
-                  isPlaying = !isPlaying;
-                });
-              },
+
+    return AspectRatio(
+      aspectRatio: _controller.value.aspectRatio,
+      child: Column(
+        children: [
+          Expanded(
+            child: Chewie(
+              controller: _chewieController!,
             ),
-            IconButton(
-              icon: Icon(Icons.stop),
-              onPressed: () {
-                setState(() {
-                  _controller.pause();
-                  _controller.seekTo(Duration.zero);
-                  isPlaying = false;
-                });
-              },
+          ),
+          Container(
+            color: Colors.black54,
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+                  onPressed: () {
+                    setState(() {
+                      isPlaying ? _controller.pause() : _controller.play();
+                      isPlaying = !isPlaying;
+                    });
+                  },
+                ),
+                Text(
+                  '${formatDuration(_controller.value.position)} / ${formatDuration(_chewieController!.videoPlayerController.value.duration)}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.replay_5),
+                  onPressed: () {
+                    setState(() {
+
+                      _controller.seekTo(
+                          _controller.value.position - const Duration(seconds: 5));
+                    });
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.forward_5),
+                  onPressed: () {
+                    setState(() {
+                      _controller.seekTo(
+                          _controller.value.position + const Duration(seconds: 5));
+                    });
+                  },
+                ),
+              ],
             ),
-            IconButton(
-              icon: Icon(Icons.replay_10),
-              onPressed: () {
-                setState(() {
-                  _controller.seekTo(
-                      _controller.value.position - Duration(seconds: 10));
-                });
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.forward_10),
-              onPressed: () {
-                setState(() {
-                  _controller.seekTo(
-                      _controller.value.position + Duration(seconds: 10));
-                });
-              },
-            ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
+  }
+
+  String formatDuration(Duration duration) {
+    return '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _chewieController?.dispose();
     super.dispose();
   }
 }

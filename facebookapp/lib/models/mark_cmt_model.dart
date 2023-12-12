@@ -3,17 +3,20 @@ import 'package:fb_app/models/cmt_model.dart';
 
 class MarkComments {
   final String? id;
-  final String? makeContent;
+  final String? markContent;
   final String? typeOfMark;
   final User? poster;
   final List<Comment>? comments;
+  final String? created;
+
 
   const MarkComments({
     this.id,
-    this.makeContent,
+    this.markContent,
     this.typeOfMark,
     this.poster,
     this.comments,
+    this.created
   });
 
   factory MarkComments.fromJson(Map<String, dynamic> json) {
@@ -23,8 +26,9 @@ class MarkComments {
         [];
     return MarkComments(
       id: json['id'] as String?,
-      makeContent: json['make_content'] as String?,
+      markContent: json['mark_content'] as String?,
       typeOfMark: json['type_of_mark'] as String?,
+      created: json['created'] as String?,
       poster: User.fromJson(json['poster']),
       comments: commentList,
     );
@@ -32,6 +36,6 @@ class MarkComments {
 
   @override
   String toString() {
-    return "$id, $makeContent, $typeOfMark, $poster, $comments";
+    return "$id, $markContent, $typeOfMark, $poster, $comments";
   }
 }
