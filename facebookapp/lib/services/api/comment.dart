@@ -74,7 +74,7 @@ class CommentAPI {
     if (response.statusCode == 200) {
       var responseData = response.data['data'];
       List<FeelList> list = [];
-      for (var item in responseData['request']) {
+      for (var item in responseData) {
         FeelList temp = FeelList.fromJson(item);
         list.add(temp);
       }

@@ -4,16 +4,16 @@ class SavedSearch {
   final String? created;
 
   const SavedSearch({
-    required this.id,
-    required this.keyword,
-    required this.created,
+    this.id,
+    this.keyword,
+    this.created,
   });
 
   factory SavedSearch.fromJson(Map<String, dynamic> json) {
     return SavedSearch(
-      id: json['id'] as String,
-      keyword: json['keyword'] as String,
-      created: json['created'] as String,
+      id: json['id'] as String?,
+      keyword: json['keyword'] as String?,
+      created: json['created'] as String?,
     );
   }
 

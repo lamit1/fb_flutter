@@ -155,7 +155,7 @@ class PostAPI {
     }
   }
 
-  Future<List<PostDetail>?> getListVideos(String userId,
+  Future<List<Post>?> getListVideos(String userId,
       String inCampaign,
       String campaignId,
       String latitude,
@@ -183,9 +183,9 @@ class PostAPI {
     );
     if (response.statusCode == 200) {
       var responseData = response.data['data'];
-      List<PostDetail> portList = [];
-      for (var item in responseData) {
-        PostDetail port = PostDetail.fromJson(item);
+      List<Post> portList = [];
+      for (var item in responseData['post']) {
+        Post port = Post.fromJson(item);
         portList.add(port);
       }
       return portList;
