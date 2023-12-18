@@ -3,7 +3,6 @@ import 'package:fb_app/models/user_info_model.dart';
 import 'package:fb_app/services/api/post.dart';
 import 'package:fb_app/services/api/profile.dart';
 import 'package:flutter/widgets.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 import '../models/post_model.dart';
 import '../widgets/create_post_container.dart';
