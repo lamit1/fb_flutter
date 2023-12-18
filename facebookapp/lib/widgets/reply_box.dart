@@ -1,3 +1,5 @@
+import 'package:fb_app/core/pallete.dart';
+import 'package:fb_app/utils/converter.dart';
 import 'package:flutter/material.dart';
 
 import '../models/cmt_model.dart';
@@ -31,7 +33,7 @@ class _RepliesBoxState extends State<RepliesBox> {
           child: Text(
             showReplies
                 ? "Hide replies"
-                : "View more ${widget.comments!.length - 2} replies...",
+                : "View more ${widget.comments!.length} replies...",
             style: const TextStyle(fontSize: 12, color: Colors.blue),
           ),
         ),
@@ -41,30 +43,46 @@ class _RepliesBoxState extends State<RepliesBox> {
       children: [
         for (var i = 0; i < widget.comments!.length; i++)
           Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.fromLTRB(75,10,10,10),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CircleAvatar(
                     radius: 24,
                     backgroundImage:
-                        NetworkImage(widget.comments![i].poster.avatar!)),
+                        NetworkImage(widget.comments![i].poster!.avatar!)),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.comments![i].poster.name!,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Palette.scaffold,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.comments![i].poster!.name!,
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(height: 4,),
+                            Text(
+                              convertTimestamp(widget.comments![i].created!),
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              widget.comments![i].content!,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        widget.comments![i].content!,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ],

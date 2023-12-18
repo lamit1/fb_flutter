@@ -4,16 +4,16 @@ import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
 import 'package:fb_app/utils/get_device_uuid.dart';
 
+import '../../models/kudos_dissapointed_model.dart';
+
 class CommentAPI {
   final DioClient dio = DioClient();
 
-  Future<String?> feel(
+  Future<Like> feel(
     String id,
     String type,
   ) async {
-    String? deviceId = await getDeviceUUID();
     String? token = await Storage().getToken();
-    if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/feel",
       requestType: RequestType.POST,
@@ -23,7 +23,7 @@ class CommentAPI {
       },
       header: {'Authorization': 'Bearer $token'},
     );
-    return response.data['code'];
+    return Like.fromJson(response.data['data']);
   }
 
   Future<List<MarkComments>?> getMarkComment(
@@ -109,7 +109,7 @@ class CommentAPI {
     return response.data['code'];
   }
 
-  Future<String?> deleteFeel(
+  Future<Like> deleteFeel(
       String id,
       ) async {
     String? deviceId = await getDeviceUUID();
@@ -123,6 +123,6 @@ class CommentAPI {
       },
       header: {'Authorization': 'Bearer $token'},
     );
-    return response.data['code'];
+    return Like.fromJson(response.data['data']);
   }
 }

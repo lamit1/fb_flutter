@@ -12,16 +12,17 @@ class PostDetail {
   final String? modified;
   final String? fake;
   final String? trust;
-  final String? kudos;
-  final String? disappointed;
+   String? kudos;
+   String? disappointed;
   final String? isRated;
   final String? isMarked;
   final List<Image>? image;
   final Video? video;
   final User? user;
-  final List<Category>? category;
+  final Category? category;
   final String? state;
   final String? isBlocked;
+  String? isFelt;
   final String? canEdit;
   final String? banned;
   final String? canMark;
@@ -29,7 +30,7 @@ class PostDetail {
   final String? url;
   final List<String>? message;
 
-  const PostDetail({
+  PostDetail({
     this.id,
     this.name,
     this.created,
@@ -41,6 +42,7 @@ class PostDetail {
     this.disappointed,
     this.isRated,
     this.isMarked,
+    this.isFelt,
     this.image,
     this.video,
     this.user,
@@ -60,7 +62,6 @@ class PostDetail {
         ?.map((item) => Image.fromJson(item))
         .toList() ??
         [];
-    Logger().d("Null image: $images");
     Video? video;
     if (json.containsKey('video') && json['video'] != null) {
       video = Video.fromJson(json['video']);
@@ -68,11 +69,6 @@ class PostDetail {
     } else {
       Logger().d("Null video");
     }
-    List<Category> categoryList = (json['category'] as List?)
-        ?.map((item) => Category.fromJson(item))
-        .toList() ??
-        [];
-    Logger().d("Null image: $categoryList");
     return PostDetail(
       id: json['id'] as String?,
       name: json['name'] as String?,
@@ -88,7 +84,8 @@ class PostDetail {
       image: images,
       video: video,
       user: User.fromJson(json['author']),
-      category: categoryList,
+      category: Category.fromJson(json['category']),
+      isFelt: json['is_felt'] as String,
       state: json['state'] as String?,
       isBlocked: json['is_blocked'] as String?,
       canEdit: json['can_edit'] as String?,

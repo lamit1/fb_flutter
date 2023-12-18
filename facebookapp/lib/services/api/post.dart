@@ -111,7 +111,8 @@ class PostAPI {
     return response.data['code'];
   }
 
-  Future<List<Post>?> getListPosts(String userId,
+  Future<List<Post>?> getUserListPosts(
+      String userId,
       String inCampaign,
       String campaignId,
       String latitude,
@@ -149,6 +150,42 @@ class PostAPI {
           return postList;
         }
         return null;
+    } catch (error) {
+      Logger().e("Error getting list of posts: $error");
+      return null;
+    }
+  }
+
+  Future<List<Post>?> getListPost(
+      String inCampaign,
+      String campaignId,
+      String latitude,
+      String longitude,
+      String lastId,
+      String index,
+      String count,) async {
+    try {
+      String? token = await Storage().getToken();
+      var response = await DioClient().apiCall(
+        url: "https://it4788.catan.io.vn/get_list_posts",
+        requestType: RequestType.POST,
+        body: {
+          "in_campaign": inCampaign,
+          "campaign_id": campaignId,
+          "latitude": latitude,
+          "longitude": longitude,
+          "last_id": lastId,
+          "index": index,
+          "count": count,
+        },
+        header: {'Authorization': 'Bearer $token'},
+      );
+      var responseData = response.data['data'];
+      print(responseData);
+      List<Post>? postList = (responseData['post'] as List)
+          .map((x) => Post.fromJson(x))
+          .toList();
+      return postList;
     } catch (error) {
       Logger().e("Error getting list of posts: $error");
       return null;

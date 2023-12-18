@@ -3,6 +3,7 @@ import 'package:fb_app/models/user_info_model.dart';
 import 'package:fb_app/services/api/post.dart';
 import 'package:fb_app/services/api/profile.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 import '../models/post_model.dart';
 import '../widgets/create_post_container.dart';
@@ -17,8 +18,11 @@ class PostScreen extends StatefulWidget {
 
 class _PostScreenState extends State<PostScreen> {
   final ScrollController _scrollController = ScrollController(keepScrollOffset: true);
-  late UserInfo user;
-  late List<Post> posts;
+  late UserInfo user = const UserInfo();
+  late List<Post> posts = [];
+  int index = 0;
+  int count = 0;
+  int lastId = 0;
 
   @override
   void initState() {
@@ -41,15 +45,14 @@ class _PostScreenState extends State<PostScreen> {
 
   void loadPosts() async {
     try {
-      List<Post>? fetchedPosts = await PostAPI().getListPosts(
-        widget.uid!,
+      List<Post>? fetchedPosts = await PostAPI().getListPost(
         '1',
         '1',
-        "1.0",
-        "1.0",
-        '0',
-        "0",
-        "10"
+        '1.0',
+        '1.0',
+        lastId.toString(),
+        index.toString(),
+        count.toString()
       );
       if (fetchedPosts != null) {
         setState(() {
@@ -74,9 +77,9 @@ class _PostScreenState extends State<PostScreen> {
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-              return PostWidget(post: posts[index]);
+              return posts.isNotEmpty ? PostWidget(post: posts[index]) : Container();
             },
-            childCount: 5,
+            childCount: count,
           ),
         ),
       ],

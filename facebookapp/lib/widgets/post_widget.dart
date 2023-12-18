@@ -1,21 +1,51 @@
 
+import 'dart:ffi';
+
 import 'package:fb_app/core/pallete.dart';
+import 'package:fb_app/models/kudos_dissapointed_model.dart';
 import 'package:fb_app/models/post_detail_model.dart';
+import 'package:fb_app/services/api/comment.dart';
+import 'package:fb_app/services/api/post.dart';
+import 'package:fb_app/utils/converter.dart';
 import 'package:fb_app/widgets/comment_box.dart';
 import 'package:fb_app/widgets/video_post.dart';
-import 'package:intl/intl.dart';
 import 'package:multi_image_layout/multi_image_layout.dart';
 import '../models/post_model.dart';
 
-class PostWidget extends StatelessWidget {
+class PostWidget extends StatefulWidget {
   final Post post;
+
 
   PostWidget({required this.post});
 
+  @override
+  State<PostWidget> createState() => _PostWidgetState();
+}
+
+class _PostWidgetState extends State<PostWidget> {
+  late PostDetail postDetail = PostDetail();
+
+  Future<void> getPost() async {
+    try {
+      PostDetail? result = await PostAPI().getPost(widget.post!.id!);
+      if (result != null) {
+        setState(() {
+          postDetail = result;
+        });
+      }
+    } catch (e) {
+      print("Error fetching post: $e");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getPost();
+  }
 
   @override
   Widget build(BuildContext postContext) {
-    print(post.image);
     return Card(
       margin: const EdgeInsets.all(8.0),
       child: Column(
@@ -30,21 +60,21 @@ class PostWidget extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 20.0,
-                      backgroundImage: NetworkImage(post.user?.avatar ?? "/assets/avatar.png"),
+                      backgroundImage: NetworkImage(widget.post.user?.avatar ?? "/assets/avatar.png"),
                     ),
-                    SizedBox(width: 8.0),
+                    const SizedBox(width: 8.0),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          post.user?.name ?? "Username",
-                          style: TextStyle(
+                          widget.post.user?.name ?? "Username",
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          DateFormat('dd/MM/yyyy').format(DateTime.parse(post.created ?? "01/01/1970")),
-                          style: TextStyle(
+                          convertTimestamp(widget.post.created!),
+                          style: const TextStyle(
                             color: Colors.grey,
                           ),
                         ),
@@ -55,7 +85,8 @@ class PostWidget extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.more_horiz_outlined),
                   onPressed: () {
-                    _showNonUserPostOption(postContext);
+                    postDetail.canEdit == "1" ?
+                    _showUserPostOption(postContext) : _showNonUserPostOption(context);
                   },
                   splashRadius: 20,
                 ),
@@ -63,11 +94,62 @@ class PostWidget extends StatelessWidget {
             ),
           ),
            Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(post.described!),
+            padding: const EdgeInsets.all(8.0),
+            child: Text(widget.post.described!),
           ),
           if (true)
-            _buildImageSection(post.image!.map((i) => i.url!).toList(), postContext),
+            _buildImageSection(widget.post.image!.map((i) => i.url!).toList(), postContext),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10.0,15.0,20.0,10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: (){},
+                  child: Row(
+                    children: [
+                      (int.parse(postDetail!.disappointed ?? "0") + int.parse(postDetail!.kudos ?? "0")) == 0 ?
+                          const Icon(Icons.sentiment_neutral_sharp,
+                            size: 30,
+                            color: Palette.facebookBlue,) : Container(),
+                      (int.parse(postDetail!.kudos ?? "0") > 0) ? const Icon(
+                        Icons.sentiment_very_satisfied,
+                        size: 30,
+                        color: Palette.facebookBlue,
+                        fill: 1,
+                      ) : Container(),
+                      (int.parse(postDetail!.disappointed ?? "0") > 0) ? const Icon(
+                        Icons.sentiment_dissatisfied_rounded,
+                        size: 30,
+                        color: Palette.facebookBlue,
+                      ) : Container(),
+                      const SizedBox(width: 8,),
+                      Text(
+                        (int.parse(postDetail!.disappointed ?? "0") + int.parse(postDetail!.kudos ?? "0")).toString(),
+                        style: const TextStyle(fontSize: 20, color: Colors.grey),
+                      )
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: (){},
+                  child: Row(
+                    children: [
+                      const Icon(
+                          Icons.insert_comment_rounded,
+                          color: Palette.facebookBlue,
+                      ),
+                      const SizedBox(width: 15,),
+                      Text(
+                          widget.post!.commentMark!,
+                          style: const TextStyle(fontSize: 20, color: Colors.grey),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
           const Divider(height: 10.0, thickness: 1.0),
           Padding(
             padding: const EdgeInsets.all(10.0),
@@ -77,41 +159,42 @@ class PostWidget extends StatelessWidget {
                 children: [
                   Expanded(
                     child: TextButton(
-                      onPressed: () {
-                        print("Press Like");
-                      },
                       style: const ButtonStyle(
                           foregroundColor: MaterialStatePropertyAll(Colors.grey)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // TODO: Intergrate the true
-                          Icon(Icons.thumb_up, color: true ? null : Palette.facebookBlue,),
-                          SizedBox(
-                            width: 10.0,
-                          ),
-                          Text(post.feel.toString()),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const VerticalDivider(),
-                  Expanded(
-                    child: TextButton(
-                      style: const ButtonStyle(
-                          foregroundColor: MaterialStatePropertyAll(Colors.grey)),
-                      onPressed: () {
-                        print("Press Comment!");
-                        _showCommentDialog(postContext);
+                      onPressed: () async {
+                        Like like;
+                        if(postDetail.isFelt == "1") {
+                          like =  await CommentAPI().deleteFeel(widget.post!.id!);
+                          if (like != null) {
+                            setState(() {
+                              postDetail.disappointed = like.disappointed;
+                              postDetail.kudos = like.kudos;
+                              postDetail.isFelt = "-1";
+                            });
+                          }
+                        } else {
+                          like = await CommentAPI().feel(widget.post!.id!, "1");
+                          if (like != null) {
+                            setState(() {
+                              postDetail.disappointed = like.disappointed;
+                              postDetail.kudos = like.kudos;
+                              postDetail.isFelt = "1";
+                            });
+                          }
+                        }
                       },
                       child:  Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.comment),
-                          SizedBox(
+                           Icon(
+                            Icons.sentiment_very_satisfied_sharp,
+                            color: postDetail!.isFelt == "1" ?
+                            Colors.orange : null,
+                          ),
+                          const SizedBox(
                             width: 10.0,
                           ),
-                          Text(post.commentMark!),
+                          Text(postDetail!.kudos ?? "loading..."),
                         ],
                       ),
                     ),
@@ -122,16 +205,65 @@ class PostWidget extends StatelessWidget {
                   ),
                   Expanded(
                     child: TextButton(
-                      onPressed: () {
-                        print("Press Like");
-                      },
                       style: const ButtonStyle(
                           foregroundColor: MaterialStatePropertyAll(Colors.grey)),
-                      child: const Row(
+                      onPressed: () async {
+                        Like like;
+                        if(postDetail.isFelt == "0") {
+                          like =  await CommentAPI().deleteFeel(widget.post!.id!);
+                          if (like != null) {
+                            setState(() {
+                              postDetail.disappointed = like.disappointed;
+                              postDetail.kudos = like.kudos;
+                              postDetail.isFelt = "-1";
+                            });
+                          }
+                        } else {
+                          like = await CommentAPI().feel(widget.post!.id!, "0");
+                          if (like != null) {
+                            setState(() {
+                              postDetail.disappointed = like.disappointed;
+                              postDetail.kudos = like.kudos;
+                              postDetail.isFelt = "0";
+                            });
+                          }
+                        }
+                      },
+                      child:  Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // TODO: Intergrate the true
-                          Icon(Icons.share, color: true ? null : Palette.facebookBlue,),
+                          Icon(
+                            Icons.sentiment_dissatisfied_rounded,
+                            color: postDetail!.isFelt == "0" ?
+                            Colors.deepPurpleAccent : null,
+                          ),
+                          const SizedBox(
+                            width: 10.0,
+                          ),
+                          Text(postDetail!.disappointed ?? "loading"),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const VerticalDivider(
+                    width: 20,
+                    thickness: 1,
+                  ),
+                  Expanded(
+                    child: TextButton(
+                      style: const ButtonStyle(
+                          foregroundColor: MaterialStatePropertyAll(Colors.grey)),
+                      onPressed: () {
+                        _showCommentDialog(postContext);
+                      },
+                      child:  Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.comment),
+                          const SizedBox(
+                            width: 10.0,
+                          ),
+                          Text(widget.post.commentMark!),
                         ],
                       ),
                     ),
@@ -149,9 +281,9 @@ class PostWidget extends StatelessWidget {
     double imageWidth = MediaQuery.of(context).size.width;
 
     // Check if there is a video
-    if (post.video != null && post.video!.url != null) {
+    if (widget.post.video != null && widget.post.video!.url != null) {
       // If there is a video, display it
-      return VideoPlayerWidget(videoUrl: post.video!.url!);
+      return VideoPlayerWidget(videoUrl: widget.post.video!.url!);
     } else if (imageUrls.isNotEmpty) {
       // If there are images, display them
       return MultiImageViewer(
@@ -177,11 +309,12 @@ class PostWidget extends StatelessWidget {
           maxChildSize: 0.9,
           initialChildSize: 0.9,
           builder: (context, scrollController) =>
-              CommentBottomSheet(scrollController: scrollController, id: post.id),
+              CommentBottomSheet(scrollController: scrollController, id: widget.post.id),
         );
       },
     );
   }
+
   void _showUserPostOption(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -191,9 +324,9 @@ class PostWidget extends StatelessWidget {
       builder: (BuildContext context) {
         return DraggableScrollableSheet(
           expand: false,
-          minChildSize: 0.5,
-          maxChildSize: 0.75,
-          initialChildSize: 0.6,
+          minChildSize: 0.2,
+          maxChildSize: 0.25,
+          initialChildSize: 0.25,
           builder: (context, scrollController)
           => SingleChildScrollView(
             controller: scrollController,
@@ -201,30 +334,6 @@ class PostWidget extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
-                  TextButton(
-                    style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
-                    onPressed: () {  },
-                    child: const Row(
-                      children: [
-                        Icon(Icons.circle_notifications_rounded, size: 35,),
-                        SizedBox(width: 25,),
-                        Text("Turn off notification", style: TextStyle(fontSize: 15),)
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 1.5, color: Colors.black54,),
-                  TextButton(
-                    style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
-                    onPressed: () {  },
-                    child: const Row(
-                      children: [
-                        Icon(Icons.save_alt, size: 35,),
-                        SizedBox(width: 25,),
-                        Text("Save post", style: TextStyle(fontSize: 15),)
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 1.5, color: Colors.black54,),
                   TextButton(
                     style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
                     onPressed: () {  },
@@ -237,12 +346,11 @@ class PostWidget extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const Divider(height: 1.5, color: Colors.black54,),
+                  const Divider(height: 1.5, color: Colors.grey,),
                   TextButton(
                     style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
                     onPressed: () {  },
                     child: const Row(
-
                       children: [
                         Icon(Icons.edit,  size: 35,),
                         SizedBox(width: 25,),
@@ -250,7 +358,7 @@ class PostWidget extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const Divider(height: 1.5, color: Colors.black54,),
+                  const Divider(height: 3, color: Colors.grey,),
                   TextButton(
                     style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
                     onPressed: () {  },
@@ -270,6 +378,7 @@ class PostWidget extends StatelessWidget {
       },
     );
   }
+
   void _showNonUserPostOption(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -279,9 +388,9 @@ class PostWidget extends StatelessWidget {
       builder: (BuildContext context) {
         return DraggableScrollableSheet(
           expand: false,
-          minChildSize: 0.5,
-          maxChildSize: 0.75,
-          initialChildSize: 0.6,
+          minChildSize: 0.2,
+          maxChildSize: 0.3,
+          initialChildSize: 0.3,
           builder: (context, scrollController)
           => SingleChildScrollView(
             controller: scrollController,
@@ -344,7 +453,6 @@ class PostWidget extends StatelessWidget {
       },
     );
   }
-
 }
 
 
