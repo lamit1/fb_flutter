@@ -22,8 +22,7 @@ class MarkComments {
   factory MarkComments.fromJson(Map<String, dynamic> json) {
     List<Comment> commentList = (json['comments'] as List?)
         ?.map((item) => Comment.fromJson(item))
-        .toList() ??
-        [];
+        .toList() ?? [];
     return MarkComments(
       id: json['id'] as String?,
       markContent: json['mark_content'] as String?,

@@ -1,8 +1,6 @@
-import 'package:fb_app/core/pallete.dart';
 import 'package:fb_app/models/user_info_model.dart';
 import 'package:flutter/material.dart';
 
-import '../models/user_model.dart';
 
 class CreatePostContainer extends StatelessWidget {
   final UserInfo currentUser;

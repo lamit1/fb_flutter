@@ -84,7 +84,7 @@ class CommentAPI {
     }
   }
 
-  Future<String?> setMarkComment(
+  Future<List<MarkComments>> setMarkComment(
     String id,
     String content,
     String index,
@@ -94,7 +94,7 @@ class CommentAPI {
   ) async {
     String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
-      url: "https://it4788.catan.io.vn/settings/set_mark_comment",
+      url: "https://it4788.catan.io.vn/set_mark_comment",
       requestType: RequestType.POST,
       body: {
         "id": id,
@@ -106,7 +106,40 @@ class CommentAPI {
       },
       header: {'Authorization': 'Bearer $token'},
     );
-    return response.data['code'];
+    List<MarkComments> list = [];
+    for (var item in response.data['data']) {
+      MarkComments temp = MarkComments.fromJson(item);
+      list.add(temp);
+    }
+    return list;
+  }
+
+  Future<List<MarkComments>> setMark(
+      String id,
+      String content,
+      String index,
+      String count,
+      String type,
+      ) async {
+    String? token = await Storage().getToken();
+    var response = await DioClient().apiCall(
+      url: "https://it4788.catan.io.vn/set_mark_comment",
+      requestType: RequestType.POST,
+      body: {
+        "id": id,
+        "content": content,
+        "index": index,
+        "count": count,
+        "type": type,
+      },
+      header: {'Authorization': 'Bearer $token'},
+    );
+    List<MarkComments> list = [];
+    for (var item in response.data['data']) {
+      MarkComments temp = MarkComments.fromJson(item);
+      list.add(temp);
+    }
+    return list;
   }
 
   Future<Like> deleteFeel(

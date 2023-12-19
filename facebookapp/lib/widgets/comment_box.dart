@@ -1,43 +1,76 @@
 import 'package:fb_app/core/pallete.dart';
 import 'package:fb_app/models/mark_cmt_model.dart';
+import 'package:fb_app/models/post_detail_model.dart';
+import 'package:fb_app/services/api/block.dart';
 import 'package:fb_app/services/api/comment.dart';
 import 'package:fb_app/widgets/comment_sheet.dart';
 import 'package:fb_app/widgets/reply_box.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 import '../models/cmt_model.dart';
+import '../models/user_info_model.dart';
+import '../models/user_model.dart';
+import '../services/api/profile.dart';
 import '../utils/converter.dart';
 
 class CommentBottomSheet extends StatefulWidget {
   final ScrollController scrollController;
-  final String? id; // Add id parameter
-
-  CommentBottomSheet({Key? key, required this.scrollController, this.id}) : super(key: key);
+  final String? id;
+  final String? uid;
+  final Function updateMark;
+  const CommentBottomSheet(
+      {Key? key, required this.scrollController, this.id, this.uid, required this.updateMark})
+      : super(key: key);
 
   @override
   State<CommentBottomSheet> createState() => _CommentBottomSheetState();
 }
-
 
 class _CommentBottomSheetState extends State<CommentBottomSheet> {
   String? selectedSortOption = "all";
   final _key = GlobalKey<FormState>();
   final TextEditingController commentController = TextEditingController();
   late List<MarkComments>? marks = [];
+  bool loading = true;
+  String? isReplying = "-1";
+  UserInfo user = const UserInfo();
+  late FocusNode commentFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _loadComments();
+    _loadUserInfo();
+    commentFocusNode.addListener(() {
+      if (!commentFocusNode.hasFocus) {
+        setState(() {
+          isReplying = "-1";
+        });
+      }
+    });
+  }
+
+  void _loadUserInfo() async {
+    try {
+      UserInfo userInfo = await ProfileAPI().getUserInfo(widget.uid!);
+      setState(() {
+        user = userInfo;
+      });
+    } catch (error) {
+      Logger().d('Error loading user info: $error');
+    }
   }
 
   Future<void> _loadComments() async {
     try {
-      List<MarkComments>? marksData = await CommentAPI().getMarkComment(widget.id!, "0", "10");
+      List<MarkComments>? marksData =
+          await CommentAPI().getMarkComment(widget.id!, "0", "10");
       if (marksData != null) {
         setState(() {
-          marks=marksData;
+          marks = marksData;
+          loading = false;
         });
       }
     } catch (error) {
@@ -48,33 +81,56 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Scaffold(
-        body: CommentBox(
-          userImage: CommentBox.commentImageParser(imageURLorPath: "assets/avatar.png"),
-          labelText: 'Write a comment...',
-          errorText: 'Comment cannot be blank',
-          withBorder: false,
-          sendButtonMethod: () {
-            if (_key.currentState!.validate()) {
-              FocusScope.of(context).unfocus();
-            } else {
-              print("Not validated");
-            }
-          },
-          formKey: _key,
-          commentController: commentController,
-          // backgroundColor: Palette.facebookBlue,
-          textColor: Colors.grey,
-          sendWidget: const Icon(Icons.send_sharp, size: 30, color: Palette.facebookBlue),
-          child: commentChild(marks),
-        ),
-      ),
-    );
+    return loading == false
+        ? Container(
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(30), topLeft: Radius.circular(30)),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Scaffold(
+              body: CommentBox(
+                userImage: CommentBox.commentImageParser(
+                    imageURLorPath: user.avatar ?? "assets/avatar.png"),
+                labelText:
+                    isReplying == "-1" ? 'Write a mark...' : 'Reply a mark...',
+                errorText: 'Comment cannot be blank',
+                withBorder: false,
+                focusNode: commentFocusNode,
+                sendButtonMethod: () async {
+                  if (_key.currentState!.validate()) {
+                    FocusScope.of(context).unfocus();
+                    List<MarkComments> newMarks = [];
+                    if (isReplying != "-1") {
+                      newMarks = await CommentAPI().setMarkComment(widget.id!,
+                          commentController.text, "0", "10", isReplying!, "0");
+                    } else {
+                      newMarks = await CommentAPI().setMark(
+                          widget.id!, commentController.text, "0", "10", "0");
+                    }
+                    setState(() {
+                      marks = newMarks;
+                      isReplying = "-1";
+                    });
+                    widget.updateMark();
+                    commentController.clear();
+                  } else {
+                    print("Not validated");
+                  }
+                },
+                formKey: _key,
+                commentController: commentController,
+                textColor: Colors.black,
+                sendWidget: const Icon(Icons.send_sharp,
+                    size: 30, color: Palette.facebookBlue),
+                child: commentChild(marks),
+              ),
+            ),
+          )
+        : const Center(
+            child: CircularProgressIndicator(
+            color: Palette.facebookBlue,
+          ));
   }
 
   Widget commentChild(List<MarkComments>? marks) {
@@ -87,36 +143,36 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
             Padding(
               padding: const EdgeInsets.only(left: 8.0),
               child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                DropdownButton<String>(
-                  value: selectedSortOption,
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'nearest',
-                      child: Text('Sort by Nearest Time'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'latest',
-                      child: Text('Sort by Latest Time'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'all',
-                      child: Text('All comments'),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      selectedSortOption = value!;
-                      // Call a method to sort comments based on the selected option
-                      // For example: sortComments();
-                    });
-                  },
-                ),
-              ],
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  DropdownButton<String>(
+                    value: selectedSortOption,
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'nearest',
+                        child: Text('Sort by Nearest Time'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'latest',
+                        child: Text('Sort by Latest Time'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'all',
+                        child: Text('All comments'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        selectedSortOption = value!;
+                        // Call a method to sort comments based on the selected option
+                        // For example: sortComments();
+                      });
+                    },
+                  ),
+                ],
               ),
             ),
-            if (marks == null || marks.isEmpty)
+            if (marks == null || marks.isEmpty && loading == false)
               Container(
                 width: double.infinity,
                 height: 500,
@@ -136,85 +192,177 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
               for (var i = 0; i < marks.length; i++)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5.0, 15.0, 2.0, 0.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      CircleAvatar(
-                        radius: 32,
-                        backgroundImage: marks[i].poster!.avatar != null
-                            ? NetworkImage(marks[i].poster!.avatar!)
-                            : const AssetImage("assets/avatar.png") as ImageProvider<Object>,
-                      ),
-                      const SizedBox(width: 10,),
-                      Expanded(
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            color: Palette.scaffold,
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            radius: 32,
+                            backgroundImage: marks[i].poster!.avatar != null
+                                ? NetworkImage(marks[i].poster!.avatar!)
+                                : const AssetImage("assets/avatar.png")
+                                    as ImageProvider<Object>,
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Column(
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Palette.scaffold,
+                                // Why the border is error
+                                border: (marks[i].id == isReplying)
+                                    ? Border.all(
+                                        color: Palette.facebookBlue,
+                                        width: 1.5,
+                                      )
+                                    : null,
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(10)),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    RichText(
-                                      text: TextSpan(
-                                        text: marks[i].poster!.name,
-                                        style: const TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.w700),
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () {
-                                            //TODO: Implement the redirect to user profile
-                                          },
-                                      ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        RichText(
+                                          text: TextSpan(
+                                            text: marks[i].poster!.name,
+                                            style: const TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w700),
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () {
+                                                //TODO: Implement the redirect to user profile
+                                              },
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        RichText(
+                                          text: TextSpan(
+                                            text: convertTimestamp(
+                                                marks[i].created!),
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.black),
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () {},
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        RichText(
+                                          text: TextSpan(
+                                            text: marks[i].markContent,
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.black),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(height: 10,),
-                                    RichText(
-                                      text: TextSpan(
-                                        text: convertTimestamp(marks[i].created!),
-                                        style: const TextStyle(fontSize: 14, color: Colors.black),
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () {},
-                                      ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        widget.uid! != marks[i].poster!.id!
+                                            ? RichText(
+                                                text: TextSpan(
+                                                  text: "Reply",
+                                                  style: const TextStyle(
+                                                      fontSize: 12,
+                                                      color: Palette.facebookBlue,
+                                                      fontWeight: FontWeight.w600
+                                                  ),
+                                                  recognizer:
+                                                      TapGestureRecognizer()
+                                                        ..onTap = () {
+                                                          setState(() {
+                                                            isReplying =
+                                                                marks[i]?.id ??
+                                                                    "-1";
+                                                          });
+                                                          commentFocusNode
+                                                              .requestFocus();
+                                                        },
+                                                ),
+                                              )
+                                            : Container(),
+                                        const SizedBox(
+                                          width: 15,
+                                        ),
+                                        widget.uid! != marks[i].poster!.id!
+                                            ? RichText(
+                                                text: TextSpan(
+                                                  text: "Block",
+                                                  style: const TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.deepOrange,
+                                                    fontWeight: FontWeight.w600
+                                                  ),
+                                                  recognizer:
+                                                      TapGestureRecognizer()
+                                                        ..onTap = () {
+                                                          showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return  AlertDialog(
+                                                                  title: Text(
+                                                                      "Block \"${marks[i].poster!.name!}\"",
+                                                                  ),
+                                                                  content: Text(
+                                                                      "Are you sure to block \"${marks[i].poster!.name!}\""),
+                                                                  actions: [
+                                                                    TextButton(
+                                                                        onPressed:
+                                                                            () async {
+                                                                                  await BlockAPI()
+                                                                                  .setBlock(
+                                                                                  marks[i]
+                                                                                      .poster!
+                                                                                      .id!);
+                                                                              _loadComments();
+                                                                              Navigator.of(context).pop();
+                                                                            },
+                                                                        child: const Text("Block")
+                                                                    ),
+                                                                    TextButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                              Navigator.of(context).pop();
+                                                                            },
+                                                                        child: const Text(
+                                                                            "Cancel")),
+                                                                  ],
+                                                                );
+                                                              });
+                                                        },
+                                                ),
+                                              )
+                                            : Container(),
+                                      ],
                                     ),
-                                    const SizedBox(height: 10,),
-                                    RichText(
-                                      text: TextSpan(
-                                        text: marks[i].markContent,
-                                        style: const TextStyle(fontSize: 14, color: Colors.black),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10,),
                                   ],
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    RichText(
-                                      text: const TextSpan(
-                                        text: "Reply",
-                                        style: TextStyle(fontSize: 12, color: Colors.black),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 15,),
-                                    RichText(
-                                      text: TextSpan(
-                                        text: "Report",
-                                        style: const TextStyle(fontSize: 12, color: Colors.black),
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () {},
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                      // RepliesBox here
                       RepliesBox(comments: marks[i].comments),
                     ],
                   ),
@@ -249,6 +397,10 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
     );
   }
 
-
+  @override
+  void dispose() {
+    // Dispose the FocusNode when the widget is disposed
+    commentFocusNode.dispose();
+    super.dispose();
+  }
 }
-

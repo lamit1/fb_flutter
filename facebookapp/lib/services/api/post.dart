@@ -181,7 +181,6 @@ class PostAPI {
         header: {'Authorization': 'Bearer $token'},
       );
       var responseData = response.data['data'];
-      print(responseData);
       List<Post>? postList = (responseData['post'] as List)
           .map((x) => Post.fromJson(x))
           .toList();

@@ -15,7 +15,7 @@ class PostDetail {
    String? kudos;
    String? disappointed;
   final String? isRated;
-  final String? isMarked;
+  String? isMarked;
   final List<Image>? image;
   final Video? video;
   final User? user;

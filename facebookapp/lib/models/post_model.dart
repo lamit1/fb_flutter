@@ -11,7 +11,7 @@ class Post {
   final String? described;
   final String? created;
   final String? feel;
-  final String? commentMark;
+  String? commentMark;
   final String? isFelt;
   final String? isBlocked;
   final String? canEdit;
@@ -19,7 +19,7 @@ class Post {
   final String? state;
   final User? user;
 
-  const Post({
+  Post({
     this.id,
     this.name,
     this.created,

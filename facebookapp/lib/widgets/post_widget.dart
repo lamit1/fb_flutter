@@ -11,12 +11,15 @@ import 'package:fb_app/widgets/comment_box.dart';
 import 'package:fb_app/widgets/video_post.dart';
 import 'package:multi_image_layout/multi_image_layout.dart';
 import '../models/post_model.dart';
+import '../services/api/block.dart';
 
 class PostWidget extends StatefulWidget {
   final Post post;
+  final String uid;
+  final VoidCallback loadPosts;
+  final Function(String, String) addMark;
 
-
-  PostWidget({required this.post});
+  PostWidget({required this.post, required this.uid, required this.loadPosts, required this.addMark});
 
   @override
   State<PostWidget> createState() => _PostWidgetState();
@@ -27,16 +30,24 @@ class _PostWidgetState extends State<PostWidget> {
 
   Future<void> getPost() async {
     try {
-      PostDetail? result = await PostAPI().getPost(widget.post!.id!);
-      if (result != null) {
+      PostDetail? posts = await PostAPI().getPost(widget.post!.id!);
+      if (posts != null) {
         setState(() {
-          postDetail = result;
+          postDetail = posts;
         });
       }
     } catch (e) {
       print("Error fetching post: $e");
     }
   }
+
+  void updateMark() {
+    setState(() {
+      postDetail.isMarked = "1";
+      widget.addMark(postDetail.id!,(int.parse(widget.post.commentMark!)+1).toString());
+    });
+  }
+
 
   @override
   void initState() {
@@ -259,7 +270,7 @@ class _PostWidgetState extends State<PostWidget> {
                       child:  Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.comment),
+                          Icon(Icons.comment, color: postDetail.isMarked == "1" ? Colors.green : Colors.grey ,),
                           const SizedBox(
                             width: 10.0,
                           ),
@@ -309,7 +320,7 @@ class _PostWidgetState extends State<PostWidget> {
           maxChildSize: 0.9,
           initialChildSize: 0.9,
           builder: (context, scrollController) =>
-              CommentBottomSheet(scrollController: scrollController, id: widget.post.id),
+              CommentBottomSheet(scrollController: scrollController, id: widget.post.id, uid : widget.uid, updateMark : updateMark),
         );
       },
     );
@@ -379,7 +390,7 @@ class _PostWidgetState extends State<PostWidget> {
     );
   }
 
-  void _showNonUserPostOption(BuildContext context) {
+  void _showNonUserPostOption(BuildContext postContext) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -412,12 +423,45 @@ class _PostWidgetState extends State<PostWidget> {
                   const Divider(height: 1.5, color: Colors.black54,),
                   TextButton(
                     style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
-                    onPressed: () {  },
-                    child: const Row(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder:
+                              (BuildContext
+                          context) {
+                            return  AlertDialog(
+                              title: Text(
+                                "Block \"${postDetail.user!.name!}\"",
+                              ),
+                              content: Text(
+                                  "Are you sure to block \"${postDetail.user!.name!}\""),
+                              actions: [
+                                TextButton(
+                                    onPressed:
+                                        () async {
+                                          await BlockAPI().setBlock(postDetail.user!.id!);
+                                          widget.loadPosts();
+                                          Navigator.of(context).pop();
+                                          Navigator.of(postContext).pop();
+                                    },
+                                    child: const Text("Block")
+                                ),
+                                TextButton(
+                                    onPressed:
+                                        () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text(
+                                        "Cancel")),
+                              ],
+                            );
+                          });
+                    },
+                    child: Row(
                       children: [
-                        Icon(Icons.report_problem, size: 35,),
-                        SizedBox(width: 25,),
-                        Text("Report post", style: TextStyle(fontSize: 15),)
+                        const Icon(Icons.block_sharp, size: 35,),
+                        const SizedBox(width: 25,),
+                        Text("Block \"${postDetail.user!.name}\"", style: const TextStyle(fontSize: 15),)
                       ],
                     ),
                   ),

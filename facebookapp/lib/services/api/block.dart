@@ -20,7 +20,10 @@ class BlockAPI {
       },
       header: {'Authorization': 'Bearer $token'},
     );
-    return response.data['code'];
+    if (response.data['code'] == "1000") {
+      return "Block user success!";
+    }
+    return "Error on block user!";
   }
 
   Future<Object?> getListBlocks(

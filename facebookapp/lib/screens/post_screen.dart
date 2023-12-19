@@ -1,4 +1,4 @@
-import 'package:fb_app/models/post_detail_model.dart';
+
 import 'package:fb_app/models/user_info_model.dart';
 import 'package:fb_app/services/api/post.dart';
 import 'package:fb_app/services/api/profile.dart';
@@ -20,7 +20,7 @@ class _PostScreenState extends State<PostScreen> {
   late UserInfo user = const UserInfo();
   late List<Post> posts = [];
   int index = 0;
-  int count = 0;
+  int count = 10;
   int lastId = 0;
 
   @override
@@ -63,6 +63,17 @@ class _PostScreenState extends State<PostScreen> {
     }
   }
 
+  void addMark(String postId, String commentMark) {
+    setState(() {
+      posts = posts.map((post) {
+        if (post.id == postId) {
+          // Update the commentMark for the matching post
+          post.commentMark = commentMark;
+        }
+        return post;
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +87,13 @@ class _PostScreenState extends State<PostScreen> {
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-              return posts.isNotEmpty ? PostWidget(post: posts[index]) : Container();
+              return posts.isNotEmpty ?
+              PostWidget(
+                  post: posts[index],
+                  uid: widget.uid!,
+                  loadPosts: loadPosts,
+                  addMark: addMark,
+              ) : Container();
             },
             childCount: count,
           ),

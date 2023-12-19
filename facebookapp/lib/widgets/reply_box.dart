@@ -34,7 +34,10 @@ class _RepliesBoxState extends State<RepliesBox> {
             showReplies
                 ? "Hide replies"
                 : "View more ${widget.comments!.length} replies...",
-            style: const TextStyle(fontSize: 12, color: Colors.blue),
+            style: const TextStyle(
+                fontSize: 12,
+                color: Colors.blue,
+            ),
           ),
         ),
       );

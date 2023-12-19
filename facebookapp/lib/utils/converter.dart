@@ -8,10 +8,12 @@ String convertTimestamp(String timestamp) {
   Duration difference = now.difference(postTime);
 
   if (difference.inMinutes < 1) {
-    return "Just posted";
+    return "Just posted ...";
   } else if (difference.inHours < 1) {
     return "${difference.inMinutes} minutes ago";
-  } else if (difference.inDays < 1 && postTime.day == now.day) {
+  } else if (difference.inDays < 1 && difference.inMinutes < 60) {
+    return "${difference.inMinutes} minutes ago"; // Adjusted condition
+  } else if (difference.inDays < 1) {
     return "${difference.inHours} hours ago";
   } else if (difference.inDays < 7) {
     return "${difference.inDays} days ago";
