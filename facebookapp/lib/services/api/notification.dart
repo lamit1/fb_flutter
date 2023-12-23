@@ -3,6 +3,7 @@ import 'package:fb_app/models/user_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
 import 'package:fb_app/utils/get_device_uuid.dart';
+import 'package:logger/logger.dart';
 
 class NotificationAPI {
   final DioClient dio = DioClient();
@@ -26,7 +27,7 @@ class NotificationAPI {
     return response.data['code'];
   }
 
-  Future<Notification?> getNotification(
+  Future<List<NotificationModel>?> getNotification(
       String index,
       String count,
       ) async {
@@ -42,8 +43,12 @@ class NotificationAPI {
     );
     if (response.statusCode == 200) {
       var responseData = response.data['data'];
-      Notification temp = Notification.fromJson(responseData);
-      return temp;
+      List<NotificationModel> list = [];
+      for (var item in responseData) {
+        NotificationModel temp = NotificationModel.fromJson(item);
+        list.add(temp);
+      }
+      return list;
     } else {
       return null;
     }

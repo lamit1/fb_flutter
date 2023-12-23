@@ -1,5 +1,4 @@
 import 'package:fb_app/models/friend_model.dart';
-import 'package:fb_app/models/suggested_friends_model.dart';
 import 'package:fb_app/services/api/friend.dart';
 import 'package:fb_app/widgets/friend_card.dart';
 import 'package:flutter/material.dart';
@@ -123,9 +122,10 @@ class _FriendScreenState extends State<FriendScreen>
       body: Column(
         children: [
           Container(
+            margin: const EdgeInsets.only(top: 5.0),
             padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Colors.white38,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.15),
@@ -134,50 +134,39 @@ class _FriendScreenState extends State<FriendScreen>
                 ),
               ],
             ),
-            child: TabBar(
-              controller: _tabController,
-              tabs: const [
-                Tab(
-                  child: Text(
-                    'Lời mời',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white, // Selected label color
+            child: Row(
+              children: [
+                for (int i = 0; i < 3; i++)
+                  Expanded(
+                    child: Container(
+                      height: 40.0, // Adjust the height as needed
+                      margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(18.0),
+                        color: _tabController?.index == i ? Colors.lightBlue : Colors.white,
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          _tabController?.animateTo(i);
+                        },
+                        child: Center(
+                          child: Text(
+                            i == 0 ? 'Lời mời' : (i == 1 ? 'Gợi ý' : 'Bạn bè'),
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: _tabController?.index == i ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                Tab(
-                  child: Text(
-                    'Gợi ý',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white, // Unselected label color
-                    ),
-                  ),
-                ),
-                Tab(
-                  child: Text(
-                    'Bạn bè',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white, // Unselected label color
-                    ),
-                  ),
-                ),
               ],
-              labelColor: Colors.white,
-              // Selected label color
-              unselectedLabelColor: Colors.white.withOpacity(0.7),
-              // Unselected label color
-              indicator: const BoxDecoration(
-                color:
-                Colors.lightBlue, // Color for the selected tab's background
-              ),
             ),
           ),
+
           Expanded(
             child: TabBarView(
               controller: _tabController,
