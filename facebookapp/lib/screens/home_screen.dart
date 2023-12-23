@@ -3,6 +3,7 @@ import 'package:fb_app/core/pallete.dart';
 import 'package:fb_app/screens/friend_screen.dart';
 import 'package:fb_app/screens/notifications_screen.dart';
 import 'package:fb_app/screens/post_screen.dart';
+import 'package:fb_app/screens/video_screen.dart';
 import 'package:fb_app/widgets/circle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -45,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: CircleButton(icon: Icons.search, iconSize: 25.0, onPressed: () {
+              //TODO: Implement Search
               print("Search is clicked");
             }),
           ),
@@ -55,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             PostScreen(key: const PageStorageKey('postScreen'), uid: uid, ),
             FriendScreen(key: const PageStorageKey('FriendScreen'), uid: uid, ),
+            VideoScreen(key: const PageStorageKey('videoScreen'), uid: uid,),
             const NotificationScreen(key: PageStorageKey('notificationScreen')),
             const MenuScreen(key: PageStorageKey('menuScreen')),
           ]
@@ -76,6 +79,10 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.people),
             label: 'Friends',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.video_collection),
+            label: 'Videos',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.notifications),

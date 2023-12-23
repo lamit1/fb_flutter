@@ -191,7 +191,7 @@ class PostAPI {
     }
   }
 
-  Future<List<Post>?> getListVideos(String userId,
+  Future<List<Post>?> getListVideos(
       String inCampaign,
       String campaignId,
       String latitude,
@@ -206,7 +206,6 @@ class PostAPI {
       url: "https://it4788.catan.io.vn/get_list_videos",
       requestType: RequestType.POST,
       body: {
-        "user_id": userId,
         "in_campaign": inCampaign,
         "campaign_id": campaignId,
         "latitude": latitude,

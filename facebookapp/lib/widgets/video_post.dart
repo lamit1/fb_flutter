@@ -26,14 +26,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     _controller = VideoPlayerController.networkUrl(
       Uri.parse(widget.videoUrl),
     );
-
     await _controller.initialize(
     );
-
     setState(() {
       _chewieController = ChewieController(
         videoPlayerController: _controller,
-        autoPlay: true,
+        autoPlay: false,
         looping: true,
         showControls: false,
         allowFullScreen: true,
