@@ -11,4 +11,6 @@ class Storage {
   void deleteToken() async {
     await storage.delete(key: "token");
   }
+
+  getUserId() {}
 }

@@ -17,7 +17,7 @@ class SearchAPI {
     String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
-      url: "https://it4788.catan.io.vn/search",
+      url: "https://it4788.catan.io.vn/setting_personal_page.dart",
       requestType: RequestType.POST,
       body: {
         "userId": userId,

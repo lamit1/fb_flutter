@@ -26,14 +26,14 @@ class ProfileAPI {
   }
 
   Future<String?> setUserInfo(
-    String username,
-    String description,
-    File avatar,
-    String address,
-    String city,
-    String country,
-    File coverImage,
-    String link,
+    String? username,
+    String? description,
+    File? avatar,
+    String? address,
+    String? city,
+    String? country,
+    File? coverImage,
+    String? link,
   ) async {
     String? token = await Storage().getToken();
     FormData data = FormData.fromMap({

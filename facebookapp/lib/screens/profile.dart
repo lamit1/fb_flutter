@@ -1,220 +1,764 @@
 import 'dart:convert';
 
+import 'package:fb_app/models/friend_model.dart';
 import 'package:fb_app/models/info.dart';
+import 'package:fb_app/models/post_model.dart';
+import 'package:fb_app/models/user_info_model.dart';
+import 'package:fb_app/screens/all_friend_page.dart';
+import 'package:fb_app/screens/edit_personal_page.dart';
+import 'package:fb_app/screens/preview_avatar.dart';
+import 'package:fb_app/screens/preview_coverage_image.dart';
+import 'package:fb_app/screens/setting_personal_page.dart';
+import 'package:fb_app/services/api/profile.dart';
+import 'package:fb_app/widgets/post_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-class Profile extends StatelessWidget {
-  Profile({Key? key}) : super(key: key);
-  List<Info> info = [
-    Info(
-        icon: const Icon(
-          Icons.work,
-          color: Colors.white,
-        ),
-        normalText: 'Studying department of CSE at ',
-        boldText: 'Begum Rokeya University, Rangpur'),
-    Info(
-        icon: const Icon(Icons.school, color: Colors.white),
-        normalText: 'Studied at ',
-        boldText: 'Cantonment Public School & College, Lalmonirhat'),
-    Info(
-        icon: const Icon(Icons.favorite, color: Colors.white),
-        normalText: 'Single',
-        boldText: ''),
-    Info(
-        icon: const Icon(Icons.link, color: Colors.white),
-        normalText: 'somewhereinblog.net/blog/Faisal2020',
-        boldText: ''),
-    Info(
-        icon: const Icon(Icons.more_horiz, color: Colors.white),
-        normalText: 'See your About info')
-  ];
+class PersonalPage extends StatefulWidget {
+  final String id;
 
-  Widget infoTemplate(infoItem, context) {
-    return Row(
-      children: [
-        infoItem.icon,
-        const SizedBox(
-          width: 5,
+  const PersonalPage({super.key, required this.id});
+
+  @override
+  State<PersonalPage> createState() => _PersonalPageState();
+}
+
+class _PersonalPageState extends State<PersonalPage> {
+  final Future<List<UserInfo>> _future = Future<List<UserInfo>>.sync(() => getData());
+  late UserInfo userInfor;
+  late List<Friend> userFriends;
+  late List<Post> listPost;
+
+  @override
+  void initState() {
+    super.initState;
+    getData();
+  }
+
+  void getData() async {
+    var profileAPI = ProfileAPI();
+    UserInfo user =  await profileAPI.getUserInfo(widget.id);
+    setState((){
+      userInfor=user;
+    });
+  }
+
+  void navigateToPreviewAvatar(String imagePath) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PreviewAvatar(
+          imagePath: imagePath,
+          userInfor: userInfor,
         ),
-        Container(
-          width: MediaQuery.of(context).size.width - 50.0,
-          padding: const EdgeInsets.all(5),
-          child: RichText(
-              text: TextSpan(style: const TextStyle(fontSize: 18), children: [
-                TextSpan(
-                    text: infoItem.normalText,
-                    style: const TextStyle(color: Colors.white)),
-                TextSpan(
-                    text: infoItem.boldText,
-                    style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold))
-              ])),
-        ),
-      ],
+      ),
     );
+  }
+
+  void navigateToPreviewCoverageImage(String imagePath) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PreviewCoverageImage(
+          imagePath: imagePath,
+          userInfor: userInfor,
+        ),
+      ),
+    );
+  }
+
+  Future getAvatarImage() async {
+    try {
+      // Chọn ảnh từ gallery
+      var pickedFile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 100,
+        maxHeight: 800,
+        maxWidth: 800,
+      );
+
+      if (pickedFile == null) {
+        // Người dùng không chọn ảnh
+        return;
+      }
+
+      navigateToPreviewAvatar(pickedFile.path);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future getCoverImage() async {
+    try {
+      // Chọn ảnh từ gallery
+      var pickedFile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 100,
+        maxHeight: 800,
+        maxWidth: 800,
+      );
+
+      if (pickedFile == null) {
+        // Người dùng không chọn ảnh
+        return;
+      }
+
+      navigateToPreviewCoverageImage(pickedFile.path);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.only(left: 10, right: 10),
-        color: Color.fromARGB(242, 8, 5, 5),
-        constraints: const BoxConstraints.expand(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const SizedBox(
-              height: 30,
-            ),
-            Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 180,
-                  decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10)),
-                      image: DecorationImage(
-                          image: AssetImage('assets/bg.jpg'),
-                          fit: BoxFit.cover)),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 80),
-                  child: const CircleAvatar(
-                    radius: 74.0,
-                    backgroundColor: Colors.white,
-                    child: CircleAvatar(
-                      radius: 70.0,
-                      backgroundImage: AssetImage('assets/avatar.jpg'),
-                    ),
-                  ),
-                ),
-                Container(
-                    margin: const EdgeInsets.only(top: 190),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(
-                          width: 55,
-                        ),
-                        const Icon(
-                          Icons.shield,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(
-                          width: 25,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius:
-                              BorderRadius.all(Radius.circular(50))),
-                          child: const Icon(
-                            Icons.camera_alt,
-                            color: Colors.white,
+      appBar: AppBar(
+        title: const Text('Trang cá nhân'),
+      ),
+      body: FutureBuilder<List<dynamic>>(
+          future: _futures,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Align(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator());
+            } else if (snapshot.hasData) {
+              userInfor = snapshot.data!.elementAt(0);
+              userFriends = snapshot.data!.elementAt(1);
+              listPost = snapshot.data!.elementAt(2);
+
+              return SingleChildScrollView(
+                  physics: const ScrollPhysics(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Stack(
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height: 400,
+                          ),
+                          Container(
+                              padding: const EdgeInsets.all(5.0),
+                              width: MediaQuery.of(context).size.width,
+                              height: 300,
+                              child: GestureDetector(
+                                onTap: () => {
+                                  showModalBottomSheet(
+                                      context: context,
+                                      builder: (builder) {
+                                        return SizedBox(
+                                          height: 200,
+                                          width: double.infinity,
+                                          child: Column(
+                                            children: [
+                                              Padding(
+                                                  padding:
+                                                  const EdgeInsets.all(8.0),
+                                                  child: GestureDetector(
+                                                    onTap: () =>
+                                                        getCoverImage(),
+                                                    child: const Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons
+                                                              .picture_in_picture_outlined,
+                                                          color: Colors.black45,
+                                                          size: 24.0,
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                          EdgeInsets.all(
+                                                              20),
+                                                          child: Text(
+                                                            'Xem ảnh bìa',
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                              FontWeight
+                                                                  .bold,
+                                                              fontSize: 20,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )),
+                                              Padding(
+                                                  padding:
+                                                  const EdgeInsets.all(8.0),
+                                                  child: GestureDetector(
+                                                    onTap: () =>
+                                                        getCoverImage(),
+                                                    child: const Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.upload,
+                                                          color: Colors.black45,
+                                                          size: 24.0,
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                          EdgeInsets.all(
+                                                              20),
+                                                          child: Text(
+                                                            'Tải ảnh lên',
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                              FontWeight
+                                                                  .bold,
+                                                              fontSize: 20,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )),
+                                            ],
+                                          ),
+                                        );
+                                      })
+                                },
+                                child: Container(
+                                    child: ClipRRect(
+                                      borderRadius:
+                                      BorderRadius.circular(20), // Image border
+                                      child: SizedBox.fromSize(
+                                        size: const Size.fromRadius(
+                                            56), // Image radius
+                                        child: Image.network(
+                                            userInfor.coverAvatar!.isNotEmpty
+                                                ? userInfor.coverAvatar!
+                                                : 'https://wallpapers.com/images/hd/light-grey-background-cxk0x5hxxykvb55z.jpg',
+                                            fit: BoxFit.cover),
+                                      ),
+                                    )),
+                              )),
+                          Positioned(
+                              top: 200,
+                              left: 100,
+                              child: Center(
+                                child: GestureDetector(
+                                    onTap: () => {
+                                      showModalBottomSheet(
+                                          context: context,
+                                          builder: (builder) {
+                                            return SizedBox(
+                                              height: 100,
+                                              width: double.infinity,
+                                              child: Column(
+                                                children: [
+                                                  Padding(
+                                                      padding:
+                                                      const EdgeInsets
+                                                          .all(8.0),
+                                                      child:
+                                                      GestureDetector(
+                                                        onTap: () =>
+                                                            getAvatarImage(),
+                                                        child: const Row(
+                                                          children: [
+                                                            Icon(
+                                                              Icons
+                                                                  .photo_outlined,
+                                                              color: Colors
+                                                                  .black45,
+                                                              size: 24.0,
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                              EdgeInsets
+                                                                  .all(
+                                                                  20),
+                                                              child: Text(
+                                                                'Chọn ảnh đại diện',
+                                                                textAlign:
+                                                                TextAlign
+                                                                    .center,
+                                                                overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                                style:
+                                                                TextStyle(
+                                                                  fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                                  fontSize:
+                                                                  20,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )),
+                                                ],
+                                              ),
+                                            );
+                                          })
+                                    },
+                                    child: CircleAvatar(
+                                      radius: 100,
+                                      backgroundImage: NetworkImage(userInfor
+                                          .avatar!.isNotEmpty
+                                          ? userInfor.avatar!
+                                          : 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png'),
+                                    )),
+                              )),
+                        ],
+                      ),
+                      Text(
+                        userInfor.username!.isNotEmpty
+                            ? userInfor.username!
+                            : "unknow",
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 24),
+                      ),
+                      TextButton(
+                          style: ButtonStyle(
+                            foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.blue),
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                const Color.fromARGB(255, 187, 226, 245)),
+                            overlayColor:
+                            MaterialStateProperty.resolveWith<Color?>(
+                                  (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.focused) ||
+                                    states.contains(MaterialState.pressed)) {
+                                  return Colors.blue.withOpacity(0.12);
+                                }
+                                return null; // Defer to the widget's default.
+                              },
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SettingPersonalPage(
+                                    userInfor: userInfor,
+                                  )),
+                            );
+                          },
+                          child: const Text(
+                            '...',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 20,
+                            ),
+                          )),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 3,
+                            child: Container(
+                              color: const Color.fromARGB(
+                                  139, 140, 141, 142), // Màu nền của SizedBox
+                            ),
                           ),
                         ),
-                      ],
-                    )),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            const Text(
-              'Faisal Shohag',
-              style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-            // const SizedBox(
-            //   height: 10,
-            // ),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                'If you cannot do great things, do small things in a great way.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 15, color: Colors.grey),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(primary: Colors.blue[800]),
-                  child: Row(
-                    children: const [
-                      Icon(Icons.add_circle_rounded),
-                      SizedBox(
-                        width: 10,
                       ),
-                      Text('Add to story')
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(primary: Colors.grey[900]),
-                  child: Row(
-                    children: const [
-                      Icon(Icons.edit),
-                      SizedBox(
-                        width: 10,
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.work,
+                                  color: Colors.black45,
+                                  size: 24.0,
+                                  semanticLabel:
+                                  'Text to announce in accessibility modes',
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(5),
+                                  child: Text(
+                                    userInfor.city!.isNotEmpty
+                                        ? userInfor.city!
+                                        : 'unknown',
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.home,
+                                  color: Colors.black45,
+                                  size: 24.0,
+                                  semanticLabel:
+                                  'Text to announce in accessibility modes',
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(5),
+                                  child: Text.rich(
+                                    TextSpan(
+                                      text: 'Sống tại ',
+                                      style: const TextStyle(fontSize: 18),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                            text: userInfor
+                                                .address!.isNotEmpty
+                                                ? userInfor.address!
+                                                : 'unknow',
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.location_pin,
+                                  color: Colors.black45,
+                                  size: 24.0,
+                                  semanticLabel:
+                                  'Text to announce in accessibility modes',
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(5),
+                                  child: Text.rich(
+                                    TextSpan(
+                                      text: 'Đến từ ',
+                                      style: const TextStyle(fontSize: 18),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                            text: userInfor
+                                                .country!.isNotEmpty
+                                                ? userInfor.country!
+                                                : "unknow",
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                      Text('Add to story')
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(primary: Colors.grey[900]),
-                  child: const Icon(Icons.more_horiz),
-                )
-              ],
-            ),
-            Divider(
-              thickness: 1,
-              height: 10,
-              color: Colors.grey[800],
-            ),
-            Column(
-              children: info
-                  .map<Widget>((infoList) => infoTemplate(infoList, context))
-                  .toList(),
-            ),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        width: double.infinity,
+                        child: TextButton(
+                            style: ButtonStyle(
+                              foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.blue),
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  const Color.fromARGB(255, 187, 226, 245)),
+                              overlayColor:
+                              MaterialStateProperty.resolveWith<Color?>(
+                                    (Set<MaterialState> states) {
+                                  if (states.contains(MaterialState.focused) ||
+                                      states.contains(MaterialState.pressed)) {
+                                    return Colors.blue.withOpacity(0.12);
+                                  }
+                                  return null; // Defer to the widget's default.
+                                },
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => EditPersonalPage(
+                                      userInfor: userInfor,
+                                    )),
+                              );
+                            },
+                            child: const Text(
+                              'Chỉnh sửa chi tiết công khai',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 18,
+                              ),
+                            )),
+                      ),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 3,
+                            child: Container(
+                              color: const Color.fromARGB(
+                                  139, 140, 141, 142), // Màu nền của SizedBox
+                            ),
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Bạn bè',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: GestureDetector(
+                                      onTap: () => {},
+                                      child: const Text(
+                                        'Tìm bạn bè',
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 18,
+                                            color: Colors.blue),
+                                      ),
+                                    )),
+                              ],
+                            ),
+                            // Row(
+                            //   children: [
+                            //     Padding(
+                            //       padding: EdgeInsets.all(8.0),
+                            //       child: Text(
+                            //         textAlign: TextAlign.left,
+                            //         "${userFriends.data.total.toString()} người bạn",
+                            //         style: const TextStyle(
+                            //           fontWeight: FontWeight.w400,
+                            //           fontSize: 18,
+                            //         ),
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        child: SizedBox(
+                          height: userFriends.isNotEmpty
+                              ? userFriends.length > 3
+                              ? 350
+                              : 150
+                              : 0,
+                          child: GridView.builder(
+                            gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 8.0, // Khoảng cách giữa các cột
+                              mainAxisSpacing: 8.0, // Khoảng cách giữa các hàng
+                            ),
+                            itemCount: userFriends.length,
+                            itemBuilder: (context, index) {
+                              var item = userFriends[index];
 
-            Container(
-              width: MediaQuery.of(context).size.width,
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                      primary: Colors.blue.withOpacity(0.1)),
-                  child: Text(
-                    'Edit public details',
-                    style: TextStyle(color: Colors.blue[900]),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
+                              return SizedBox(
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: SizedBox.fromSize(
+                                          size: const Size.fromRadius(56),
+                                          child: Image.network(
+                                            item.avatar!.isNotEmpty
+                                                ? item.avatar!
+                                                : 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png',
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Text(item.username!,
+                                        textAlign: TextAlign.left,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 12,
+                                        ),
+                                        maxLines:
+                                        2, // Số dòng tối đa bạn muốn hiển thị
+                                        overflow: TextOverflow.ellipsis),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        width: double.infinity,
+                        child: TextButton(
+                            style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.black),
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  const Color.fromARGB(255, 208, 211, 213)),
+                              overlayColor:
+                              MaterialStateProperty.resolveWith<Color?>(
+                                    (Set<MaterialState> states) {
+                                  if (states.contains(MaterialState.focused) ||
+                                      states.contains(MaterialState.pressed)) {
+                                    return Colors.blue.withOpacity(0.12);
+                                  }
+                                  return null; // Defer to the widget's default.
+                                },
+                              ),
+                            ),
+                            onPressed: () {
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //       builder: (context) =>
+                              //       const AllFriendPage()),
+                              // );
+                            },
+                            child: const Text(
+                              'Xem tất cả bạn bè',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                              ),
+                            )),
+                      ),
+                      const SizedBox(
+                        width: double.infinity,
+                        height: 15,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 144, 142, 142)),
+                        ),
+                      ),
+                      Container(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.all(10.0),
+                                child: Text(
+                                  'Bài viết',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 24,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: CircleAvatar(
+                                          radius: 30,
+                                          backgroundImage: NetworkImage(userInfor
+                                              .avatar!.isNotEmpty
+                                              ? userInfor.avatar!
+                                              : 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png'),
+                                        )),
+                                    // SizedBox(
+                                    //     width: 300,
+                                    //     height: 60,
+                                    //     child: MaterialButton(
+                                    //         onPressed: () => {
+                                    //           Navigator.push(
+                                    //               context,
+                                    //               MaterialPageRoute(
+                                    //                   builder: (context) =>
+                                    //                   const PostArticle()))
+                                    //         },
+                                    //         child: const Row(
+                                    //           children: [
+                                    //             Expanded(
+                                    //               child: Text(
+                                    //                 'Bạn đang nghĩ gì?',
+                                    //                 textAlign: TextAlign.left,
+                                    //               ),
+                                    //             ),
+                                    //           ],
+                                    //         ))),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                width: double.infinity,
+                                height: 2,
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                      color:
+                                      Color.fromARGB(255, 183, 180, 180)),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: double.infinity,
+                                height: 30,
+                              ),
+                              const SizedBox(
+                                width: double.infinity,
+                                height: 15,
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                      color:
+                                      Color.fromARGB(255, 144, 142, 142)),
+                                ),
+                              ),
+                            ]),
+                      ),
+                      Container(
+                          child: ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (BuildContext context, int index) {
+                                return PostWidget(
+                                    post: listPost[index]);
+                              },
+                              separatorBuilder:
+                                  (BuildContext context, int index) =>
+                              const Divider(),
+                              itemCount: listPost.length)),
+                    ],
+                  ));
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              return const Text('No data available');
+            }
+          }),
     );
   }
 }

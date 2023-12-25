@@ -1,20 +1,20 @@
 
 class UserInfo {
   final String? id;
-  final String? username;
-  final String? created;
-  final String? description;
-  final String? avatar;
-  final String? coverAvatar;
-  final String? link;
-  final String? address;
-  final String? city;
-  final String? country;
-  final String? listing;
-  final String? isFriend;
-  final String? online;
+   String? username;
+   String? created;
+  String? description;
+   String? avatar;
+   String? coverAvatar;
+   String? link;
+   String? address;
+  String? city;
+   String? country;
+   String? listing;
+   String? isFriend;
+   String? online;
 
-  const UserInfo({
+   UserInfo({
     this.id,
     this.username,
     this.created,
@@ -48,7 +48,6 @@ class UserInfo {
     );
   }
 
-  static const empty = UserInfo();
 
   @override
   String toString() {
