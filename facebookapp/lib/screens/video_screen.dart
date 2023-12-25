@@ -1,8 +1,10 @@
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:video_player/video_player.dart';
 
 import '../models/post_model.dart';
+import '../models/post_response.dart';
 import '../models/user_info_model.dart';
 import '../services/api/post.dart';
 import '../services/api/profile.dart';
@@ -22,33 +24,71 @@ class _VideoScreenState extends State<VideoScreen> {
   late UserInfo user = const UserInfo();
   late List<Post> posts = [];
   int index = 0;
-  int count = 10;
-  int lastId = 0;
+  int count = 2;
+  String lastId = "0";
+  bool isLoadingPost = true;
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent && !isLoadingPost) {
+        setState(() {
+          isLoadingPost = true;
+        });
+        loadMorePosts();
+      }
+    });
     loadPosts();
   }
 
   void loadPosts() async {
     try {
-      List<Post>? fetchedPosts = await PostAPI().getListVideos(
+      PostResponse? postResponse = await PostAPI().getListVideos(
           '1',
           '1',
           '1.0',
           '1.0',
-          lastId.toString(),
+          lastId,
           index.toString(),
           count.toString()
       );
-      if (fetchedPosts != null) {
+      if (postResponse != null) {
         setState(() {
-          posts = fetchedPosts;
+          posts = postResponse.posts;
+          lastId = postResponse.lastId;
+          isLoadingPost = false;
+          index += count;
         });
       }
     } catch (error) {
-      print('Error loading posts: $error');
+      Logger().d('Error loading posts: $error');
+    }
+  }
+
+  void loadMorePosts() async {
+    try {
+      PostResponse? postResponse = await PostAPI().getListVideos(
+          '1', '1', '1.0', '1.0', lastId.toString(), index.toString(), count.toString()
+      );
+      if (postResponse != null && postResponse.posts.isNotEmpty) {
+        setState(() {
+          posts.addAll(postResponse.posts);
+          lastId = postResponse.lastId;
+          index += count;
+          isLoadingPost = false;
+        });
+      } else {
+        print(posts.length);
+        setState(() {
+          isLoadingPost = false;
+        });
+      }
+    } catch (error) {
+      Logger().d('Error loading more posts: $error');
+      setState(() {
+        isLoadingPost = false;
+      });
     }
   }
 
@@ -80,8 +120,14 @@ class _VideoScreenState extends State<VideoScreen> {
                 addMark: addMark,
               ) : Container();
             },
-            childCount: count,
+            childCount: index,
           ),
+        ),
+        SliverToBoxAdapter(
+          child: isLoadingPost ? const Padding(
+            padding: EdgeInsets.only(top: 20, bottom: 8.0),
+            child: Center(child: CircularProgressIndicator()),
+          ) : Container(),
         ),
       ],
     );

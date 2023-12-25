@@ -12,45 +12,35 @@ class VideoPlayerWidget extends StatefulWidget {
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  late VideoPlayerController videoController;
-  late FlickManager flickManager;
+  late VideoPlayerController videoController = VideoPlayerController.network(widget.videoUrl);
+  late FlickManager flickManager = FlickManager(
+  videoPlayerController: videoController,
+  autoPlay: false,
+  autoInitialize: true,
+  );
   double aspectRatio = 16 / 9; // Default aspect ratio
 
   @override
   void initState() {
     super.initState();
-    videoController = VideoPlayerController.network(widget.videoUrl);
-
     videoController.initialize().then((_) {
       if (mounted) {
-        setState(() {
-          aspectRatio = videoController.value.aspectRatio;
-        });
+        setState(() {});
       }
     });
-
-    setUpVideoController();
-  }
-
-  void setUpVideoController() {
-    flickManager = FlickManager(
-      videoPlayerController: videoController,
-      autoPlay: false,
-      autoInitialize: true,
-    );
   }
 
   @override
   void dispose() {
     flickManager.dispose();
-    videoController.dispose(); // Dispose of the video controller as well
+    videoController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: aspectRatio,
+      aspectRatio: videoController.value.aspectRatio,
       child: FlickVideoPlayer(flickManager: flickManager),
     );
   }

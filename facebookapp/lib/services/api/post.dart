@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:fb_app/models/post_detail_model.dart';
 import 'package:fb_app/models/post_model.dart';
+import 'package:fb_app/models/post_response.dart';
 import 'package:fb_app/models/video_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
@@ -156,7 +157,7 @@ class PostAPI {
     }
   }
 
-  Future<List<Post>?> getListPost(
+  Future<PostResponse?> getListPosts(
       String inCampaign,
       String campaignId,
       String latitude,
@@ -180,18 +181,35 @@ class PostAPI {
         },
         header: {'Authorization': 'Bearer $token'},
       );
-      var responseData = response.data['data'];
-      List<Post>? postList = (responseData['post'] as List)
-          .map((x) => Post.fromJson(x))
-          .toList();
-      return postList;
+      var responseData = PostResponse.fromJson(response.data['data']);
+      return responseData;
     } catch (error) {
       Logger().e("Error getting list of posts: $error");
       return null;
     }
   }
 
-  Future<List<Post>?> getListVideos(
+  Future<PostResponse?> getNewPosts(
+      String count) async {
+    try {
+      String? token = await Storage().getToken();
+      var response = await DioClient().apiCall(
+        url: "https://it4788.catan.io.vn/get_new_posts",
+        requestType: RequestType.POST,
+        body: {
+          "count": count,
+        },
+        header: {'Authorization': 'Bearer $token'},
+      );
+      var responseData = PostResponse.fromJson(response.data['data']);
+      return responseData;
+    } catch (error) {
+      Logger().e("Error getting list of posts: $error");
+      return null;
+    }
+  }
+
+  Future<PostResponse> getListVideos(
       String inCampaign,
       String campaignId,
       String latitude,
@@ -216,16 +234,7 @@ class PostAPI {
       },
       header: {'Authorization': 'Bearer $token'},
     );
-    if (response.statusCode == 200) {
-      var responseData = response.data['data'];
-      List<Post> portList = [];
-      for (var item in responseData['post']) {
-        Post port = Post.fromJson(item);
-        portList.add(port);
-      }
-      return portList;
-    } else {
-      return null;
+    var responseData = PostResponse.fromJson(response.data['data']);
+    return responseData;
     }
-  }
 }

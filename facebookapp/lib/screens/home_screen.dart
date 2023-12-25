@@ -18,7 +18,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
   int _selectedIndex = 0;
+  Key _postScreenKey = UniqueKey();
 
+  void _resetPostScreen() {
+    setState(() {
+      _postScreenKey = UniqueKey(); // Generate a new key
+    });
+  }
 
   @override
   void dispose() {
@@ -55,9 +61,9 @@ class _HomeScreenState extends State<HomeScreen> {
       body: PageView(
           controller: _pageController,
           children: [
-            PostScreen(key: const PageStorageKey('postScreen'), uid: uid, ),
-            FriendScreen(key: const PageStorageKey('FriendScreen'), uid: uid, ),
-            VideoScreen(key: const PageStorageKey('videoScreen'), uid: uid,),
+            PostScreen(key: _postScreenKey, uid: uid, ),
+            FriendScreen(key: _postScreenKey, uid: uid, ),
+            VideoScreen(key: _postScreenKey, uid: uid,),
             const NotificationScreen(key: PageStorageKey('notificationScreen')),
             const MenuScreen(key: PageStorageKey('menuScreen')),
           ]
@@ -66,6 +72,9 @@ class _HomeScreenState extends State<HomeScreen> {
         type: BottomNavigationBarType.fixed, // Allows more than 3 items
         currentIndex: _selectedIndex,
         onTap: (index){
+          if (_selectedIndex != 0 && index == 0) {
+            _resetPostScreen(); // Call this when navigating back to PostScreen
+          }
           setState(() {
             _selectedIndex = index;
           });

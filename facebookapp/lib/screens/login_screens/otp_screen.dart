@@ -149,7 +149,6 @@ class _OTPScreenState extends State<OTPScreen> {
                                             ),
                                           ),
                                         ));
-                                // TODO: Intergrate verify OTP
                                 String? code = await Auth()
                                     .checkVerifyCode(email, otp);
                                 Navigator.pop(context);
@@ -214,7 +213,6 @@ class _OTPScreenState extends State<OTPScreen> {
                                               ),
                                             ),
                                           ));
-                                  // TODO: Call the verify_code api
                                   String? code = await Auth()
                                       .getVerifyCode(email.toString());
                                   Navigator.pop(context);

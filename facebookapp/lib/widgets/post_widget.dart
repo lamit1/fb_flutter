@@ -8,6 +8,7 @@ import 'package:fb_app/services/api/comment.dart';
 import 'package:fb_app/services/api/post.dart';
 import 'package:fb_app/utils/converter.dart';
 import 'package:fb_app/widgets/comment_box.dart';
+import 'package:fb_app/widgets/report_post_widget.dart';
 import 'package:fb_app/widgets/video_post.dart';
 import 'package:multi_image_layout/multi_image_layout.dart';
 import '../models/post_model.dart';
@@ -30,7 +31,7 @@ class _PostWidgetState extends State<PostWidget> {
 
   Future<void> getPost() async {
     try {
-      PostDetail? posts = await PostAPI().getPost(widget.post!.id!);
+      PostDetail? posts = await PostAPI().getPost(widget.post.id!);
       if (posts != null) {
         setState(() {
           postDetail = posts;
@@ -71,7 +72,7 @@ class _PostWidgetState extends State<PostWidget> {
                   children: [
                     CircleAvatar(
                       radius: 20.0,
-                      backgroundImage: NetworkImage(widget.post.user?.avatar ?? "/assets/avatar.png"),
+                      backgroundImage: NetworkImage(widget.post.user?.avatar ?? "assets/avatar.png"),
                     ),
                     const SizedBox(width: 8.0),
                     Column(
@@ -119,24 +120,24 @@ class _PostWidgetState extends State<PostWidget> {
                   onTap: (){},
                   child: Row(
                     children: [
-                      (int.parse(postDetail!.disappointed ?? "0") + int.parse(postDetail!.kudos ?? "0")) == 0 ?
+                      (int.parse(postDetail.disappointed ?? "0") + int.parse(postDetail.kudos ?? "0")) == 0 ?
                           const Icon(Icons.sentiment_neutral_sharp,
                             size: 30,
                             color: Palette.facebookBlue,) : Container(),
-                      (int.parse(postDetail!.kudos ?? "0") > 0) ? const Icon(
+                      (int.parse(postDetail.kudos ?? "0") > 0) ? const Icon(
                         Icons.sentiment_very_satisfied,
                         size: 30,
                         color: Palette.facebookBlue,
                         fill: 1,
                       ) : Container(),
-                      (int.parse(postDetail!.disappointed ?? "0") > 0) ? const Icon(
+                      (int.parse(postDetail.disappointed ?? "0") > 0) ? const Icon(
                         Icons.sentiment_dissatisfied_rounded,
                         size: 30,
                         color: Palette.facebookBlue,
                       ) : Container(),
                       const SizedBox(width: 8,),
                       Text(
-                        (int.parse(postDetail!.disappointed ?? "0") + int.parse(postDetail!.kudos ?? "0")).toString(),
+                        (int.parse(postDetail.disappointed ?? "0") + int.parse(postDetail.kudos ?? "0")).toString(),
                         style: const TextStyle(fontSize: 20, color: Colors.grey),
                       )
                     ],
@@ -146,14 +147,10 @@ class _PostWidgetState extends State<PostWidget> {
                   onTap: (){},
                   child: Row(
                     children: [
-                      const Icon(
-                          Icons.insert_comment_rounded,
-                          color: Palette.facebookBlue,
-                      ),
                       const SizedBox(width: 15,),
                       Text(
-                          widget.post!.commentMark!,
-                          style: const TextStyle(fontSize: 20, color: Colors.grey),
+                        "${widget.post.commentMark!} comments",
+                          style: const TextStyle(fontSize: 16, color: Colors.grey),
                       )
                     ],
                   ),
@@ -175,7 +172,7 @@ class _PostWidgetState extends State<PostWidget> {
                       onPressed: () async {
                         Like like;
                         if(postDetail.isFelt == "1") {
-                          like =  await CommentAPI().deleteFeel(widget.post!.id!);
+                          like =  await CommentAPI().deleteFeel(widget.post.id!);
                           if (like != null) {
                             setState(() {
                               postDetail.disappointed = like.disappointed;
@@ -184,7 +181,7 @@ class _PostWidgetState extends State<PostWidget> {
                             });
                           }
                         } else {
-                          like = await CommentAPI().feel(widget.post!.id!, "1");
+                          like = await CommentAPI().feel(widget.post.id!, "1");
                           if (like != null) {
                             setState(() {
                               postDetail.disappointed = like.disappointed;
@@ -199,20 +196,21 @@ class _PostWidgetState extends State<PostWidget> {
                         children: [
                            Icon(
                             Icons.sentiment_very_satisfied_sharp,
-                            color: postDetail!.isFelt == "1" ?
+                            color: postDetail.isFelt == "1" ?
                             Colors.orange : null,
                           ),
                           const SizedBox(
                             width: 10.0,
                           ),
-                          Text(postDetail!.kudos ?? "loading..."),
+                          Text(postDetail.kudos ?? "loading"),
                         ],
                       ),
                     ),
                   ),
                   const VerticalDivider(
-                    width: 20,
+                    width: 0.1,
                     thickness: 1,
+                    color: Colors.black
                   ),
                   Expanded(
                     child: TextButton(
@@ -221,7 +219,7 @@ class _PostWidgetState extends State<PostWidget> {
                       onPressed: () async {
                         Like like;
                         if(postDetail.isFelt == "0") {
-                          like =  await CommentAPI().deleteFeel(widget.post!.id!);
+                          like =  await CommentAPI().deleteFeel(widget.post.id!);
                           if (like != null) {
                             setState(() {
                               postDetail.disappointed = like.disappointed;
@@ -230,7 +228,7 @@ class _PostWidgetState extends State<PostWidget> {
                             });
                           }
                         } else {
-                          like = await CommentAPI().feel(widget.post!.id!, "0");
+                          like = await CommentAPI().feel(widget.post.id!, "0");
                           if (like != null) {
                             setState(() {
                               postDetail.disappointed = like.disappointed;
@@ -245,13 +243,13 @@ class _PostWidgetState extends State<PostWidget> {
                         children: [
                           Icon(
                             Icons.sentiment_dissatisfied_rounded,
-                            color: postDetail!.isFelt == "0" ?
+                            color: postDetail.isFelt == "0" ?
                             Colors.deepPurpleAccent : null,
                           ),
                           const SizedBox(
                             width: 10.0,
                           ),
-                          Text(postDetail!.disappointed ?? "loading"),
+                          Text(postDetail.disappointed ?? "loading"),
                         ],
                       ),
                     ),
@@ -399,9 +397,9 @@ class _PostWidgetState extends State<PostWidget> {
       builder: (BuildContext context) {
         return DraggableScrollableSheet(
           expand: false,
-          minChildSize: 0.2,
-          maxChildSize: 0.3,
-          initialChildSize: 0.3,
+          minChildSize: 0.15,
+          maxChildSize: 0.2,
+          initialChildSize: 0.2,
           builder: (context, scrollController)
           => SingleChildScrollView(
             controller: scrollController,
@@ -410,13 +408,15 @@ class _PostWidgetState extends State<PostWidget> {
               child: Column(
                 children: [
                   TextButton(
-                    style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
-                    onPressed: () {  },
+                    style: ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
+                    onPressed: () {
+                      showReportModal(context, widget.post.id!);
+                    },
                     child: const Row(
                       children: [
-                        Icon(Icons.circle_notifications_rounded, size: 35,),
+                        Icon(Icons.report_problem_rounded, size: 35,),
                         SizedBox(width: 25,),
-                        Text("Turn on notification", style: TextStyle(fontSize: 15),)
+                        Text("Report post", style: TextStyle(fontSize: 15),)
                       ],
                     ),
                   ),
@@ -465,35 +465,20 @@ class _PostWidgetState extends State<PostWidget> {
                       ],
                     ),
                   ),
-                  const Divider(height: 1.5, color: Colors.black54,),
-                  TextButton(
-                    style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
-                    onPressed: () {  },
-                    child: const Row(
-                      children: [
-                        Icon(Icons.save_alt, size: 35,),
-                        SizedBox(width: 25,),
-                        Text("Save post", style: TextStyle(fontSize: 15),)
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 1.5, color: Colors.black54,),
-                  TextButton(
-                    style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
-                    onPressed: () {  },
-                    child: const Row(
-                      children: [
-                        Icon(Icons.link,  size: 35,),
-                        SizedBox(width: 25,),
-                        Text("Copy link address", style: TextStyle(fontSize: 15),)
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
           ),
         );
+      },
+    );
+  }
+
+  void showReportModal(BuildContext context, String postId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ReportModal(id: postId,);
       },
     );
   }

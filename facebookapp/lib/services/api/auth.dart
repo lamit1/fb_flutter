@@ -83,4 +83,16 @@ class Auth {
         header: {'Authorization': 'Bearer $token'});
     return response.data['code'];
   }
+
+  Future<bool> checkEmailExisted(String email) async {
+    String? deviceId = await getDeviceUUID();
+    String? token = await Storage().getToken();
+    if (deviceId == null) throw Exception("Invalid device!");
+    var response = await DioClient().apiCall(
+        url: "https://it4788.catan.io.vn/change_pasword",
+        requestType: RequestType.POST,
+        body: {"email": email,},
+        header: {'Authorization': 'Bearer $token'});
+    return response.data['data']['existed'] == "0" ? false : true;
+  }
 }

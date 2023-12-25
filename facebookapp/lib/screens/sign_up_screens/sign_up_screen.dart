@@ -68,6 +68,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         String email = _emailController.text;
+                        // TODO: Check the email existed using AuthAPI().checkEmailExisted() and show the result modal box
+
                         // Sign up user with email and password
                         Navigator.pushNamed(context, "/type_password", arguments: [email]);
                       }

@@ -1,7 +1,9 @@
 
+import 'package:fb_app/models/post_response.dart';
 import 'package:fb_app/models/user_info_model.dart';
 import 'package:fb_app/services/api/post.dart';
 import 'package:fb_app/services/api/profile.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
 import '../models/post_model.dart';
@@ -19,17 +21,57 @@ class _PostScreenState extends State<PostScreen> {
   final ScrollController _scrollController = ScrollController(keepScrollOffset: true);
   late UserInfo user = const UserInfo();
   late List<Post> posts = [];
+  bool isLoadingPost = true;
   int index = 0;
-  int count = 10;
-  int lastId = 0;
+  int count = 5;
+  String lastId = "0";
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent && !isLoadingPost) {
+        setState(() {
+          isLoadingPost = true;
+        });
+        loadMorePosts();
+      }
+    });
     loadUserInfo();
     loadPosts();
   }
 
+  void loadMorePosts() async {
+    try {
+      PostResponse? postResponse = await PostAPI().getListPosts(
+          '1', '1', '1.0', '1.0', lastId.toString(), index.toString(), count.toString()
+      );
+      if (postResponse != null && postResponse.posts.isNotEmpty) {
+        Logger().d("POST LAST ID: ${postResponse.lastId}");
+        setState(() {
+          posts.addAll(postResponse.posts);
+          lastId = postResponse.lastId;
+          isLoadingPost = false;
+          index += count;
+        });
+      } else {
+        setState(() {
+          isLoadingPost = false;
+        });
+      }
+    } catch (error) {
+      Logger().d('Error loading more posts: $error');
+      setState(() {
+        isLoadingPost = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+  }
   // Function to load user information
   void loadUserInfo() async {
     try {
@@ -44,24 +86,28 @@ class _PostScreenState extends State<PostScreen> {
 
   void loadPosts() async {
     try {
-      List<Post>? fetchedPosts = await PostAPI().getListPost(
+      PostResponse? postResponse = await PostAPI().getListPosts(
         '1',
         '1',
         '1.0',
         '1.0',
-        lastId.toString(),
+        lastId,
         index.toString(),
         count.toString()
       );
-      if (fetchedPosts != null) {
+      if (postResponse != null) {
         setState(() {
-          posts = fetchedPosts;
+          posts = postResponse.posts;
+          lastId = postResponse.lastId;
+          isLoadingPost = false;
+          index += count;
         });
       }
     } catch (error) {
       Logger().d('Error loading posts: $error');
     }
   }
+
 
   void addMark(String postId, String commentMark) {
     setState(() {
@@ -94,8 +140,14 @@ class _PostScreenState extends State<PostScreen> {
                   addMark: addMark,
               ) : Container();
             },
-            childCount: count,
+            childCount: index,
           ),
+        ),
+        SliverToBoxAdapter(
+          child: isLoadingPost ? const Padding(
+            padding: EdgeInsets.only(top: 20, bottom: 8.0),
+            child: Center(child: CircularProgressIndicator()),
+          ) : Container(),
         ),
       ],
     );

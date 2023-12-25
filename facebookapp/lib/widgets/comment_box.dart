@@ -36,6 +36,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
   bool loading = true;
   String? isReplying = "-1";
   UserInfo user = const UserInfo();
+  late String userMarkType;
   late FocusNode commentFocusNode = FocusNode();
 
   @override
@@ -67,16 +68,28 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
     try {
       List<MarkComments>? marksData =
           await CommentAPI().getMarkComment(widget.id!, "0", "10");
+      print("MARK DATA: $marksData");
       if (marksData != null) {
+        MarkComments userMark = marksData!.firstWhere((mark) => mark.poster!.id == widget.uid);
         setState(() {
+          userMarkType = userMark.typeOfMark!;
           marks = marksData;
-          loading = false;
         });
       }
+      setState(() {
+        loading = false;
+      });
+
     } catch (error) {
       // Handle error if necessary
       print("Error loading comments: $error");
     }
+  }
+
+  void setType(String markType) {
+    setState(() {
+      userMarkType = markType;
+    });
   }
 
   @override
@@ -97,16 +110,18 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                 errorText: 'Comment cannot be blank',
                 withBorder: false,
                 focusNode: commentFocusNode,
+                currentMarkType: userMarkType,
+                setType: setType,
                 sendButtonMethod: () async {
                   if (_key.currentState!.validate()) {
                     FocusScope.of(context).unfocus();
                     List<MarkComments> newMarks = [];
                     if (isReplying != "-1") {
                       newMarks = await CommentAPI().setMarkComment(widget.id!,
-                          commentController.text, "0", "10", isReplying!, "0");
+                          commentController.text, "0", "10", isReplying!, userMarkType);
                     } else {
                       newMarks = await CommentAPI().setMark(
-                          widget.id!, commentController.text, "0", "10", "0");
+                          widget.id!, commentController.text, "0", "10", userMarkType);
                     }
                     setState(() {
                       marks = newMarks;
@@ -231,18 +246,24 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        RichText(
-                                          text: TextSpan(
-                                            text: marks[i].poster!.name,
-                                            style: const TextStyle(
-                                                fontSize: 20,
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w700),
-                                            recognizer: TapGestureRecognizer()
-                                              ..onTap = () {
-                                                //TODO: Implement the redirect to user profile
-                                              },
-                                          ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            RichText(
+                                              text: TextSpan(
+                                                text: "${marks[i].poster!.name}",
+                                                style: const TextStyle(
+                                                    fontSize: 20,
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.w700),
+                                                recognizer: TapGestureRecognizer()
+                                                  ..onTap = () {
+                                                    //TODO: Implement the redirect to user profile
+                                                  },
+                                              ),
+                                            ),
+                                            Icon(marks[i].typeOfMark == "0" ? Icons.thumb_down : Icons.thumb_up, color: Palette.facebookBlue,)
+                                          ],
                                         ),
                                         const SizedBox(
                                           height: 10,
