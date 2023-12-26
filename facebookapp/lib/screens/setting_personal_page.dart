@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 
 class SettingPersonalPage extends StatefulWidget {
-  final UserInfo userInfor;
-  const SettingPersonalPage({super.key, required this.userInfor});
+  final UserInfo userInfo;
+  const SettingPersonalPage({super.key, required this.userInfo});
 
   @override
   State<SettingPersonalPage> createState() => _SettingPersonalPageState();
@@ -28,7 +28,7 @@ class _SettingPersonalPageState extends State<SettingPersonalPage> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => EditPersonalPage(
-                        userInfor: widget.userInfor,
+                        userInfo: widget.userInfo,
                       )),
                 )
               },

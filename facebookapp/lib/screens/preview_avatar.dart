@@ -7,10 +7,10 @@ import '../models/user_info_model.dart';
 
 class PreviewAvatar extends StatefulWidget {
   final String imagePath;
-  final UserInfo userInfor;
+  final UserInfo userInfo;
 
   const PreviewAvatar(
-      {Key? key, required this.imagePath, required this.userInfor})
+      {Key? key, required this.imagePath, required this.userInfo})
       : super(key: key);
 
   @override
@@ -26,14 +26,14 @@ class _PreviewAvatarState extends State<PreviewAvatar> {
     File imageFile = File(widget.imagePath);
 
     await ProfileAPI().setUserInfo(
-        widget.userInfor.username!,
-        widget.userInfor.description!,
+        widget.userInfo.username!,
+        widget.userInfo.description!,
         imageFile,
-        widget.userInfor.address!,
-        widget.userInfor.city!,
-        widget.userInfor.country!,
+        widget.userInfo.address!,
+        widget.userInfo.city!,
+        widget.userInfo.country!,
         null,
-        widget.userInfor.link!);
+        widget.userInfo.link!);
 
     popBackScreen();
   }

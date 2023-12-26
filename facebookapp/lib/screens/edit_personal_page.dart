@@ -7,16 +7,16 @@ import 'package:image_picker/image_picker.dart';
 import '../models/user_info_model.dart';
 
 class EditPersonalPage extends StatefulWidget {
-  final UserInfo userInfor;
+  final UserInfo userInfo;
 
-  const EditPersonalPage({super.key, required this.userInfor});
+  const EditPersonalPage({super.key, required this.userInfo});
 
   @override
   State<EditPersonalPage> createState() => _EditPersonalPageState();
 }
 
 class _EditPersonalPageState extends State<EditPersonalPage> {
-  late UserInfo userInfor;
+  late UserInfo userInfo;
   late TextEditingController _descriptionController;
   late TextEditingController _cityController;
   late TextEditingController _addressController;
@@ -25,34 +25,34 @@ class _EditPersonalPageState extends State<EditPersonalPage> {
   @override
   void initState() {
     super.initState();
-    userInfor = widget.userInfor;
+    userInfo = widget.userInfo;
     _descriptionController = TextEditingController();
     _cityController = TextEditingController();
     _addressController = TextEditingController();
     _countryController = TextEditingController();
 
     _descriptionController.value = _descriptionController.value.copyWith(
-      text: userInfor.description!,
+      text: userInfo.description!,
       selection:
-      TextSelection.collapsed(offset: userInfor.description!.length),
+      TextSelection.collapsed(offset: userInfo.description!.length),
     );
 
     _cityController.value = _descriptionController.value.copyWith(
-      text: userInfor.city!,
+      text: userInfo.city!,
       selection:
-      TextSelection.collapsed(offset: userInfor.description!.length),
+      TextSelection.collapsed(offset: userInfo.description!.length),
     );
 
     _addressController.value = _descriptionController.value.copyWith(
-      text: userInfor.address!,
+      text: userInfo.address!,
       selection:
-      TextSelection.collapsed(offset: userInfor.description!.length),
+      TextSelection.collapsed(offset: userInfo.description!.length),
     );
 
     _countryController.value = _descriptionController.value.copyWith(
-      text: userInfor.country!,
+      text: userInfo.country!,
       selection:
-      TextSelection.collapsed(offset: userInfor.description!.length),
+      TextSelection.collapsed(offset: userInfo.description!.length),
     );
   }
 
@@ -68,7 +68,7 @@ class _EditPersonalPageState extends State<EditPersonalPage> {
       MaterialPageRoute(
         builder: (context) => PreviewAvatar(
           imagePath: imagePath,
-          userInfor: userInfor,
+          userInfo: userInfo,
         ),
       ),
     );
@@ -80,7 +80,7 @@ class _EditPersonalPageState extends State<EditPersonalPage> {
       MaterialPageRoute(
         builder: (context) => PreviewCoverageImage(
           imagePath: imagePath,
-          userInfor: userInfor,
+          userInfo: userInfo,
         ),
       ),
     );
@@ -128,17 +128,17 @@ class _EditPersonalPageState extends State<EditPersonalPage> {
     }
   }
 
-  Future saveUserInfor() async {
+  Future saveuserInfo() async {
     try {
       await ProfileAPI().setUserInfo(
-          widget.userInfor.username!,
-          widget.userInfor.description!,
+          widget.userInfo.username!,
+          widget.userInfo.description!,
           null!,
-          widget.userInfor.address!,
-          widget.userInfor.city!,
-          widget.userInfor.country!,
+          widget.userInfo.address!,
+          widget.userInfo.city!,
+          widget.userInfo.country!,
           null!,
-          widget.userInfor.link!);
+          widget.userInfo.link!);
     } catch (e) {
       rethrow;
     }
@@ -194,9 +194,9 @@ class _EditPersonalPageState extends State<EditPersonalPage> {
                   onTap: () => {getAvatarImage()},
                   child: CircleAvatar(
                     radius: 120,
-                    backgroundImage: NetworkImage(userInfor
+                    backgroundImage: NetworkImage(userInfo
                         .avatar!.isNotEmpty
-                        ? userInfor.avatar!
+                        ? userInfo.avatar!
                         : 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png'),
                   ),
                 )),
@@ -248,8 +248,8 @@ class _EditPersonalPageState extends State<EditPersonalPage> {
                         child: SizedBox.fromSize(
                           size: const Size.fromRadius(56), // Image radius
                           child: Image.network(
-                              userInfor.coverAvatar!.isNotEmpty
-                                  ? userInfor.coverAvatar!
+                              userInfo.coverAvatar!.isNotEmpty
+                                  ? userInfo.coverAvatar!
                                   : 'https://wallpapers.com/images/hd/light-grey-background-cxk0x5hxxykvb55z.jpg',
                               fit: BoxFit.cover),
                         ),
@@ -276,10 +276,10 @@ class _EditPersonalPageState extends State<EditPersonalPage> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              userInfor.description =
+                              userInfo.description =
                                   _descriptionController.text;
                             });
-                            saveUserInfor();
+                            saveuserInfo();
                           },
                           child: const Text(
                             'Lưu',
@@ -327,11 +327,11 @@ class _EditPersonalPageState extends State<EditPersonalPage> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              userInfor.address = _addressController.text;
-                              userInfor.city = _cityController.text;
-                              userInfor.country = _countryController.text;
+                              userInfo.address = _addressController.text;
+                              userInfo.city = _cityController.text;
+                              userInfo.country = _countryController.text;
                             });
-                            saveUserInfor();
+                            saveuserInfo();
                           },
                           child: const Text(
                             'Chỉnh sửa',
