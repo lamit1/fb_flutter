@@ -1,3 +1,4 @@
+import 'package:fb_app/core/pallete.dart';
 import 'package:fb_app/models/friend_model.dart';
 import 'package:fb_app/services/api/friend.dart';
 import 'package:fb_app/widgets/friend_card.dart';
@@ -124,16 +125,6 @@ class _FriendScreenState extends State<FriendScreen>
           Container(
             margin: const EdgeInsets.only(top: 5.0),
             padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-            decoration: BoxDecoration(
-              color: Colors.white38,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  offset: const Offset(0.0, 1.0),
-                  blurRadius: 4.0,
-                ),
-              ],
-            ),
             child: Row(
               children: [
                 for (int i = 0; i < 3; i++)
@@ -142,9 +133,8 @@ class _FriendScreenState extends State<FriendScreen>
                       height: 40.0, // Adjust the height as needed
                       margin: const EdgeInsets.symmetric(horizontal: 5.0),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
                         borderRadius: BorderRadius.circular(18.0),
-                        color: _tabController?.index == i ? Colors.lightBlue : Colors.white,
+                        color: _tabController?.index == i ? Colors.lightBlue : Palette.scaffold,
                       ),
                       child: InkWell(
                         onTap: () {

@@ -35,7 +35,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
   late List<MarkComments>? marks = [];
   bool loading = true;
   String? isReplying = "-1";
-  UserInfo user = const UserInfo();
+  UserInfo user = UserInfo();
   late String userMarkType;
   late FocusNode commentFocusNode = FocusNode();
 
@@ -70,7 +70,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
           await CommentAPI().getMarkComment(widget.id!, "0", "10");
       print("MARK DATA: $marksData");
       if (marksData != null) {
-        MarkComments userMark = marksData!.firstWhere((mark) => mark.poster!.id == widget.uid);
+        MarkComments userMark = marksData.firstWhere((mark) => mark.poster!.id == widget.uid);
         setState(() {
           userMarkType = userMark.typeOfMark!;
           marks = marksData;
@@ -188,10 +188,10 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
               ),
             ),
             if (marks == null || marks.isEmpty && loading == false)
-              Container(
+              const SizedBox(
                 width: double.infinity,
                 height: 500,
-                child: const Center(
+                child: Center(
                   child: Text(
                     "There is no comment in this post!",
                     style: TextStyle(
@@ -312,7 +312,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                                         ..onTap = () {
                                                           setState(() {
                                                             isReplying =
-                                                                marks[i]?.id ??
+                                                                marks[i].id ??
                                                                     "-1";
                                                           });
                                                           commentFocusNode
@@ -324,8 +324,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                         const SizedBox(
                                           width: 15,
                                         ),
-                                        widget.uid! != marks[i].poster!.id!
-                                            ? RichText(
+                                        if (widget.uid! != marks[i].poster!.id!) RichText(
                                                 text: TextSpan(
                                                   text: "Block",
                                                   style: const TextStyle(
@@ -373,8 +372,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                                               });
                                                         },
                                                 ),
-                                              )
-                                            : Container(),
+                                              ) else Container(),
                                       ],
                                     ),
                                   ],
@@ -409,7 +407,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                     backgroundImage: NetworkImage(comment.poster!.avatar!),
                   ),
                   title: Text(comment.poster!.name!),
-                  subtitle: Text(comment!.content!),
+                  subtitle: Text(comment.content!),
                 ),
             ],
           ),

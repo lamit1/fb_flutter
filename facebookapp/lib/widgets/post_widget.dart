@@ -210,7 +210,6 @@ class _PostWidgetState extends State<PostWidget> {
                   const VerticalDivider(
                     width: 0.1,
                     thickness: 1,
-                    color: Colors.black
                   ),
                   Expanded(
                     child: TextButton(
@@ -255,7 +254,7 @@ class _PostWidgetState extends State<PostWidget> {
                     ),
                   ),
                   const VerticalDivider(
-                    width: 20,
+                    width: 0.1,
                     thickness: 1,
                   ),
                   Expanded(

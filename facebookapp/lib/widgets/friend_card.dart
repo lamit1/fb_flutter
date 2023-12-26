@@ -141,7 +141,7 @@ class FriendCard extends StatelessWidget {
                             },
                             style: ButtonStyle(
                               backgroundColor:
-                              MaterialStateProperty.all(Palette.scaffold),
+                              MaterialStateProperty.all(Colors.grey),
                               foregroundColor:
                               MaterialStateProperty.all(Colors.black),
                               overlayColor:
@@ -170,7 +170,7 @@ class FriendCard extends StatelessWidget {
                             },
                             style: ButtonStyle(
                               backgroundColor:
-                              MaterialStateProperty.all(Palette.scaffold),
+                              MaterialStateProperty.all(Colors.grey),
                               foregroundColor:
                               MaterialStateProperty.all(Colors.black),
                               overlayColor:

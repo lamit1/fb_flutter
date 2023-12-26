@@ -19,7 +19,7 @@ class PostScreen extends StatefulWidget {
 
 class _PostScreenState extends State<PostScreen> {
   final ScrollController _scrollController = ScrollController(keepScrollOffset: true);
-  late UserInfo user = const UserInfo();
+  late UserInfo user =  UserInfo();
   late List<Post> posts = [];
   bool isLoadingPost = true;
   int index = 0;
@@ -103,9 +103,20 @@ class _PostScreenState extends State<PostScreen> {
           index += count;
         });
       }
+      print('loadPosts is executed in PostScreen');
     } catch (error) {
       Logger().d('Error loading posts: $error');
     }
+  }
+
+  void reloadPosts() {
+    setState(() {
+      isLoadingPost = true;  // Set loading to true to show a loading indicator
+      posts.clear();          // Optionally clear existing posts before loading new ones
+      lastId = "0";           // Reset lastId if necessary
+      index = 0;              // Reset index if you're paginating
+    });
+    loadPosts();              // Call loadPosts to fetch and display new posts
   }
 
 
@@ -127,7 +138,7 @@ class _PostScreenState extends State<PostScreen> {
       controller: _scrollController,
       slivers: [
         SliverToBoxAdapter(
-          child: CreatePostContainer(currentUser: user),
+          child: CreatePostContainer(currentUser: user, loadPosts: reloadPosts),
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate(

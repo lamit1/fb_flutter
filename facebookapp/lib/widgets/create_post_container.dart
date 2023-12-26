@@ -1,3 +1,4 @@
+import 'package:fb_app/models/post_model.dart';
 import 'package:fb_app/models/user_info_model.dart';
 import 'package:fb_app/screens/add_post_screen.dart';
 import 'package:flutter/gestures.dart';
@@ -8,7 +9,9 @@ import 'package:logger/logger.dart';
 class CreatePostContainer extends StatefulWidget {
   final UserInfo currentUser;
 
-  const CreatePostContainer({super.key, required this.currentUser});
+  Function loadPosts;
+
+  CreatePostContainer({super.key, required this.currentUser, required this.loadPosts});
 
   @override
   State<CreatePostContainer> createState() => _CreatePostContainerState();
@@ -41,8 +44,11 @@ class _CreatePostContainerState extends State<CreatePostContainer> {
                       Navigator.push(context,
                         MaterialPageRoute(
                             builder: (BuildContext context) =>
-                                AddPostScreen(user: widget.currentUser)),
-                      );
+                                AddPostScreen(user: widget.currentUser, onPostAdded: widget.loadPosts)),
+                      ).then((_) => {
+                        widget.loadPosts(),
+                        print('loadPosts called from CreatePostContainer')
+                      });
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -66,7 +72,7 @@ class _CreatePostContainerState extends State<CreatePostContainer> {
                           Navigator.push(context,
                             MaterialPageRoute(
                                 builder: (BuildContext context) =>
-                                    AddPostScreen(user: widget.currentUser)),
+                                    AddPostScreen(user: widget.currentUser, onPostAdded: widget.loadPosts,)),
                           );
                         },
                       ),
@@ -92,7 +98,7 @@ class _CreatePostContainerState extends State<CreatePostContainer> {
                         if(widget.currentUser != null) {
                           Navigator.push(context,
                             MaterialPageRoute (
-                                builder: (BuildContext context) => AddPostScreen(user: widget.currentUser)),
+                                builder: (BuildContext context) => AddPostScreen(user: widget.currentUser, onPostAdded: widget.loadPosts,)),
                           )
                         }
                     },
@@ -119,7 +125,7 @@ class _CreatePostContainerState extends State<CreatePostContainer> {
                         Navigator.push(context,
                         MaterialPageRoute(
                         builder: (BuildContext context) =>
-                        AddPostScreen(user: widget.currentUser)),
+                        AddPostScreen(user: widget.currentUser, onPostAdded: widget.loadPosts,)),
                         )
                       },
                       child: const Icon(Icons.image, color: Colors.white),

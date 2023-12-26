@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:fb_app/models/add_post_response.dart';
 import 'package:fb_app/models/post_detail_model.dart';
 import 'package:fb_app/models/post_model.dart';
 import 'package:fb_app/models/post_response.dart';
@@ -32,15 +33,35 @@ class PostAPI {
     }
   }
 
-  Future<String?> addPost(List<File> images,
-      File video,
+  Future<Post?> getPostAdded(String id) async {
+    String? deviceId = await getDeviceUUID();
+    String? token = await Storage().getToken();
+    if (deviceId == null) throw Exception("Invalid device!");
+    var response = await DioClient().apiCall(
+      url: "https://it4788.catan.io.vn/get_post",
+      requestType: RequestType.POST,
+      body: {"id": id},
+      header: {'Authorization': 'Bearer $token'},
+    );
+    if (response.statusCode == 200) {
+      var responseData = response.data['data'];
+      Post post = Post.fromJson(responseData);
+      return post;
+    } else {
+      return null;
+    }
+  }
+
+  Future<AddPostResponse?> addPost(
+      List<File>? images,
+      File? video,
       String described,
       String status,
       String autoAccept,) async {
     String? token = await Storage().getToken();
     FormData data = FormData.fromMap({
-      "username": images,
-      "avatar": video,
+      "image": images,
+      "video": video,
       "described": described,
       "status": status,
       "auto_accept": autoAccept,
@@ -51,7 +72,12 @@ class PostAPI {
       formData: data,
       header: {'Authorization': 'Bearer $token'},
     );
-    return response.data['code'];
+    print(response.data["data"]);
+    if(response.data["code"] == "1000") {
+      return AddPostResponse.fromJson(response.data['data']);
+    } else {
+      return null;
+    }
   }
 
   Future<String?> editPost(List<File> images,

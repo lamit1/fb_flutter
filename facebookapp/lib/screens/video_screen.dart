@@ -21,7 +21,7 @@ class VideoScreen extends StatefulWidget {
 
 class _VideoScreenState extends State<VideoScreen> {
   final ScrollController _scrollController = ScrollController(keepScrollOffset: true);
-  late UserInfo user = const UserInfo();
+  late UserInfo user =  UserInfo();
   late List<Post> posts = [];
   int index = 0;
   int count = 2;
