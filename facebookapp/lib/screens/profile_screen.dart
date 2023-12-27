@@ -251,7 +251,9 @@ class _PersonalPageState extends State<PersonalPage> {
                       child: Container(
                           child: ClipRRect(
                             borderRadius:
-                            BorderRadius.circular(20), // Image border
+                            BorderRadius.only(
+                              topLeft:Radius.circular(10),
+                              topRight:Radius.circular(10))                            , // Image border
                             child: SizedBox.fromSize(
                               size: const Size.fromRadius(
                                   56), // Image radius
@@ -264,8 +266,8 @@ class _PersonalPageState extends State<PersonalPage> {
                           )),
                     )),
                 Positioned(
-                    top: 200,
-                    left: 100,
+                    top: 80,
+                    left: 130,
                     child: Center(
                       child: GestureDetector(
                           onTap: () => {
@@ -326,11 +328,16 @@ class _PersonalPageState extends State<PersonalPage> {
                                 })
                           },
                           child: CircleAvatar(
-                            radius: 100,
-                            backgroundImage: NetworkImage(
-                                userInfo.avatar != null
-                                    ? userInfo.avatar!
-                                    : 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png'),
+                            radius: 74.0,
+                            backgroundColor: Colors.white,
+                            child: CircleAvatar(
+                              radius: 70.0,
+                              backgroundImage: NetworkImage(
+                                  userInfo.avatar != null
+                                      ? userInfo.avatar!
+                                      : 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png'),
+                            ),
+
                           )),
                     )),
               ],
@@ -339,43 +346,36 @@ class _PersonalPageState extends State<PersonalPage> {
               userInfo.username != null
                   ? userInfo.username!
                   : "unknow",
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 24),
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
             ),
-            TextButton(
-                style: ButtonStyle(
-                  foregroundColor:
-                  MaterialStateProperty.all<Color>(Colors.blue),
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                      const Color.fromARGB(255, 187, 226, 245)),
-                  overlayColor:
-                  MaterialStateProperty.resolveWith<Color?>(
-                        (Set<MaterialState> states) {
-                      if (states.contains(MaterialState.focused) ||
-                          states.contains(MaterialState.pressed)) {
-                        return Colors.blue.withOpacity(0.12);
-                      }
-                      return null; // Defer to the widget's default.
-                    },
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SettingPersonalPage(
-                          userInfo: userInfo,
-                        )),
-                  );
-                },
-                child: const Text(
-                  '...',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 20,
+            // const SizedBox(
+            //   height: 10,
+            // ),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'If you cannot do great things, do small things in a great way.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 15, color: Colors.grey),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(primary: Colors.blue[800]),
+                  child: Row(
+                    children: const [
+                      Icon(Icons.add_circle_rounded),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text('Add to story')
+                    ],
                   ),
                 )),
             Row(
@@ -403,6 +403,73 @@ class _PersonalPageState extends State<PersonalPage> {
                 )
               ],
             ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    primary:Colors.grey[250],
+                    textStyle: TextStyle(color: Colors.black),),
+                  child: Row(
+                    children: const [
+                      Icon(Icons.edit),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text('Edit profile')
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(primary: Colors.grey[250]),
+                  child: const Icon(Icons.more_horiz,
+                    color: Colors.black,),
+
+                )
+              ],
+            ),
+
+
+            // TextButton(
+            //     style: ButtonStyle(
+            //       foregroundColor:
+            //       MaterialStateProperty.all<Color>(Colors.blue),
+            //       backgroundColor: MaterialStateProperty.all<Color>(
+            //           const Color.fromARGB(255, 187, 226, 245)),
+            //       overlayColor:
+            //       MaterialStateProperty.resolveWith<Color?>(
+            //             (Set<MaterialState> states) {
+            //           if (states.contains(MaterialState.focused) ||
+            //               states.contains(MaterialState.pressed)) {
+            //             return Colors.blue.withOpacity(0.12);
+            //           }
+            //           return null; // Defer to the widget's default.
+            //         },
+            //       ),
+            //     ),
+            //     onPressed: () {
+            //       Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //             builder: (context) => SettingPersonalPage(
+            //               userInfo: userInfo,
+            //             )),
+            //       );
+            //     },
+            //     child: const Text(
+            //       '...',
+            //       textAlign: TextAlign.center,
+            //       style: TextStyle(
+            //         fontWeight: FontWeight.w600,
+            //         fontSize: 20,
+            //       ),
+            //     )),
             Align(
               alignment: Alignment.center,
               child: Padding(
@@ -449,7 +516,7 @@ class _PersonalPageState extends State<PersonalPage> {
                   Row(
                     children: [
                       const Icon(
-                        Icons.location_pin,
+                        Icons.home,
                         color: Colors.black45,
                         size: 24.0,
                         semanticLabel:
@@ -459,14 +526,14 @@ class _PersonalPageState extends State<PersonalPage> {
                         padding: const EdgeInsets.all(5),
                         child: Text.rich(
                           TextSpan(
-                            text: 'Đến từ ',
+                            text: 'Sống tại ',
                             style: const TextStyle(fontSize: 18),
                             children: <TextSpan>[
                               TextSpan(
                                   text: userInfo
-                                      .country != null
-                                      ? userInfo.country!
-                                      : "unknow",
+                                      .address != null
+                                      ? userInfo.address!
+                                      : 'unknow',
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold)),
                             ],
@@ -478,7 +545,7 @@ class _PersonalPageState extends State<PersonalPage> {
                   Row(
                     children: [
                       const Icon(
-                        Icons.link,
+                        Icons.location_pin,
                         color: Colors.black45,
                         size: 24.0,
                         semanticLabel:
@@ -488,7 +555,7 @@ class _PersonalPageState extends State<PersonalPage> {
                         padding: const EdgeInsets.all(5),
                         child: Text.rich(
                           TextSpan(
-                            text: 'Đường dẫn liên kết',
+                            text: 'Đến từ ',
                             style: const TextStyle(fontSize: 18),
                             children: <TextSpan>[
                               TextSpan(
@@ -533,7 +600,6 @@ class _PersonalPageState extends State<PersonalPage> {
                       MaterialPageRoute(
                           builder: (context) => EditPersonalPage(
                             userInfo: userInfo,
-                            setResponse : setResponse
                           )),
                     );
                   },
