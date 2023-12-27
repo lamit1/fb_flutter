@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:fb_app/models/edit_user_profile_model.dart';
 import 'package:fb_app/models/user_info_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
@@ -25,7 +26,7 @@ class ProfileAPI {
     return user;
   }
 
-  Future<String?> setUserInfo(
+  Future<EditProfileResponse> setUserInfo(
     String? username,
     String? description,
     File? avatar,
@@ -43,7 +44,7 @@ class ProfileAPI {
       "address": address,
       "city": city,
       "country": country,
-      "coverImage": coverImage,
+      "cover_image": coverImage,
       "link": link,
     });
     var response = await DioClient().formDataCall(
@@ -52,7 +53,8 @@ class ProfileAPI {
       formData: data,
       header: {'Authorization': 'Bearer $token'},
     );
-    return response.data['code'];
+    print(response);
+    return EditProfileResponse.fromJson(response.data['data']);
   }
 
   Future<String?> changeProfileAfterSignup(

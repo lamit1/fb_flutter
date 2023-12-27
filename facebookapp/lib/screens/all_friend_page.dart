@@ -1,5 +1,5 @@
 import 'package:fb_app/models/friend_model.dart';
-import 'package:fb_app/screens/profile.dart';
+import 'package:fb_app/screens/profile_screen.dart';
 import 'package:fb_app/services/api/friend.dart';
 import 'package:fb_app/services/api/profile.dart';
 import 'package:fb_app/services/storage.dart';

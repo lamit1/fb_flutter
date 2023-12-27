@@ -25,7 +25,7 @@ class PersonalPage extends StatefulWidget {
 }
 
 class _PersonalPageState extends State<PersonalPage> {
-  late UserInfo userInfo;
+  late UserInfo userInfo = UserInfo();
   late List<Friend>? userFriends;
   // late List<Post>? listPost;
 
@@ -119,6 +119,26 @@ class _PersonalPageState extends State<PersonalPage> {
     } catch (e) {
       rethrow;
     }
+  }
+
+  void setResponse(
+      String avatarUrl,
+      String coverImageUrl,
+      String description,
+      String city,
+      String country,
+      String address,
+      String link
+      ) {
+    setState(() {
+      userInfo.avatar = avatarUrl;
+      userInfo.coverAvatar = coverImageUrl;
+      userInfo.description = description;
+      userInfo.country = country;
+      userInfo.city = city;
+      userInfo.address = address;
+      userInfo.link = link;
+    });
   }
 
   @override
@@ -358,6 +378,31 @@ class _PersonalPageState extends State<PersonalPage> {
                     fontSize: 20,
                   ),
                 )),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: Text.rich(
+                    TextSpan(
+                      text: userInfo
+                          .description != null
+                          ? userInfo.description!
+                          : "unknow",
+                      style: const TextStyle(fontSize: 18),
+                      children: <TextSpan>[
+                        TextSpan(
+                            text: userInfo
+                                .description != null
+                                ? userInfo.description!
+                                : "unknow",
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
             Align(
               alignment: Alignment.center,
               child: Padding(
@@ -404,35 +449,6 @@ class _PersonalPageState extends State<PersonalPage> {
                   Row(
                     children: [
                       const Icon(
-                        Icons.home,
-                        color: Colors.black45,
-                        size: 24.0,
-                        semanticLabel:
-                        'Text to announce in accessibility modes',
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5),
-                        child: Text.rich(
-                          TextSpan(
-                            text: 'Sống tại ',
-                            style: const TextStyle(fontSize: 18),
-                            children: <TextSpan>[
-                              TextSpan(
-                                  text: userInfo
-                                      .address != null
-                                      ? userInfo.address!
-                                      : 'unknow',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Icon(
                         Icons.location_pin,
                         color: Colors.black45,
                         size: 24.0,
@@ -444,6 +460,35 @@ class _PersonalPageState extends State<PersonalPage> {
                         child: Text.rich(
                           TextSpan(
                             text: 'Đến từ ',
+                            style: const TextStyle(fontSize: 18),
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text: userInfo
+                                      .country != null
+                                      ? userInfo.country!
+                                      : "unknow",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.link,
+                        color: Colors.black45,
+                        size: 24.0,
+                        semanticLabel:
+                        'Text to announce in accessibility modes',
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: Text.rich(
+                          TextSpan(
+                            text: 'Đường dẫn liên kết',
                             style: const TextStyle(fontSize: 18),
                             children: <TextSpan>[
                               TextSpan(
@@ -488,6 +533,7 @@ class _PersonalPageState extends State<PersonalPage> {
                       MaterialPageRoute(
                           builder: (context) => EditPersonalPage(
                             userInfo: userInfo,
+                            setResponse : setResponse
                           )),
                     );
                   },

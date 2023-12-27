@@ -29,6 +29,7 @@ class _SettingPersonalPageState extends State<SettingPersonalPage> {
                   MaterialPageRoute(
                       builder: (context) => EditPersonalPage(
                         userInfo: widget.userInfo,
+
                       )),
                 )
               },

@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
             FriendScreen(key: _postScreenKey, uid: uid, ),
             VideoScreen(key: _postScreenKey, uid: uid,),
             const NotificationScreen(key: PageStorageKey('notificationScreen')),
-            const MenuScreen(key: PageStorageKey('menuScreen')),
+            MenuScreen(key: PageStorageKey('menuScreen'), uid:uid),
           ]
       ),
       bottomNavigationBar: BottomNavigationBar(

@@ -1,10 +1,10 @@
 import 'dart:io';
 
+import 'package:fb_app/models/edit_user_profile_model.dart';
 import 'package:fb_app/services/api/profile.dart';
 import 'package:flutter/material.dart';
 
 import '../models/user_info_model.dart';
-
 
 class PreviewCoverageImage extends StatefulWidget {
   final String imagePath;
@@ -25,15 +25,16 @@ class _PreviewCoverageImageState extends State<PreviewCoverageImage> {
 
   void saveImage() async {
     File imageFile = File(widget.imagePath);
-    await ProfileAPI().setUserInfo(
+    EditProfileResponse response =  await ProfileAPI().setUserInfo(
         widget.userInfo.username!,
         widget.userInfo.description!,
-        null ,
+        null,
         widget.userInfo.address!,
         widget.userInfo.city!,
         widget.userInfo.country!,
         imageFile,
         widget.userInfo.link!);
+
     popBackScreen();
   }
 

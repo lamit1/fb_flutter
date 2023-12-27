@@ -1,12 +1,12 @@
 import 'package:fb_app/screens/login_screens/login_screen.dart';
-import 'package:fb_app/screens/profile.dart';
+import 'package:fb_app/screens/profile_screen.dart';
 import 'package:fb_app/widgets/menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class MenuScreen extends StatefulWidget {
-  const MenuScreen({super.key});
-
+  MenuScreen({super.key, required this.uid});
+  String? uid;
   @override
   State<MenuScreen> createState() => _MenuScreenState();
 }
@@ -22,7 +22,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   if (index == 0) return  MenuItem(icon: Icons.person, text: "Profile", function: (){
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => PersonalPage(id: "136")),
+                      MaterialPageRoute(builder: (context) => PersonalPage(id: widget.uid!)),
                     );
                   },);
                   if (index == 1) return  MenuItem(icon: Icons.payment, text: "Deposit", function: (){},);
