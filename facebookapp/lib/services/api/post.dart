@@ -9,6 +9,7 @@ import 'package:fb_app/models/video_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
 import 'package:fb_app/utils/get_device_uuid.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:logger/logger.dart';
 
 class PostAPI {
@@ -59,26 +60,72 @@ class PostAPI {
       String status,
       String autoAccept,) async {
     String? token = await Storage().getToken();
+
+    // Convert images to MultipartFiles
+    List<MultipartFile> imageFiles = [];
+    if (images != null) {
+      for (File image in images) {
+        MultipartFile multipartFile;
+        String fileExtension = image.path.split('.').last.toLowerCase(); // Get the file extension
+        if (fileExtension == 'png') {
+          multipartFile = await MultipartFile.fromFile(
+            image.path,
+            filename: image.path.split('/').last,
+            contentType: MediaType('image', 'png'),
+          );
+        } else if (fileExtension == 'jpg' || fileExtension == 'jpeg') {
+          multipartFile = await MultipartFile.fromFile(
+            image.path,
+            filename: image.path.split('/').last,
+            contentType: MediaType('image', 'jpeg'),
+          );
+        } else {
+          // Handle other file types or throw an error
+          print('Unsupported file type');
+          return null; // Or handle appropriately
+        }
+        imageFiles.add(multipartFile);
+      }
+    }
+
+    // Convert video to MultipartFile if it's not null
+    MultipartFile? videoSend;
+    if (video != null) {
+      videoSend = await MultipartFile.fromFile(
+          video.path,
+          filename: video.path.split('/').last,
+          contentType: MediaType('video', 'mp4')
+      );
+    }
+
+    // Prepare FormData
     FormData data = FormData.fromMap({
-      "image": images,
-      "video": video,
+      "image": imageFiles,
+      "video": videoSend,
       "described": described,
       "status": status,
       "auto_accept": autoAccept,
     });
-    var response = await DioClient().formDataCall(
-      url: "https://it4788.catan.io.vn/add_post",
-      requestType: RequestType.POST,
-      formData: data,
-      header: {'Authorization': 'Bearer $token'},
-    );
-    print(response.data["data"]);
-    if(response.data["code"] == "1000") {
-      return AddPostResponse.fromJson(response.data['data']);
-    } else {
+
+    try {
+      var response = await DioClient().formDataCall(
+        url: "https://it4788.catan.io.vn/add_post",
+        requestType: RequestType.POST,
+        formData: data,
+        header: {'Authorization': 'Bearer $token'},
+      );
+      print(response.data);
+      if (response.data["code"] == "1000") {
+        return AddPostResponse.fromJson(response.data['data']);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error: $e');
       return null;
     }
   }
+
 
   Future<String?> editPost(List<File> images,
       File video,

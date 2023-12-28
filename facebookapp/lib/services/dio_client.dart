@@ -86,7 +86,6 @@ class DioClient {
   }) async {
     try {
       late Response result;
-
       switch (requestType) {
         case RequestType.GET:
           {
@@ -124,6 +123,15 @@ class DioClient {
 
       return result;
     } on DioException catch (error) {
+      if (error.response != null) {
+        print(error.response?.data);
+        print(error.response?.headers);
+        print(error.response?.requestOptions);
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        print(error.requestOptions);
+        print(error.message);
+      }
       if (error.response != null && error.response!.statusCode == 400) {
         return error.response!;
       }

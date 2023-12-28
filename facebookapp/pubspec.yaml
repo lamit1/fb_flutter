@@ -53,6 +53,7 @@ dependencies:
   logger: ^2.0.2+1
   intl: ^0.19.0
   firebase_messaging: ^14.7.9
+  http_parser: ^4.0.2
 dependency_overrides:
   win32: ^5.0.0
 

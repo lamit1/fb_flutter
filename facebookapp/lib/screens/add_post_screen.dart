@@ -14,6 +14,7 @@ import '../models/post_model.dart';
 class AddPostScreen extends StatefulWidget {
   UserInfo user;
   final Function? onPostAdded;
+
   AddPostScreen({super.key, required this.user, required this.onPostAdded});
 
   @override
@@ -26,11 +27,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
   final TextEditingController statusController = TextEditingController();
   File? video;
   VideoPlayerController? videoController;
-  UserInfo user =  UserInfo();
+  UserInfo user = UserInfo();
   late String coins;
   bool isLoading = false;
   Post? newPost;
-
+  IconData iconStatus = Icons.play_arrow;
 
   @override
   void initState() {
@@ -44,15 +45,25 @@ class _AddPostScreenState extends State<AddPostScreen> {
         await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (videopicked != null) {
       video = File(videopicked.path);
+      videoController?.dispose(); // Dispose the old controller if it exists
       videoController = VideoPlayerController.file(video!)
         ..initialize().then((_) {
-          setState(() {});
-          videoController!.play();
-          videoController!.setLooping(true);
+          setState(() {
+            iconStatus = Icons.play_arrow;
+          });
+          videoController!.addListener(() {
+            final bool isEndOfVideo = videoController!.value.position ==
+                videoController!.value.duration;
+            if (isEndOfVideo) {
+              setState(() {
+                iconStatus = Icons.redo;
+              });
+              videoController!.seekTo(Duration.zero);
+            }
+          });
         });
     }
   }
-
 
   _selectImages(BuildContext context) async {
     final ImagePicker _picker = ImagePicker();
@@ -70,6 +81,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       _images.removeAt(index);
     });
   }
+
   @override
   void dispose() {
     videoController?.dispose();
@@ -78,13 +90,90 @@ class _AddPostScreenState extends State<AddPostScreen> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    return Stack(
-      children: [Scaffold(
+
+    Widget videoWidget = video != null &&
+            videoController?.value.isInitialized == true
+        ? Center(
+            child: Container(
+              color: Colors.black,
+              child: Center(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    // Black background for the video
+                    Container(
+                      width: 200,
+                      height: 200,
+                      color: Colors.black,
+                    ),
+                    // Video Player
+                    Container(
+                      width: 200,
+                      child: AspectRatio(
+                        aspectRatio: videoController!.value.aspectRatio,
+                        child: VideoPlayer(videoController!),
+                      ),
+                    ),
+                    // Play/Pause Button
+                    Positioned(
+                      child: IconButton(
+                        icon: Icon(
+                          iconStatus,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            // If the video is playing, pause it
+                            if (videoController!.value.isPlaying) {
+                              videoController!.pause();
+                              setState(() {
+                                iconStatus = Icons.play_arrow;
+                              });
+                            } else {
+                              // If the video is at or near the end, reset to the beginning
+                              if (videoController!.value.position.inSeconds >=
+                                  videoController!.value.duration.inSeconds -
+                                      1) {
+                                videoController!.seekTo(Duration.zero);
+                              }
+                              // Play the video
+                              videoController!.play();
+                              setState(() {
+                                iconStatus = Icons.pause;
+                              });
+                            }
+                          });
+                        },
+                      ),
+                    ),
+                    Positioned(
+                        top: 0,
+                        right: 0,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              videoController!.dispose();
+                              videoController = null;
+                              video = null;
+                            });
+                          },
+                        ))
+                  ],
+                ),
+              ),
+            ),
+          )
+        : const SizedBox.shrink();
+    return Stack(children: [
+      Scaffold(
         appBar: AppBar(
           title: Row(
             children: [
@@ -94,8 +183,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 onPressed: () async {
                   String description = descriptionController.text;
                   String status = statusController.text;
-                  AddPostResponse? response = await PostAPI().addPost(_images, video, description, status, "1");
-                  if(response != null) {
+                  print(video != null ? "Video null" : "Video not null");
+                  AddPostResponse? response = await PostAPI()
+                      .addPost(_images, video, description, status, "1");
+                  if (response != null) {
                     setState(() {
                       coins = response.coins!;
                       _images = [];
@@ -104,7 +195,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     descriptionController.clear();
                     statusController.clear();
                     widget.onPostAdded!();
-                    print('onPostAdded is called');
 
                     //Implement add post success modal
                     showSuccessModal();
@@ -264,7 +354,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 // Display selected images
                 _images.isNotEmpty
                     ? Container(
-                        height: 400, // Set a specific height based on your design
+                        height:
+                            400, // Set a specific height based on your design
                         child: GridView.builder(
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
@@ -301,82 +392,17 @@ class _AddPostScreenState extends State<AddPostScreen> {
                         ),
                       )
                     : const SizedBox.shrink(),
-                video == null
-                    ? const SizedBox.shrink()
-                    : ConstrainedBox(
-                        constraints:
-                            const BoxConstraints(maxHeight: 400, maxWidth: 300),
-                        child: Stack(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {});
-                                videoController!.value.isPlaying
-                                    ? videoController!.pause()
-                                    : videoController!.play();
-                              },
-                              child: AspectRatio(
-                                aspectRatio: videoController!.value.aspectRatio,
-                                child: VideoPlayer(videoController!),
-                              ),
-                            ),
-                            Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  IconButton(
-                                    icon: Icon(
-                                      videoController!.value.isPlaying
-                                          ? Icons.pause
-                                          : Icons.play_arrow,
-                                      size: 50,
-                                      color: Colors.grey,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        videoController!.value.isPlaying
-                                            ? videoController!.pause()
-                                            : videoController!.play();
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Positioned(
-                              top: -10,
-                              right: -10,
-                              child: IconButton(
-                                icon: const Icon(
-                                  Icons.delete,
-                                  size: 20,
-                                  color: Colors.red,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    // Add logic to delete the video
-                                    videoController!.pause();
-                                    videoController!.dispose();
-                                    videoController = null;
-                                    video = null;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                videoWidget,
               ],
             ),
           ),
         ),
       ),
-        if (isLoading) // Show loading overlay when posting
-          const Center(
-            child: CircularProgressIndicator(),
-          ),
-      ]
-    );
+      if (isLoading) // Show loading overlay when posting
+        const Center(
+          child: CircularProgressIndicator(),
+        ),
+    ]);
   }
 
   void showSuccessModal() {
@@ -400,14 +426,14 @@ class _AddPostScreenState extends State<AddPostScreen> {
     );
   }
 
-
   void showFailedModal() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Upload Failed'),
-          content: const Text('There was an issue uploading your post. Please try again later.'),
+          content: const Text(
+              'There was an issue uploading your post. Please try again later.'),
           actions: <Widget>[
             TextButton(
               child: const Text('OK'),
@@ -420,5 +446,4 @@ class _AddPostScreenState extends State<AddPostScreen> {
       },
     );
   }
-
 }

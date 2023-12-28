@@ -357,7 +357,9 @@ class _PostWidgetState extends State<PostWidget> {
                   const Divider(height: 1.5, color: Colors.grey,),
                   TextButton(
                     style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
-                    onPressed: () {  },
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/edit_post");
+                    },
                     child: const Row(
                       children: [
                         Icon(Icons.edit,  size: 35,),
