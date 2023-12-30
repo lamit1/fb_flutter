@@ -81,7 +81,7 @@ class _CommentBoxState extends State<CommentBox> {
                     child: Container(
                       color: widget.currentMarkType == "1" ? Palette.scaffold : null,
                       height: 50,
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.thumb_up, color: Colors.green),
@@ -100,7 +100,7 @@ class _CommentBoxState extends State<CommentBox> {
                     child: Container(
                       color: widget.currentMarkType == "0" ? Palette.scaffold : null,
                       height: 50,
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.thumb_down, color: Colors.red),

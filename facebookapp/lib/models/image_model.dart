@@ -1,14 +1,14 @@
-class Image {
+class ImageNetwork {
   final String? id;
   final String? url;
 
-  const Image({
+  const ImageNetwork({
     this.id,
     this.url,
   });
 
-  factory Image.fromJson(Map<String, dynamic> json) {
-    return Image(
+  factory ImageNetwork.fromJson(Map<String, dynamic> json) {
+    return ImageNetwork(
       id: json['id'] as String?,
       url: json['url'] as String?,
     );

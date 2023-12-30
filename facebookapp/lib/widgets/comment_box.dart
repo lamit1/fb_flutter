@@ -70,9 +70,12 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
           await CommentAPI().getMarkComment(widget.id!, "0", "10");
       print("MARK DATA: $marksData");
       if (marksData != null) {
-        MarkComments userMark = marksData.firstWhere((mark) => mark.poster!.id == widget.uid);
+        MarkComments? userMark = marksData.firstWhere(
+              (mark) => mark.poster?.id == widget.uid,
+          orElse: () => const MarkComments(), // Returns null if no match is found
+        );
         setState(() {
-          userMarkType = userMark.typeOfMark!;
+          userMarkType = userMark.typeOfMark ?? "-1";
           marks = marksData;
         });
       }
@@ -81,7 +84,6 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       });
 
     } catch (error) {
-      // Handle error if necessary
       print("Error loading comments: $error");
     }
   }

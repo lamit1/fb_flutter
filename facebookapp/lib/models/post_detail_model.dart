@@ -16,7 +16,7 @@ class PostDetail {
    String? disappointed;
   final String? isRated;
   String? isMarked;
-  final List<Image>? image;
+  final List<ImageNetwork>? image;
   final Video? video;
   final User? user;
   final Category? category;
@@ -58,8 +58,8 @@ class PostDetail {
   });
 
   factory PostDetail.fromJson(Map<String, dynamic> json) {
-    List<Image> images = (json['image'] as List?)
-        ?.map((item) => Image.fromJson(item))
+    List<ImageNetwork> images = (json['image'] as List?)
+        ?.map((item) => ImageNetwork.fromJson(item))
         .toList() ??
         [];
     Video? video;

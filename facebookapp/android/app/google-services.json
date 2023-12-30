@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "858445286823",
-    "project_id": "login-demo-84bc1",
-    "storage_bucket": "login-demo-84bc1.appspot.com"
+    "project_number": "368299366684",
+    "project_id": "sns-api-a968a",
+    "storage_bucket": "sns-api-a968a.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:858445286823:android:3d20a759439b042fdf3a82",
+        "mobilesdk_app_id": "1:368299366684:android:30f49360684a9d645c02d9",
         "android_client_info": {
-          "package_name": "com.example.fb_app"
-        }
+          "package_name": "vn.io.catan.antifakebook"
+        },
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCehDEgVzpdKGa3oX4CrzyNR2IbAWsyZWA"
+          "current_key": "AIzaSyA-UMFmnqg1p1sW9pA_nxz0EE547opVg2E"
         }
       ],
       "services": {

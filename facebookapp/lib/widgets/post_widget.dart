@@ -4,6 +4,7 @@ import 'dart:ffi';
 import 'package:fb_app/core/pallete.dart';
 import 'package:fb_app/models/kudos_dissapointed_model.dart';
 import 'package:fb_app/models/post_detail_model.dart';
+import 'package:fb_app/screens/edit_post_screen.dart';
 import 'package:fb_app/services/api/comment.dart';
 import 'package:fb_app/services/api/post.dart';
 import 'package:fb_app/utils/converter.dart';
@@ -27,16 +28,18 @@ class PostWidget extends StatefulWidget {
 }
 
 class _PostWidgetState extends State<PostWidget> {
-  late PostDetail postDetail = PostDetail();
+  PostDetail postDetail = PostDetail();
 
   Future<void> getPost() async {
+    print("Get PSOT: 123");
     try {
-      PostDetail? posts = await PostAPI().getPost(widget.post.id!);
-      if (posts != null) {
+      PostDetail? post = await PostAPI().getPost(widget.post.id!);
+      if (post != null) {
         setState(() {
-          postDetail = posts;
+          postDetail = post;
         });
       }
+      print(post);
     } catch (e) {
       print("Error fetching post: $e");
     }
@@ -72,16 +75,22 @@ class _PostWidgetState extends State<PostWidget> {
                   children: [
                     CircleAvatar(
                       radius: 20.0,
-                      backgroundImage: NetworkImage(widget.post.user?.avatar ?? "assets/avatar.png"),
+                      backgroundImage: NetworkImage(widget.post.user!.avatar ?? "assets/avatar.png"),
                     ),
                     const SizedBox(width: 8.0),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.post.user?.name ?? "Username",
+                          widget.post.user!.name ?? "Loading Username",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "- is feeling ${postDetail.state}",
+                          style: const TextStyle(
+                            color: Palette.facebookBlue
                           ),
                         ),
                         Text(
@@ -107,10 +116,10 @@ class _PostWidgetState extends State<PostWidget> {
           ),
            Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(widget.post.described!),
+            child: Text(postDetail.described ?? "Loading ..."),
           ),
           if (true)
-            _buildImageSection(widget.post.image!.map((i) => i.url!).toList(), postContext),
+            _buildImageSection(postDetail.image?.map((i) => i.url!).toList(), postContext),
           Padding(
             padding: const EdgeInsets.fromLTRB(10.0,15.0,20.0,10),
             child: Row(
@@ -285,14 +294,14 @@ class _PostWidgetState extends State<PostWidget> {
     );
   }
 
-  Widget _buildImageSection(List<String> imageUrls, BuildContext context) {
+  Widget _buildImageSection(List<String>? imageUrls, BuildContext context) {
     double imageWidth = MediaQuery.of(context).size.width;
 
     // Check if there is a video
-    if (widget.post.video != null && widget.post.video!.url != null) {
+    if (postDetail.video != null && postDetail.video!.url != null) {
       // If there is a video, display it
-      return VideoPlayerWidget(videoUrl: widget.post.video!.url!);
-    } else if (imageUrls.isNotEmpty) {
+      return VideoPlayerWidget(videoUrl: postDetail.video!.url!);
+    } else if (imageUrls!= null && imageUrls.isNotEmpty) {
       // If there are images, display them
       return MultiImageViewer(
         images: imageUrls.map((url) => ImageModel(imageUrl: url)).toList(),
@@ -358,7 +367,9 @@ class _PostWidgetState extends State<PostWidget> {
                   TextButton(
                     style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
                     onPressed: () {
-                      Navigator.pushNamed(context, "/edit_post");
+                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+                        return EditPostScreen(postDetail: postDetail, reloadPost: getPost);
+                      }));
                     },
                     child: const Row(
                       children: [
@@ -409,7 +420,7 @@ class _PostWidgetState extends State<PostWidget> {
               child: Column(
                 children: [
                   TextButton(
-                    style: ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
+                    style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
                     onPressed: () {
                       showReportModal(context, widget.post.id!);
                     },

@@ -127,18 +127,55 @@ class PostAPI {
   }
 
 
-  Future<String?> editPost(List<File> images,
-      File video,
-      String described,
-      String status,
+  Future<String?> editPost(
+      List<File>? images,
+      File? video,
+      String? described,
+      String? status,
       String autoAccept,
       String id,
-      String imageDel,
-      String imageSort,) async {
+      String? imageDel,
+      String? imageSort,) async {
     String? token = await Storage().getToken();
+    List<MultipartFile> imageFiles = [];
+    if (images != null) {
+      for (File image in images) {
+        MultipartFile multipartFile;
+        String fileExtension = image.path.split('.').last.toLowerCase(); // Get the file extension
+        if (fileExtension == 'png') {
+          multipartFile = await MultipartFile.fromFile(
+            image.path,
+            filename: image.path.split('/').last,
+            contentType: MediaType('image', 'png'),
+          );
+        } else if (fileExtension == 'jpg' || fileExtension == 'jpeg') {
+          multipartFile = await MultipartFile.fromFile(
+            image.path,
+            filename: image.path.split('/').last,
+            contentType: MediaType('image', 'jpeg'),
+          );
+        } else {
+          // Handle other file types or throw an error
+          print('Unsupported file type');
+          return null; // Or handle appropriately
+        }
+        imageFiles.add(multipartFile);
+      }
+    }
+
+    // Convert video to MultipartFile if it's not null
+    MultipartFile? videoSend;
+    if (video != null) {
+      videoSend = await MultipartFile.fromFile(
+          video.path,
+          filename: video.path.split('/').last,
+          contentType: MediaType('video', 'mp4')
+      );
+    }
+
     FormData data = FormData.fromMap({
-      "image": images,
-      "video": video,
+      "image": imageFiles,
+      "video": videoSend,
       "described": described,
       "status": status,
       "auto_accept": autoAccept,

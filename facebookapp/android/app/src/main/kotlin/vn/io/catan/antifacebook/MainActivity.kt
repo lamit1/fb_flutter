@@ -1,4 +1,4 @@
-package com.example.fb_app
+package vn.io.catan.antifakebook
 
 import io.flutter.embedding.android.FlutterActivity
 
