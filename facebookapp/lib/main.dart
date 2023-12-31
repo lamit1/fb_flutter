@@ -6,6 +6,7 @@ import 'package:fb_app/screens/loading_screen.dart';
 import 'package:fb_app/screens/login_screens/change_info.dart';
 import 'package:fb_app/screens/login_screens/login_screen.dart';
 import 'package:fb_app/screens/login_screens/otp_screen.dart';
+import 'package:fb_app/screens/search_screen.dart';
 import 'package:fb_app/screens/sign_up_screens/sign_up_screen.dart';
 import 'package:fb_app/screens/sign_up_screens/type_password_screen.dart';
 import 'package:fb_app/screens/video_screen.dart';
@@ -49,7 +50,7 @@ class MyApp extends StatelessWidget {
       // },
       routes: {
         // "/add_post_screen": (BuildContext context) => AddPostScreen(),
-        "/add_post_screen": (BuildContext context) => VideoScreen(),
+        "/add_post_screen": (BuildContext context) => FacebookSearchScreen(),
       },
     );
   }
