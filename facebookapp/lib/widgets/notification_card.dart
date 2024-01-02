@@ -67,7 +67,7 @@ class _NotificationCardState extends State<NotificationCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "${notification.user!.name} has liked your post",
+                            "${notification.user!.username} has liked your post",
                             style: TextStyle(
                               fontWeight: FontWeight.w400,
                               fontSize: 14,

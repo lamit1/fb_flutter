@@ -239,7 +239,7 @@ class _AllFriendPageState extends State<AllFriendPage> {
                                                           context,
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                                  PersonalPage(
+                                                                  ProfileScreen(
                                                                       id: item
                                                                           .id!)),
                                                         )

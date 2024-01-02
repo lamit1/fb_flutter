@@ -22,7 +22,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   if (index == 0) return  MenuItem(icon: Icons.person, text: "Profile", function: (){
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => PersonalPage(id: widget.uid!)),
+                      MaterialPageRoute(builder: (context) => ProfileScreen(id: widget.uid!)),
                     );
                   },);
                   if (index == 1) return  MenuItem(icon: Icons.payment, text: "Deposit", function: (){},);

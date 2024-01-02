@@ -5,6 +5,7 @@ import 'package:fb_app/screens/loading_screen.dart';
 import 'package:fb_app/screens/login_screens/change_info.dart';
 import 'package:fb_app/screens/login_screens/login_screen.dart';
 import 'package:fb_app/screens/login_screens/otp_screen.dart';
+import 'package:fb_app/screens/profile_screen.dart';
 import 'package:fb_app/screens/sign_up_screens/sign_up_screen.dart';
 import 'package:fb_app/screens/sign_up_screens/type_password_screen.dart';
 import 'package:fb_app/services/storage.dart';
@@ -15,6 +16,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/login/login_bloc.dart';
+import 'models/notification_model.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +39,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'Facebook Login',
       debugShowCheckedModeBanner: false,
       initialRoute: "/login",
@@ -57,12 +64,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Got a message whilst in the foreground!');
-      print('Message data: ${message.data}');
-      if (message.notification != null) {
-        print('Message also contained a notification: ${message.notification}');
-      }
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print("12312312312312312312312312312");
+      navigateBasedOnMessage(message.data);
     });
   }
 }

@@ -16,16 +16,16 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 
-class PersonalPage extends StatefulWidget {
+class ProfileScreen extends StatefulWidget {
   final String id;
 
-  const PersonalPage({super.key, required this.id});
+  const ProfileScreen({super.key, required this.id});
 
   @override
-  State<PersonalPage> createState() => _PersonalPageState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _PersonalPageState extends State<PersonalPage> {
+class _ProfileScreenState extends State<ProfileScreen> {
   late UserInfo userInfo = UserInfo();
   late List<Friend>? userFriends;
 

@@ -1,22 +1,20 @@
-import 'package:fb_app/models/post_model.dart';
-import 'package:fb_app/models/post_noti_model.dart';
-import 'package:fb_app/models/user_model.dart';
+import 'package:intl/intl.dart';
 
 class NotificationModel {
-  final String? type;
-  final String? objectId;
-  final String? title;
-  final String? notificationId;
-  final String? created;
-  final String? avatar;
-  final String? group;
-  final String? read;
-  final User? user;
-  final PostNoti? post;
-  final String? mark;
-  final String? feel;
+  String? type;
+  String? objectId;
+  Title? title;
+  String? notificationId;
+  String? created;
+  String? avatar;
+  String? group;
+  String? read;
+  User? user;
+  Post? post;
+  Mark? mark;
+  Feel? feel;
 
-  const NotificationModel({
+  NotificationModel({
     this.type,
     this.objectId,
     this.title,
@@ -30,31 +28,86 @@ class NotificationModel {
     this.mark,
     this.feel,
   });
-
-  factory NotificationModel.fromJson(Map<String, dynamic> json) {
-    User user = User(
-      id: json['user']['id'],
-      name: json['user']['username'],
-      avatar: json['user']['avatar'],
-    );
-    return NotificationModel(
-      type: json['type'] as String?,
-      objectId: json['object_id'] as String?,
-      title: json['title'] as String?,
-      notificationId: json['notification_id'] as String?,
-      created: json['created'] as String?,
-      avatar: json['avatar'] as String?,
-      group: json['group'] as String?,
-      read: json['read'] as String?,
-      user: user,
-      post: json['post'] != null ? PostNoti.fromJson(json['post']) : null,
-      mark: json['mark'] as String?,
-      feel: json['feel'] as String?,
-    );
+  NotificationModel.fromJson(Map<String, dynamic> json) {
+    type = json['type'];
+    objectId = json['objectId'];
+    title = json['title'] != null ? Title.values.firstWhere((e) => e.toString().split('.').last == json['title']) : null;
+    notificationId = json['notificationId'];
+    created = json['created'];
+    avatar = json['avatar'];
+    group = json['group'];
+    read = json['read'];
+    user = json['user'] != null ? User.fromJson(json['user']) : null;
+    post = json['post'] != null ? Post.fromJson(json['post']) : null;
+    mark = json['mark'] != null ? Mark.fromJson(json['mark']) : null;
+    feel = json['feel'] != null ? Feel.fromJson(json['feel']) : null;
   }
+}
 
-  @override
-  String toString() {
-    return "$type, $objectId, $title, $notificationId, $created, $avatar, $group, $read, $user, $post, $mark, $feel";
+class Feel {
+  String? feelId;
+  String? type;
+
+  Feel({
+    this.feelId,
+    this.type,
+  });
+  Feel.fromJson(Map<String, dynamic> json) {
+    feelId = json['feelId'];
+    type = json['type'];
+  }
+}
+
+class Post {
+  String? id;
+  String? described;
+  String? status;
+
+  Post({
+    this.id,
+    this.described,
+    this.status,
+  });
+  Post.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    described = json['described'];
+    status = json['status'];
+  }
+}
+
+enum Title {
+  NOTIFICATION
+}
+
+class User {
+  String? id;
+  String? username;
+  String? avatar;
+
+  User({
+    this.id,
+    this.username,
+    this.avatar,
+  });
+  User.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    username = json['username'];
+    avatar = json['avatar'];
+  }
+}
+class Mark {
+  String? markId;
+  String? typeOfMark;
+  String? markContent;
+
+  Mark({
+    this.markId,
+    this.typeOfMark,
+    this.markContent,
+  });
+  Mark.fromJson(Map<String, dynamic> json) {
+    markId = json['mark_id'];
+    typeOfMark = json['type_of_mark'];
+    markContent = json['mark_content'];
   }
 }
