@@ -93,7 +93,7 @@ MaterialPageRoute getRouteBasedOnNotificationType(NotificationType notificationT
     case NotificationType.FriendRequest:
     case NotificationType.FriendAccepted:
     // If these two notification types lead to the same screen, combine them
-      return MaterialPageRoute(builder: (context) => ProfileScreen(id: notification.user!.id!));
+      return MaterialPageRoute(builder: (context) => ProfileScreen(id: notification.user!.id!, type: '2'));
 
     case NotificationType.PostAdded:
     case NotificationType.PostUpdated:

@@ -8,9 +8,10 @@ import '../models/user_info_model.dart';
 class PreviewAvatar extends StatefulWidget {
   final String imagePath;
   final UserInfo userInfo;
+  final Function()? reloadData;
 
   const PreviewAvatar(
-      {Key? key, required this.imagePath, required this.userInfo})
+      {Key? key, required this.imagePath, required this.userInfo, required this.reloadData})
       : super(key: key);
 
   @override
@@ -34,7 +35,8 @@ class _PreviewAvatarState extends State<PreviewAvatar> {
         widget.userInfo.country!,
         null,
         widget.userInfo.link!);
-
+    widget.reloadData!();
+    popBackScreen();
     popBackScreen();
   }
 

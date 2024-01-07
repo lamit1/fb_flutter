@@ -4,8 +4,8 @@ import 'package:fb_app/services/api/friend.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
+
+import '../screens/profile_screen.dart';
 
 class NotificationCard extends StatefulWidget {
   final List<NotificationModel> notification;
@@ -65,12 +65,7 @@ class _NotificationCardState extends State<NotificationCard> {
               child: InkWell(
                 onTap: () {
                   if (notification.type == '1' || notification.type == '2') {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => UserProfileScreen(userId: notification.user!.id),
-                    //   ),
-                    // );
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfileScreen(id: notification.user!.id!, type:'2')));
                   } else if (notification.type == '3'
                       || notification.type == '4'
                       || notification.type == '5'

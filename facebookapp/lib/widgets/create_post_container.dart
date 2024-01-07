@@ -5,6 +5,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
+import '../screens/profile_screen.dart';
+
 
 class CreatePostContainer extends StatefulWidget {
   final UserInfo currentUser;
@@ -29,11 +31,18 @@ class _CreatePostContainerState extends State<CreatePostContainer> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 20.0,
-                  backgroundColor: Colors.grey[200],
-                  backgroundImage: NetworkImage(
-                      widget.currentUser.avatar ?? "assets/avatar.png"),
+                GestureDetector(
+                  onTap: () {
+                    // Navigate to the profile screen when tapped
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfileScreen(id: widget.currentUser.id!, type:'1')));
+                  },
+                  child: CircleAvatar(
+                    radius: 20.0,
+                    backgroundColor: Colors.grey[200],
+                    backgroundImage: NetworkImage(
+                      widget.currentUser.avatar ?? "assets/avatar.png",
+                    ),
+                  ),
                 ),
                 const SizedBox(
                   width: 8.0,
