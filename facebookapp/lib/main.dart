@@ -1,11 +1,12 @@
 import 'package:fb_app/core/pallete.dart';
-import 'package:fb_app/screens/change_forgot_pass.dart';
-import 'package:fb_app/screens/forgot_password_screen.dart';
+import 'package:fb_app/screens/forgot_password/change_forgot_pass.dart';
+import 'package:fb_app/screens/forgot_password/forgot_password_screen.dart';
 import 'package:fb_app/screens/home_screen.dart';
 import 'package:fb_app/screens/loading_screen.dart';
 import 'package:fb_app/screens/login_screens/change_info.dart';
 import 'package:fb_app/screens/login_screens/login_screen.dart';
-import 'package:fb_app/screens/login_screens/otp_screen.dart';
+import 'package:fb_app/screens/forgot_password/otp_forget_screen.dart';
+import 'package:fb_app/screens/sign_up_screens/otp_screen.dart';
 import 'package:fb_app/screens/profile_screen.dart';
 import 'package:fb_app/screens/sign_up_screens/sign_up_screen.dart';
 import 'package:fb_app/screens/sign_up_screens/type_password_screen.dart';
@@ -54,7 +55,8 @@ class _MyAppState extends State<MyApp> {
             BlocProvider(create: (context) => LoginBloc(), child: LoginPage()),
         "/home": (BuildContext context) => const HomeScreen(),
         "/sign_up": (BuildContext context) => const SignUpScreen(),
-        "/otp": (BuildContext context) => const OTPScreen(),
+        "/otp_forgot_pass": (BuildContext context) => const OTPForgotPassScreen(),
+        "/otp":(BuildContext context) => const OTPScreen(),
         "/loading": (BuildContext context) => LoadingScreen(),
         "/type_password": (BuildContext context) => PasswordScreen(),
         "/forgot_password": (BuildContext context) => const ForgotPasswordScreen(),

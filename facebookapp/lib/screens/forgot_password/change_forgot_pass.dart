@@ -1,7 +1,7 @@
 import 'package:fb_app/screens/sign_up_screens/sign_up_success_screen.dart';
 import 'package:flutter/material.dart';
 
-import '../services/api/auth.dart';
+import '../../services/api/auth.dart';
 
 class ChangeForgotPasswordScreen extends StatefulWidget {
   const ChangeForgotPasswordScreen({super.key});

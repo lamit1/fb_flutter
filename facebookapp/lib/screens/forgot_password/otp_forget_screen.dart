@@ -7,14 +7,14 @@ import 'package:fb_app/services/api/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class OTPScreen extends StatefulWidget {
-  const OTPScreen({super.key});
+class OTPForgotPassScreen extends StatefulWidget {
+  const OTPForgotPassScreen({super.key});
 
   @override
-  _OTPScreenState createState() => _OTPScreenState();
+  _OTPForgotPassScreenState createState() => _OTPForgotPassScreenState();
 }
 
-class _OTPScreenState extends State<OTPScreen> {
+class _OTPForgotPassScreenState extends State<OTPForgotPassScreen> {
   static const maxSeconds = 120;
   bool canSendOTP = true;
   int seconds = 0;

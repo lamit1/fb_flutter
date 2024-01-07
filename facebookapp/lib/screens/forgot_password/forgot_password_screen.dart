@@ -51,7 +51,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       String? status_code = await Auth().getVerifyCode(email);
       if(status_code == '1000'){
         Navigator.pop(context);
-        Navigator.pushNamed(context, "/otp", arguments: [email]);
+        Navigator.pushNamed(context, "/otp_forgot_pass", arguments: [email]);
       }
       else{
         showTimedAlertDialog('Error', 'Email khong ton tai', const Duration(seconds: 2));

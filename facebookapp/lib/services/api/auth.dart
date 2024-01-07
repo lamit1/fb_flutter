@@ -102,6 +102,9 @@ class Auth {
         url: "https://it4788.catan.io.vn/check_verify_code",
         requestType: RequestType.POST,
         body: {"email": email, "code_verify": otp});
+
+    print(response);
+
     return response.data['code'];
   }
 

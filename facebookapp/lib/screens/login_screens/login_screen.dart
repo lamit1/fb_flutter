@@ -1,6 +1,6 @@
 import 'package:fb_app/screens/home_screen.dart';
 import 'package:fb_app/screens/loading_screen.dart';
-import 'package:fb_app/screens/login_screens/otp_screen.dart';
+import 'package:fb_app/screens/forgot_password/otp_forget_screen.dart';
 import 'package:fb_app/services/api/auth.dart';
 import 'package:fb_app/services/api/settings.dart';
 import 'package:flutter/cupertino.dart';
