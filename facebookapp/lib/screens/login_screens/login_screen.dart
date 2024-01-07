@@ -157,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
           return LoadingScreen();
         } else if (state is LoginChangeInfo) {
           Future.delayed(Duration.zero, () async {
-            Navigator.pushReplacementNamed(context, "/change_info");
+            Navigator.pushReplacementNamed(context, "/change_info", arguments: [state.uid]);
           });
           return Scaffold(
             body: Center(
@@ -182,8 +182,7 @@ class _LoginPageState extends State<LoginPage> {
               print('Error setting dev token: $error');
             }
           });
-
-// Return the scaffold
+          // Return the scaffold
           return const Scaffold(
             body: Center(
               child: Text("Login success!"),
@@ -192,6 +191,16 @@ class _LoginPageState extends State<LoginPage> {
         } else if (state is LoginFailure) {
           return Scaffold(
             body: Text('Login Failed: ${state.error}'),
+          );
+        } else if (state is LoginOTP) {
+          Future.delayed(Duration.zero, () async {
+            Navigator.pushReplacementNamed(context, "/otp",
+                arguments: [_emailController.text, state.uid]);
+          });
+          return Scaffold(
+            body: Center(
+              child: Text("Redirect to OTP screen"),
+            ),
           );
         } else {
           return Container();

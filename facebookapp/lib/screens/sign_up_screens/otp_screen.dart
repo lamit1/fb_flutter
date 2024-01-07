@@ -19,6 +19,7 @@ class _OTPScreenState extends State<OTPScreen> {
   bool canSendOTP = true;
   int seconds = 0;
   Timer? timer;
+  String uid = '';
 
   void startTimer() {
     setState(() {
@@ -51,6 +52,7 @@ class _OTPScreenState extends State<OTPScreen> {
   Widget build(BuildContext context) {
     final dynamic data = ModalRoute.of(context)?.settings.arguments;
     String email = data[0];
+    uid = data[1];
     return Scaffold(
       appBar: AppBar(
         title: const Text('Enter OTP'),
@@ -154,8 +156,7 @@ class _OTPScreenState extends State<OTPScreen> {
                                     .checkVerifyCode(email, otp);
                                 Navigator.pop(context);
                                 if (code == "1000") {
-                                  Navigator.pushNamed(context, "/type_password",
-                                      arguments: [email]);
+                                  Navigator.pushNamed(context, "/change_info", arguments: [uid]);
                                 } else if (code == "9993") {
                                   showDialog(
                                       context: context,

@@ -204,7 +204,7 @@ class _FacebookSearchScreenState extends State<FacebookSearchScreen> {
       ),
       child: const Column(
         children: [
-          _searchedPosts.map((search) => SearchPostWidget(post: search));
+          // _searchedPosts.map((search) => SearchPostWidget(post: search));
         ],
       ),
     );
