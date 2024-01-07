@@ -3,6 +3,8 @@ import 'package:fb_app/screens/profile_screen.dart';
 import 'package:fb_app/widgets/menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fb_app/services/api/auth.dart';
+import 'package:logger/logger.dart';
 
 class MenuScreen extends StatefulWidget {
   MenuScreen({super.key, required this.uid});
@@ -12,6 +14,35 @@ class MenuScreen extends StatefulWidget {
 }
 
 class _MenuScreenState extends State<MenuScreen> {
+
+  void showTimedAlertDialog(String title, String content, Duration duration) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        Future.delayed(duration, () {
+          Navigator.of(context).pop(true);
+        });
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+        );
+      },
+    );
+  }
+
+  void _logOut() async {
+    try {
+      String? resp = await Auth().logOut();
+      if (resp != '1000') {
+        Logger().d('Accept Friend');
+        showTimedAlertDialog('Success', 'Friend request accepted successfully.', Duration(seconds: 2));
+      }
+    } catch (error) {
+      Logger().d('Error Accept: $error');
+      showTimedAlertDialog('Error', 'Failed to accept friend request.', Duration(seconds: 2));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
@@ -31,7 +62,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   if (index == 4) {
                     return  MenuItem(icon: Icons.logout, text: "Logout",
                     function: (){
-                    print("Logout");
+                    _logOut();
                     Navigator.pushNamed(context, "/login");
                     },
                   );
