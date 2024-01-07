@@ -10,7 +10,9 @@ import '../models/user_info_model.dart';
 class EditPersonalPage extends StatefulWidget {
   final UserInfo userInfo;
   Function? setResponse;
-  EditPersonalPage({super.key, required this.userInfo, this.setResponse});
+  final Function()? reloadData;
+
+  EditPersonalPage({super.key, required this.userInfo, this.setResponse, required this.reloadData});
 
   @override
   State<EditPersonalPage> createState() => _EditPersonalPageState();
@@ -73,6 +75,7 @@ class _EditPersonalPageState extends State<EditPersonalPage> {
         builder: (context) => PreviewAvatar(
           imagePath: imagePath,
           userInfo: userInfo,
+          reloadData: widget.reloadData,
         ),
       ),
     );
@@ -85,6 +88,7 @@ class _EditPersonalPageState extends State<EditPersonalPage> {
         builder: (context) => PreviewCoverageImage(
           imagePath: imagePath,
           userInfo: userInfo,
+          reloadData: widget.reloadData,
         ),
       ),
     );

@@ -32,7 +32,7 @@ class FriendAPI {
     }
   }
 
-  Future<List<Friend>?> getUserFriends(
+  Future<List<Friend>> getUserFriends(
     String index,
     String count,
     String userId,
@@ -57,7 +57,7 @@ class FriendAPI {
       }
       return list;
     } else {
-      return null;
+      return [];
     }
   }
 

@@ -5,6 +5,7 @@ import 'package:fb_app/models/user_info_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
 import 'package:fb_app/utils/get_device_uuid.dart';
+import 'package:http_parser/http_parser.dart';
 
 class ProfileAPI {
   final DioClient dio = DioClient();
@@ -37,14 +38,57 @@ class ProfileAPI {
     String? link,
   ) async {
     String? token = await Storage().getToken();
+
+    MultipartFile? avatarData;
+    if( avatar != null ){
+      String fileExtension = avatar.path.split('.').last.toLowerCase(); // Get the file extension
+      if (fileExtension == 'png') {
+        avatarData = await MultipartFile.fromFile(
+          avatar.path,
+          filename: avatar.path.split('/').last,
+          contentType: MediaType('image', 'png'),
+        );
+      } else if (fileExtension == 'jpg' || fileExtension == 'jpeg') {
+        avatarData = await MultipartFile.fromFile(
+          avatar.path,
+          filename: avatar.path.split('/').last,
+          contentType: MediaType('image', 'jpeg'),
+        );
+      } else {
+        // Handle other file types or throw an error
+        print('Unsupported file type');
+      }
+    }
+
+    MultipartFile? coverAvatarData;
+    if( coverImage != null ){
+      String fileExtension = coverImage.path.split('.').last.toLowerCase(); // Get the file extension
+      if (fileExtension == 'png') {
+        coverAvatarData = await MultipartFile.fromFile(
+          coverImage.path,
+          filename: coverImage.path.split('/').last,
+          contentType: MediaType('image', 'png'),
+        );
+      } else if (fileExtension == 'jpg' || fileExtension == 'jpeg') {
+        coverAvatarData = await MultipartFile.fromFile(
+          coverImage.path,
+          filename: coverImage.path.split('/').last,
+          contentType: MediaType('image', 'jpeg'),
+        );
+      } else {
+        // Handle other file types or throw an error
+        print('Unsupported file type');
+      }
+    }
+
     FormData data = FormData.fromMap({
       "username": username,
       "description": description,
-      "avatar": avatar,
+      "avatar": avatarData,
       "address": address,
       "city": city,
       "country": country,
-      "cover_image": coverImage,
+      "cover_image": coverAvatarData,
       "link": link,
     });
     var response = await DioClient().formDataCall(

@@ -9,9 +9,10 @@ import '../models/user_info_model.dart';
 class PreviewCoverageImage extends StatefulWidget {
   final String imagePath;
   final UserInfo userInfo;
+  final Function()? reloadData;
 
   const PreviewCoverageImage(
-      {Key? key, required this.imagePath, required this.userInfo})
+      {Key? key, required this.imagePath, required this.userInfo, required this.reloadData})
       : super(key: key);
 
   @override
@@ -25,7 +26,7 @@ class _PreviewCoverageImageState extends State<PreviewCoverageImage> {
 
   void saveImage() async {
     File imageFile = File(widget.imagePath);
-    EditProfileResponse response =  await ProfileAPI().setUserInfo(
+    await ProfileAPI().setUserInfo(
         widget.userInfo.username!,
         widget.userInfo.description!,
         null,
@@ -34,7 +35,8 @@ class _PreviewCoverageImageState extends State<PreviewCoverageImage> {
         widget.userInfo.country!,
         imageFile,
         widget.userInfo.link!);
-
+    widget.reloadData!();
+    popBackScreen();
     popBackScreen();
   }
 
