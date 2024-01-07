@@ -1,6 +1,7 @@
-import 'package:fb_app/screens/login_screens/login_screen.dart';
+import 'package:fb_app/screens/change_password.dart';
 import 'package:fb_app/screens/profile_screen.dart';
 import 'package:fb_app/widgets/menu_item.dart';
+import 'package:fb_app/screens/block_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fb_app/services/api/auth.dart';
@@ -45,34 +46,52 @@ class _MenuScreenState extends State<MenuScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        SliverList(
-            delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                  if (index == 0) return  MenuItem(icon: Icons.person, text: "Profile", function: (){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ProfileScreen(id: widget.uid!)),
+    return WillPopScope(
+      onWillPop: () async {
+        _logOut();
+        return false;
+      },
+      child: CustomScrollView(
+        slivers: [
+          SliverList(
+              delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                    if (index == 0) return  MenuItem(icon: Icons.person, text: "Profile", function: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ProfileScreen(id: widget.uid!)),
+                      );
+                    },);
+                    if (index == 1) return  MenuItem(icon: Icons.payment, text: "Deposit", function: (){},);
+                    if (index == 2) return  MenuItem(icon: Icons.settings, text: "Settings", function: (){},);
+                    if (index == 3) return  MenuItem(icon: Icons.list, text: "List Blocks", function: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => BlockScreen(key: PageStorageKey('blockScreen'))),
+                      );
+                    },);
+                    if (index == 4) return  MenuItem(icon: Icons.history, text: "History", function: (){},);
+                    if (index == 5) return  MenuItem(icon: Icons.change_circle, text: "Change Password", function: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ChangePasswordScreen(key: PageStorageKey('changePasswordScreen'))),
+                      );
+                    },);
+                    if (index == 6) {
+                      return  MenuItem(icon: Icons.logout, text: "Logout",
+                      function: (){
+                      _logOut();
+                      Navigator.of(context).pushReplacementNamed("/login");
+                      },
                     );
-                  },);
-                  if (index == 1) return  MenuItem(icon: Icons.payment, text: "Deposit", function: (){},);
-                  if (index == 2) return  MenuItem(icon: Icons.settings, text: "Settings", function: (){},);
-                  if (index == 3) return  MenuItem(icon: Icons.history, text: "History", function: (){},);
-                  if (index == 4) {
-                    return  MenuItem(icon: Icons.logout, text: "Logout",
-                    function: (){
-                    _logOut();
-                    Navigator.pushNamed(context, "/login");
-                    },
-                  );
-                  }
-                  return Container();
-                },
-                childCount: 10
-            )
-        )
-      ],
+                    }
+                    return Container();
+                  },
+                  childCount: 10
+              )
+          )
+        ],
+      ),
     );
   }
 }

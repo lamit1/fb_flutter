@@ -26,7 +26,7 @@ class BlockAPI {
     return "Error on block user!";
   }
 
-  Future<Object?> getListBlocks(
+  Future<List<User>?> getListBlocks(
     String index,
     String count,
   ) async {
@@ -51,5 +51,25 @@ class BlockAPI {
     } else {
       return null;
     }
+  }
+
+  Future<String?> unBlock(
+    String userId,
+  ) async {
+    String? deviceId = await getDeviceUUID();
+    String? token = await Storage().getToken();
+    if (deviceId == null) throw Exception("Invalid device!");
+    var response = await DioClient().apiCall(
+      url: "https://it4788.catan.io.vn/unblock",
+      requestType: RequestType.POST,
+      body: {
+        "user_id": userId,
+      },
+      header: {'Authorization': 'Bearer $token'},
+    );
+    if (response.data['code'] == "1000") {
+      return "UnBlock user success!";
+    }
+    return "Error on unblock user!";
   }
 }
