@@ -155,10 +155,14 @@ class _LoginPageState extends State<LoginPage> {
           );
         } else if (state is LoginLoading) {
           return LoadingScreen();
+        } else if (state is LoginChangeInfo) {
+          Navigator.pushReplacementNamed(context, "/change_info");
+          return const Center(
+            child: Text("User hasnt activated, navigate to change info"),
+          );
         } else if (state is LoginSuccess) {
           String uid = state.uid;
-
-// This will run after the current build cycle completes
+          // This will run after the current build cycle completes
           Future.delayed(Duration.zero, () async {
             try {
               String? response = await SettingAPI().setDevToken();
