@@ -1,3 +1,4 @@
+import 'package:fb_app/screens/change_password.dart';
 import 'package:fb_app/screens/profile_screen.dart';
 import 'package:fb_app/widgets/menu_item.dart';
 import 'package:fb_app/screens/block_screen.dart';
@@ -66,11 +67,17 @@ class _MenuScreenState extends State<MenuScreen> {
                     if (index == 3) return  MenuItem(icon: Icons.list, text: "List Blocks", function: (){
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => BlockScreen(key: PageStorageKey('friendScreen'))),
+                        MaterialPageRoute(builder: (context) => BlockScreen(key: PageStorageKey('blockScreen'))),
                       );
                     },);
                     if (index == 4) return  MenuItem(icon: Icons.history, text: "History", function: (){},);
-                    if (index == 5) {
+                    if (index == 5) return  MenuItem(icon: Icons.change_circle, text: "Change Password", function: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ChangePasswordScreen(key: PageStorageKey('changePasswordScreen'))),
+                      );
+                    },);
+                    if (index == 6) {
                       return  MenuItem(icon: Icons.logout, text: "Logout",
                       function: (){
                       _logOut();
