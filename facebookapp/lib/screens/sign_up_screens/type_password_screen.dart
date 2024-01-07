@@ -15,6 +15,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
   late String email;
 
   Future<void> _submitForm() async {
@@ -66,6 +67,11 @@ class _PasswordScreenState extends State<PasswordScreen> {
   void _togglePasswordVisibility() {
     setState(() {
       _isPasswordVisible = !_isPasswordVisible;
+    });
+  }
+  void _toggleConfirmPasswordVisibility() {
+    setState(() {
+      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
     });
   }
 
@@ -137,15 +143,15 @@ class _PasswordScreenState extends State<PasswordScreen> {
                     const SizedBox(height: 16.0),
                     TextFormField(
                       controller: _confirmPasswordController,
-                      obscureText: !_isPasswordVisible,
+                      obscureText: !_isConfirmPasswordVisible,
                       decoration: InputDecoration(
                         labelText: 'Confirm Password',
                         hintText: 'Re-enter your password',
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
                           ),
-                          onPressed: _togglePasswordVisibility,
+                          onPressed: _toggleConfirmPasswordVisibility,
                         ),
                       ),
                       validator: (value) {

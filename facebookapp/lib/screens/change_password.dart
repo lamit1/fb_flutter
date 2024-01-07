@@ -16,7 +16,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmNewPasswordController = TextEditingController();
-  bool _isPasswordVisible = false;
+  bool _isOldPasswordVisible = false;
+  bool _isNewPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -26,10 +28,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            Future.delayed(Duration(seconds: 2), () {
+            Future.delayed(const Duration(seconds: 2), () {
               Navigator.of(context).pop(true);
             });
-            return AlertDialog(
+            return const AlertDialog(
               title: Text('Success'),
               content: Text('Change password successfully'),
             );
@@ -39,10 +41,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            Future.delayed(Duration(seconds: 2), () {
+            Future.delayed(const Duration(seconds: 2), () {
               Navigator.of(context).pop(true);
             });
-            return AlertDialog(
+            return const AlertDialog(
               title: Text('Error'),
               content: Text('Change password unsuccessfully'),
             );
@@ -52,9 +54,21 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     }
   }
 
-  void _togglePasswordVisibility() {
+  void _toggleOldPasswordVisibility() {
     setState(() {
-      _isPasswordVisible = !_isPasswordVisible;
+      _isOldPasswordVisible = !_isOldPasswordVisible;
+    });
+  }
+
+  void _toggleNewPasswordVisibility() {
+    setState(() {
+      _isNewPasswordVisible = !_isNewPasswordVisible;
+    });
+  }
+
+  void _toggleConfirmPasswordVisibility() {
+    setState(() {
+      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
     });
   }
 
@@ -94,15 +108,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 children: [
                   TextFormField(
                     controller: _oldPasswordController,
-                    obscureText: !_isPasswordVisible,
+                    obscureText: !_isOldPasswordVisible,
                     decoration: InputDecoration(
                       labelText: 'Previous Password',
                       hintText: 'Enter your password',
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isOldPasswordVisible ? Icons.visibility : Icons.visibility_off,
                         ),
-                        onPressed: _togglePasswordVisibility,
+                        onPressed: _toggleOldPasswordVisibility,
                       ),
                     ),
                     validator: _validatePassword,
@@ -110,15 +124,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   const SizedBox(height: 16.0),
                   TextFormField(
                     controller: _newPasswordController,
-                    obscureText: !_isPasswordVisible,
+                    obscureText: !_isNewPasswordVisible,
                     decoration: InputDecoration(
                       labelText: 'New Password',
                       hintText: 'Enter your password',
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isNewPasswordVisible ? Icons.visibility : Icons.visibility_off,
                         ),
-                        onPressed: _togglePasswordVisibility,
+                        onPressed: _toggleNewPasswordVisibility,
                       ),
                     ),
                     validator: _validatePassword,
@@ -126,15 +140,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   const SizedBox(height: 16.0),
                   TextFormField(
                     controller: _confirmNewPasswordController,
-                    obscureText: !_isPasswordVisible,
+                    obscureText: !_isConfirmPasswordVisible,
                     decoration: InputDecoration(
                       labelText: 'Confirm New Password',
                       hintText: 'Re-enter your password',
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
                         ),
-                        onPressed: _togglePasswordVisibility,
+                        onPressed: _toggleConfirmPasswordVisibility,
                       ),
                     ),
                     validator: (value) {

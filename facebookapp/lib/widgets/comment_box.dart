@@ -1,6 +1,7 @@
 import 'package:fb_app/core/pallete.dart';
 import 'package:fb_app/models/mark_cmt_model.dart';
 import 'package:fb_app/models/post_detail_model.dart';
+import 'package:fb_app/screens/profile_screen.dart';
 import 'package:fb_app/services/api/block.dart';
 import 'package:fb_app/services/api/comment.dart';
 import 'package:fb_app/widgets/comment_sheet.dart';
@@ -18,10 +19,11 @@ import '../utils/converter.dart';
 class CommentBottomSheet extends StatefulWidget {
   final ScrollController scrollController;
   final String? id;
+  final String? userId;
   final String? uid;
   final Function updateMark;
   const CommentBottomSheet(
-      {Key? key, required this.scrollController, this.id, this.uid, required this.updateMark})
+      {Key? key, required this.scrollController, this.id, this.userId, this.uid, required this.updateMark})
       : super(key: key);
 
   @override
@@ -215,12 +217,18 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CircleAvatar(
-                            radius: 32,
-                            backgroundImage: marks[i].poster!.avatar != null
-                                ? NetworkImage(marks[i].poster!.avatar!)
-                                : const AssetImage("assets/avatar.png")
-                                    as ImageProvider<Object>,
+                          GestureDetector(
+                            onTap: () {
+                              // Navigate to the profile screen when tapped
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfileScreen(id: marks[i].poster!.id!, type: widget.userId == marks[i].poster!.id! ? '1' : '2')));
+                            },
+                            child: CircleAvatar(
+                              radius: 32,
+                              backgroundImage: marks[i].poster!.avatar != null
+                                  ? NetworkImage(marks[i].poster!.avatar!)
+                                  : const AssetImage("assets/avatar.png")
+                              as ImageProvider<Object>,
+                            ),
                           ),
                           const SizedBox(
                             width: 10,

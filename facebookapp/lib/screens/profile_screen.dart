@@ -430,7 +430,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         primary: Colors.grey[250],
                         textStyle: const TextStyle(color: Colors.black),
                       ),
-                      child: Row(
+                      child: const Row(
                         children: [
                           Icon(Icons.edit),
                           SizedBox(width: 10),
@@ -447,9 +447,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         primary: Colors.grey[250],
                         textStyle: const TextStyle(color: Colors.black),
                       ),
-                      child: Row(
+                      child: const Row(
                         children: [
-                          Icon(Icons.group),
+                          Icon(Icons.cancel),
                           SizedBox(width: 10),
                           Text('Unfriend'),
                         ],
@@ -464,7 +464,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         primary: Colors.grey[250],
                         textStyle: const TextStyle(color: Colors.black),
                       ),
-                      child: Row(
+                      child: const Row(
                         children: [
                           Icon(Icons.person_add),
                           SizedBox(width: 10),
@@ -476,20 +476,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          ElevatedButton(
+                          FilledButton(
                             onPressed: () {
-                              accept(userInfo.id, '1');
+                              accept(userInfo.id,'1');
                             },
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.green,
-                              // Màu xanh cho nút "Accept"
-                              textStyle: const TextStyle(color: Colors.white),
+                            style: ButtonStyle(
+                              backgroundColor:
+                              MaterialStateProperty.all(Palette.facebookBlue),
                             ),
                             child: const Row(
                               children: [
                                 Icon(Icons.check),
-                                SizedBox(width: 10),
-                                Text('Accept'),
+                                SizedBox(
+                                  width: 8.0,
+                                ),
+                                Text("Accept"),
                               ],
                             ),
                           ),
@@ -535,7 +536,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.person_add),
+                          Icon(Icons.cancel),
                           SizedBox(width: 10),
                           Text('Cancel Request'),
                         ],
@@ -778,7 +779,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ProfileScreen(
-                                          id: item.id!, type: '2')));
+                                          id: item.id!, type:  widget.id == item.id! ? '1' : '2')));
                             },
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
@@ -833,7 +834,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                AllFriendPage(userFriendList: userFriends, reloadFriendsList: reloadData)),
+                                AllFriendPage(id: widget.id)),
                       );
                     },
                     child: const Text(
