@@ -15,6 +15,7 @@ class ChangeInfoScreen extends StatefulWidget {
 class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
   late TextEditingController _usernameController;
   File? _avatar;
+  late String? uid;
 
   @override
   void initState() {
@@ -45,12 +46,64 @@ class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
 
   Future<void> _submitForm() async {
     final String username = _usernameController.text;
-    var response = await ProfileAPI().changeProfileAfterSignup(username, _avatar!);
 
+    showDialog(
+        context: context,
+        builder: (_) => const AlertDialog(
+          content: SizedBox(
+            width: 50.0, // Set the width to your desired size
+            height: 50.0, // Set the height to your desired size
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10.0), // Adjust the radius as needed
+            ),
+          ),
+        )
+    );
+
+    var response = await ProfileAPI().changeProfileAfterSignup(username, _avatar!);
+    print(response);
+    if(response == '1000'){
+      showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text("Update information successfully"),
+            content:
+            const Text("You have restored your password"),
+            actions: [
+              TextButton(
+                  onPressed: (){Navigator.pop(context, 'OK');},
+                  child: const Text("OK"))
+            ],
+          )
+      );
+      Navigator.pushReplacementNamed(context, "/home", arguments: uid);
+    }
+    else{
+      showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text("Failed"),
+            content:
+            const Text("Updated again your information"),
+            actions: [
+              TextButton(
+                  onPressed: (){Navigator.pop(context, 'OK');},
+                  child: const Text("OK"))
+            ],
+          )
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final dynamic data = ModalRoute.of(context)?.settings.arguments;
+    uid = data[0];
     double imageWidth = 200;
     return Scaffold(
       appBar: AppBar(
@@ -114,7 +167,8 @@ class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
                 child: const SizedBox(
                     width: double.infinity,
                     height: 50,
-                    child: Center(child: Text('Continue'))
+                    child: Center(child: Text('Continue')),
+
                 ),
               ),
             ],

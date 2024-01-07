@@ -20,7 +20,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         if(loginResponse.active == "1") {
           emit(LoginSuccess(uid: loginResponse.id!,));
         } else if (loginResponse.active == "-1") {
-          emit(LoginChangeInfo());
+          emit(LoginChangeInfo(uid: loginResponse.id!));
+        }  else if (loginResponse.active == "0") {
+          emit(LoginOTP(uid: loginResponse.id!));
         } else {
           LoginFailure(error: "An unexpected error occurred.");
         }
