@@ -21,7 +21,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       String? code = await Auth().changePassword(_oldPasswordController.text,_newPasswordController.text);
-
       Navigator.pop(context);
       if(code == "1000") {
         showDialog(

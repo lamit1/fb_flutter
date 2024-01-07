@@ -1,4 +1,7 @@
+import 'package:fb_app/screens/sign_up_screens/sign_up_success_screen.dart';
 import 'package:flutter/material.dart';
+
+import '../services/api/auth.dart';
 
 class ChangeForgotPasswordScreen extends StatefulWidget {
   const ChangeForgotPasswordScreen({super.key});
@@ -35,28 +38,39 @@ class _ChangeForgotPasswordScreenState extends State<ChangeForgotPasswordScreen>
             ),
           )
       );
-      // String? code = await Auth().signUp(email,_passwordController.text);
-      // Navigator.pop(context);
-      // if(code == "1000") {
-      //   Navigator.pushReplacement(
-      //     context,
-      //     MaterialPageRoute(builder: (context) => SignUpSuccessScreen()),
-      //   );
-      // } else if (code == "9996") {
-      //   showDialog(
-      //       context: context,
-      //       builder: (_) => AlertDialog(
-      //         title: const Text("User existed"),
-      //         content:
-      //         const Text("Please provide diffrient email"),
-      //         actions: [
-      //           TextButton(
-      //               onPressed: (){Navigator.pop(context, 'OK');},
-      //               child: const Text("OK"))
-      //         ],
-      //       )
-      //   );
-      // }
+      String? otp = await Auth().getVerifyOTP(email);
+      String? code = await Auth().resetPassword(email,_passwordController.text,otp!);
+      Navigator.pop(context);
+      if(code == "1000") {
+        showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+              title: const Text("Change password successfully"),
+              content:
+              const Text("You have restored your password"),
+              actions: [
+                TextButton(
+                    onPressed: (){Navigator.pop(context, 'OK');},
+                    child: const Text("OK"))
+              ],
+            )
+        );
+        Navigator.pushReplacementNamed(context, "/login");
+      } else {
+        showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+              title: const Text("Failed"),
+              content:
+              const Text("Can not change password"),
+              actions: [
+                TextButton(
+                    onPressed: (){Navigator.pop(context, 'OK');},
+                    child: const Text("OK"))
+              ],
+            )
+        );
+      }
     }
   }
 

@@ -156,7 +156,7 @@ class _OTPScreenState extends State<OTPScreen> {
                                 Navigator.pop(context);
                                 if (code == "1000") {
                                   Navigator.pushReplacementNamed(context, "/change_forgot_pass",
-                                      arguments: [email]);
+                                      arguments: [email, otp]);
                                 } else if (code == "9993") {
                                   showDialog(
                                       context: context,

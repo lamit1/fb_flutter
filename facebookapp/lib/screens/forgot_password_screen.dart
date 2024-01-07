@@ -42,13 +42,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (_formKey.currentState?.validate() ?? false) {
       String email = _emailController.text;
       // Implement password reset logic here
+      showDialog(
+          context: context,
+          builder: (_) => const Center(
+            child: CircularProgressIndicator(),
+          )
+      );
       String? status_code = await Auth().getVerifyCode(email);
-
       if(status_code == '1000'){
+        Navigator.pop(context);
         Navigator.pushNamed(context, "/otp", arguments: [email]);
       }
       else{
-        showTimedAlertDialog('Error', 'Email khong ton tai', Duration(seconds: 2));
+        showTimedAlertDialog('Error', 'Email khong ton tai', const Duration(seconds: 2));
       }
     }
   }
@@ -57,7 +63,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Forgot Password'),
+        title: const Text('Forgot Password'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -68,15 +74,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             children: [
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Enter your email',
                 ),
                 validator: _validateEmail,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _resetPassword,
-                child: Text('Reset Password'),
+                child: const Text('Reset Password'),
               ),
             ],
           ),

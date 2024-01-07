@@ -57,6 +57,16 @@ class Auth {
     return response.data['code'];
   }
 
+  Future<String?> getVerifyOTP(String email) async {
+    var response = await DioClient().apiCall(
+      url: "https://it4788.catan.io.vn/get_verify_code",
+      requestType: RequestType.POST,
+      body: {"email": email},
+    );
+
+    return response.data['data']['verify_code'];
+  }
+
   Future<String?> checkEmail(String email) async {
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/check_email",
@@ -115,6 +125,7 @@ class Auth {
         requestType: RequestType.POST,
         body: {"password": password, "new_password": newPassword},
         header: {'Authorization': 'Bearer $token'});
+    Storage().saveToken(response.data['data']['token']);
     return response.data['code'];
   }
 
