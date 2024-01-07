@@ -19,6 +19,7 @@ class _OTPScreenState extends State<OTPScreen> {
   bool canSendOTP = true;
   int seconds = 0;
   Timer? timer;
+  final List<TextEditingController> _controllers = List.generate(6, (index) => TextEditingController());
 
   void startTimer() {
     setState(() {
@@ -35,8 +36,6 @@ class _OTPScreenState extends State<OTPScreen> {
     });
   }
 
-  final List<TextEditingController> _controllers =
-      List.generate(6, (index) => TextEditingController());
 
   // Function to get the complete 6-digit OTP
   String getOtp() {
@@ -83,6 +82,9 @@ class _OTPScreenState extends State<OTPScreen> {
                         onChanged: (value) {
                           if (value.length == 1 && index < 5) {
                             FocusScope.of(context).nextFocus();
+                          } else if (value.isEmpty && index > 0) {
+                            FocusScope.of(context).previousFocus();
+                            _controllers[index].clear();
                           }
                         },
                         onSaved: (value) {},
@@ -153,7 +155,7 @@ class _OTPScreenState extends State<OTPScreen> {
                                     .checkVerifyCode(email, otp);
                                 Navigator.pop(context);
                                 if (code == "1000") {
-                                  Navigator.pushNamed(context, "/change_info",
+                                  Navigator.pushReplacementNamed(context, "/change_forgot_pass",
                                       arguments: [email]);
                                 } else if (code == "9993") {
                                   showDialog(

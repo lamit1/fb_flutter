@@ -48,8 +48,10 @@ class Auth {
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/get_verify_code",
       requestType: RequestType.POST,
-      queryParameters: {"email": email},
+      body: {"email": email},
     );
+
+    print(response);
 
     return response.data['code'];
   }

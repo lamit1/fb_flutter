@@ -1,4 +1,5 @@
 import 'package:fb_app/core/pallete.dart';
+import 'package:fb_app/screens/change_forgot_pass.dart';
 import 'package:fb_app/screens/forgot_password_screen.dart';
 import 'package:fb_app/screens/home_screen.dart';
 import 'package:fb_app/screens/loading_screen.dart';
@@ -57,6 +58,7 @@ class _MyAppState extends State<MyApp> {
         "/loading": (BuildContext context) => LoadingScreen(),
         "/type_password": (BuildContext context) => PasswordScreen(),
         "/forgot_password": (BuildContext context) => const ForgotPasswordScreen(),
+        "/change_forgot_pass": (BuildContext context) => const ChangeForgotPasswordScreen(),
         "/change_info": (BuildContext context) => const ChangeInfoScreen(),
       },
     );
