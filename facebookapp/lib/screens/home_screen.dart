@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
           controller: _pageController,
           children: [
             PostScreen(key: _postScreenKey, uid: uid, ),
-            FriendScreen(key: _postScreenKey, uid: uid, ),
+            FriendScreen(key: PageStorageKey('friendScreen'), uid: uid, ),
             VideoScreen(key: _postScreenKey, uid: uid,),
             NotificationScreen(key: PageStorageKey('notificationScreen'), uid: uid),
             MenuScreen(key: PageStorageKey('menuScreen'), uid:uid),
