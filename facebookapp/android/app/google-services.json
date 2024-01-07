@@ -10,7 +10,7 @@
         "mobilesdk_app_id": "1:368299366684:android:30f49360684a9d645c02d9",
         "android_client_info": {
           "package_name": "vn.io.catan.antifakebook"
-        },
+        }
       },
       "oauth_client": [],
       "api_key": [
