@@ -184,7 +184,7 @@ class _FriendScreenState extends State<FriendScreen>
                 return Container();
               }
               if (index < visibleFriendsCount) {
-                return FriendCard(friend: friends[index], tag: tag, reloadFriendList: reloadFriendList);
+                return FriendCard(friend: friends[index], tag: tag, reloadFriendList: reloadFriendList, context: context);
               } else if (index == visibleFriendsCount &&
                   index != maxVisibleFriendCount) {
                 return Column(
@@ -229,7 +229,7 @@ class _FriendScreenState extends State<FriendScreen>
                 (BuildContext context, int index) {
               if (index >= friends.length) return Container();
               if (index < visibleFriendsCount) {
-                return FriendCard(friend: friends[index], tag: tag, reloadFriendList: reloadFriendList);
+                return FriendCard(friend: friends[index], tag: tag, reloadFriendList: reloadFriendList, context: context);
               } else if (index == visibleFriendsCount &&
                   index != maxVisibleFriendCount) {
                 return Column(
@@ -271,7 +271,7 @@ class _FriendScreenState extends State<FriendScreen>
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-              return FriendCard(friend: friends[index], tag: tag, reloadFriendList: reloadFriendList);
+              return FriendCard(friend: friends[index], tag: tag, reloadFriendList: reloadFriendList, context: context);
             },
             childCount: friends.length,
           ),

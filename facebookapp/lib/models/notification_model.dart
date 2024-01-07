@@ -35,12 +35,12 @@ class NotificationModel {
     notificationId = json['notificationId'];
     created = json['created'];
     avatar = json['avatar'];
-    group = json['group'];
+    group = json['group']; // 0: notification; 1: action
     read = json['read'];
     user = json['user'] != null ? User.fromJson(json['user']) : null;
     post = json['post'] != null ? Post.fromJson(json['post']) : null;
     mark = json['mark'] != null ? Mark.fromJson(json['mark']) : null;
-    feel = json['feel'] != null ? Feel.fromJson(json['feel']) : null;
+    feel = json['feel'] != null ? Feel.fromJson(json['feel']) : null; // 0: fake; 1: trust
   }
 }
 
@@ -76,7 +76,7 @@ class Post {
 }
 
 enum Title {
-  NOTIFICATION
+  Notification
 }
 
 class User {

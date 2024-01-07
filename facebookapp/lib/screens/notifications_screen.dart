@@ -5,7 +5,8 @@ import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
 
 class NotificationScreen extends StatefulWidget {
-  const NotificationScreen({super.key});
+  final String? uid;
+  NotificationScreen({Key? key, required this.uid}) : super(key: key);
 
   @override
   State<NotificationScreen> createState() => _NotificationScreenState();
@@ -19,10 +20,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
   void initState() {
     super.initState();
     notification = [];
-    loadFriends();
+    loadNotification();
   }
 
-  void loadFriends() async {
+  void loadNotification() async {
     try {
       List<NotificationModel>? fetchedNotification = await NotificationAPI().getNotification(
         '0',
@@ -38,6 +39,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
   }
 
+  void reloadList() {
+    loadNotification();
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
@@ -45,8 +50,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
       slivers: [
         SliverList(
           delegate:
-              SliverChildBuilderDelegate((BuildContext context, int index) {
-            return NotificationCard(notification: notification);
+            SliverChildBuilderDelegate((BuildContext context, int index) {
+              return NotificationCard(notification: notification, reloadList: reloadList);
           }, childCount: notification.length),
         )
       ],
