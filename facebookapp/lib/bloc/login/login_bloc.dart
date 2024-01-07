@@ -17,10 +17,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     try {
       final LoginResponse? loginResponse = await Auth().login(event.email, event.password);
       if (loginResponse!.id != null) {
-        if(loginResponse.active != "1") {
+        if(loginResponse.active == "1") {
+          emit(LoginSuccess(uid: loginResponse.id!,));
+        } else if (loginResponse.active == "-1") {
           emit(LoginChangeInfo());
+        } else {
+          LoginFailure(error: "An unexpected error occurred.");
         }
-        emit(LoginSuccess(uid: loginResponse.id!,));
       }
     } catch (error) {
       emit(LoginFailure(error: "An unexpected error occurred. $error"));

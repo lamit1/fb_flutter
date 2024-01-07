@@ -14,6 +14,14 @@ class Storage {
     return await storage.read(key: "devToken");
   }
 
+  Future<void> saveUID(String uid) async {
+    await storage.write(key: "uid", value: uid);
+  }
+
+  Future<String?> getUID() async {
+    return await storage.read(key: "uid");
+  }
+
   Future<String?> getToken() async {
     return await storage.read(key: "token");
   }

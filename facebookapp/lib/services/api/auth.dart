@@ -15,9 +15,11 @@ class Auth {
       url: 'https://it4788.catan.io.vn/login',
       body: {"email": email, "password": password, "uuid": deviceId},
     );
+    print(resp.data);
     if (resp.statusCode == 200) {
       var response = resp.data['data'];
       Storage().saveToken(response['token']);
+      Storage().saveUID(response['id']);
       return LoginResponse.fromJson(response);
     }
   }

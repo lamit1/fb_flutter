@@ -54,7 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.only(right: 8.0),
             child: CircleButton(icon: Icons.search, iconSize: 25.0,
                 onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => FacebookSearchScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FacebookSearchScreen()));
             }),
           ),
         ],

@@ -156,9 +156,13 @@ class _LoginPageState extends State<LoginPage> {
         } else if (state is LoginLoading) {
           return LoadingScreen();
         } else if (state is LoginChangeInfo) {
-          Navigator.pushReplacementNamed(context, "/change_info");
-          return const Center(
-            child: Text("User hasnt activated, navigate to change info"),
+          Future.delayed(Duration.zero, () async {
+            Navigator.pushReplacementNamed(context, "/change_info");
+          });
+          return Scaffold(
+            body: Center(
+              child: Text("Has'nt set user info, please change your info!"),
+            ),
           );
         } else if (state is LoginSuccess) {
           String uid = state.uid;

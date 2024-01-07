@@ -31,7 +31,6 @@ class _PostWidgetState extends State<PostWidget> {
   PostDetail postDetail = PostDetail();
 
   Future<void> getPost() async {
-    print("Get PSOT: 123");
     try {
       PostDetail? post = await PostAPI().getPost(widget.post.id!);
       if (post != null) {

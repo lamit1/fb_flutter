@@ -7,8 +7,7 @@ import 'package:fb_app/utils/get_device_uuid.dart';
 class SearchAPI {
   final DioClient dio = DioClient();
 
-  Future<List<Search>?> search(
-    String userId,
+  Future<List<SearchPost>?> search(
     String keyword,
     String index,
     String count,
@@ -17,10 +16,9 @@ class SearchAPI {
     String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
-      url: "https://it4788.catan.io.vn/setting_personal_page.dart",
+      url: "https://it4788.catan.io.vn/search",
       requestType: RequestType.POST,
       body: {
-        "userId": userId,
         "keyword": keyword,
         "index": index,
         "count": count,
@@ -29,10 +27,12 @@ class SearchAPI {
     );
     if (response.statusCode == 200) {
       var responseData = response.data['data'];
-      List<Search> list = [];
-      for (var item in responseData) {
-        Search temp = Search.fromJson(item);
-        list.add(temp);
+      List<SearchPost> list = [];
+      if(responseData != null ){
+        for (var item in responseData) {
+          SearchPost temp = SearchPost.fromJson(item);
+          list.add(temp);
+        }
       }
       return list;
     } else {
