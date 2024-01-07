@@ -1,3 +1,4 @@
+import 'package:fb_app/models/login_model.dart';
 import 'package:fb_app/models/user_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
@@ -6,7 +7,7 @@ import 'package:fb_app/utils/get_device_uuid.dart';
 class Auth {
   final DioClient dio = DioClient();
 
-  Future<String?> login(String email, String password) async {
+  Future<LoginResponse?> login(String email, String password) async {
     String? deviceId = await getDeviceUUID();
     if (deviceId == null) throw Exception("Invalid device!");
     var resp = await DioClient().apiCall(
@@ -17,7 +18,7 @@ class Auth {
     if (resp.statusCode == 200) {
       var response = resp.data['data'];
       Storage().saveToken(response['token']);
-      return response['id'];
+      return LoginResponse.fromJson(response);
     }
   }
 

@@ -1,4 +1,9 @@
+import 'dart:core';
+
+import 'package:fb_app/services/api/search.dart';
 import 'package:flutter/material.dart';
+
+import '../models/saved_search_model.dart';
 
 class FacebookSearchScreen extends StatefulWidget {
   const FacebookSearchScreen({Key? key}) : super(key: key);
@@ -8,18 +13,26 @@ class FacebookSearchScreen extends StatefulWidget {
 }
 
 class _FacebookSearchScreenState extends State<FacebookSearchScreen> {
-  bool _showSuggestionWidget = false;
+  bool _showSuggestionWidget = true;
   bool _showResultWidget = false;
+  List<SavedSearch>? _suggestions = [];
 
-  TextEditingController _searchController = TextEditingController();
-  List<String> _suggestions = [
-    'John Doe',
-    'Jane Smith',
-    'Mark Johnson',
-    'Sarah Brown',
-    'Michael Lee',
-    // Add more suggestions as needed
-  ];
+
+  @override
+  void initState() {
+    getSavedSearch();
+  }
+
+  void getSavedSearch() async {
+    List<SavedSearch>? newSavedList = await SearchAPI().getSavedSearch('0', '10');
+    setState(() {
+      _suggestions = newSavedList;
+    });
+    print(_suggestions);
+  }
+
+  final TextEditingController _searchController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -54,13 +67,13 @@ class _FacebookSearchScreenState extends State<FacebookSearchScreen> {
       ),
       onChanged: (value) {
         setState(() {
-          _suggestions = _getFilteredSuggestions(value);
+          // _suggestions = _getFilteredSuggestions(value);
         });
       },
       onSubmitted: (value) {
         _performSearch(value);
       },
-      onTap: (){
+      onTap: () {
         setState(() {
           _showSuggestionWidget = true;
           _showResultWidget = false;
@@ -72,34 +85,38 @@ class _FacebookSearchScreenState extends State<FacebookSearchScreen> {
   Widget _buildSuggestions() {
     return _showSuggestionWidget
         ? Flexible(
-      child: ListView.separated(
-        itemCount: _suggestions.length,
-        separatorBuilder: (context, index) => Divider(),
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(_suggestions[index]),
-            onTap: () {
-              _performSearch(_suggestions[index]);
-            },
-          );
-        },
-      ),
-    )
-        : SizedBox.shrink(); // Return an empty widget when _showSuggestions is false
+            child: ListView.separated(
+              itemCount: _suggestions!.length,
+              separatorBuilder: (context, index) => Divider(),
+              itemBuilder: (context, index) {
+                if(_suggestions == null) return Container();
+                return ListTile(
+                  title: Text(_suggestions![index].keyword!),
+                  onTap: () {
+                    _performSearch(_suggestions![index].keyword!);
+                  },
+                );
+              },
+            ),
+          )
+        : SizedBox
+            .shrink(); // Return an empty widget when _showSuggestions is false
   }
 
-  List<String> _getFilteredSuggestions(String query) {
-    List<String> filteredSuggestions = _suggestions
-        .where((suggestion) =>
-        suggestion.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-
-    if (!_suggestions.contains(query)) {
-      filteredSuggestions.insert(0, query);
-    }
-
-    return filteredSuggestions;
-  }
+  // List<String> _getFilteredSuggestions(String query) {
+  //   List<String> filteredSuggestions = _suggestions
+  //       .where((suggestion) =>
+  //           suggestion.toLowerCase().contains(query.toLowerCase()))
+  //       .toList();
+  //   List<String>? stringSuggestions = _suggestions.map((suggestion) => {
+  //     return suggestion.keyword!;
+  //   })
+  //   if (!_suggestions.contains(query)) {
+  //     filteredSuggestions.insert(0, query);
+  //   }
+  //
+  //   return filteredSuggestions;
+  // }
 
   void _performSearch(String query) {
     // Implement your search logic here
@@ -114,39 +131,38 @@ class _FacebookSearchScreenState extends State<FacebookSearchScreen> {
     });
   }
 
-
   Widget _buildSearchResults() {
     return _showResultWidget
         ? Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Search Results',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 8),
-        Text(
-          'Posts',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        _buildPostList(),  // Display list of posts
-        SizedBox(height: 16),
-        Text(
-          'Friends',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        _buildFriendsList(),  // Display list of friends
-      ],
-    )
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Search Results',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Friends',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              _buildFriendsList(),
+              SizedBox(height: 8),
+              Text(
+                'Posts',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              _buildPostList(), // Display list of posts
+            ],
+          )
         : SizedBox.shrink(); // Return an empty widget when _showResult is false
   }
 
@@ -195,6 +211,4 @@ class _FacebookSearchScreenState extends State<FacebookSearchScreen> {
       ),
     );
   }
-
-
 }

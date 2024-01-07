@@ -3,6 +3,7 @@ import 'package:fb_app/core/pallete.dart';
 import 'package:fb_app/screens/friend_screen.dart';
 import 'package:fb_app/screens/notifications_screen.dart';
 import 'package:fb_app/screens/post_screen.dart';
+import 'package:fb_app/screens/search_screen.dart';
 import 'package:fb_app/screens/video_screen.dart';
 import 'package:fb_app/widgets/circle_button.dart';
 import 'package:flutter/material.dart';
@@ -51,9 +52,9 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
-            child: CircleButton(icon: Icons.search, iconSize: 25.0, onPressed: () {
-              //TODO: Implement Search
-              print("Search is clicked");
+            child: CircleButton(icon: Icons.search, iconSize: 25.0,
+                onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => FacebookSearchScreen()));
             }),
           ),
         ],

@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:fb_app/models/login_model.dart';
 import 'package:fb_app/services/api/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +15,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   void _onLoginButtonPressed(LoginButtonPressed event, Emitter<LoginState> emit) async {
     emit(LoginLoading());
     try {
-      final String? id = await Auth().login(event.email, event.password);
-      if (id!=null) {
-        emit(LoginSuccess(uid: id,));
+      final LoginResponse? loginResponse = await Auth().login(event.email, event.password);
+      if (loginResponse!.id != null) {
+        if(loginResponse.active != "1") {
+          emit(LoginChangeInfo());
+        }
+        emit(LoginSuccess(uid: loginResponse.id!,));
       }
     } catch (error) {
       emit(LoginFailure(error: "An unexpected error occurred. $error"));
