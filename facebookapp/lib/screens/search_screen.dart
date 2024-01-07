@@ -21,19 +21,11 @@ class _FacebookSearchScreenState extends State<FacebookSearchScreen> {
 
   List<SearchPost> _searchedPosts = [];
 
-
   @override
   void initState() {
-    getUID();
     getSavedSearch();
   }
 
-  void getUID() async {
-    String? uidFetched = await Storage().getUID();
-    setState(() {
-      uid = uidFetched;
-    });
-  }
 
   void getSavedSearch() async {
     List<SavedSearch>? newSavedList =
@@ -114,14 +106,15 @@ class _FacebookSearchScreenState extends State<FacebookSearchScreen> {
                 return ListTile(
                   title: Text(_suggestions[index]!.keyword!),
                   trailing: GestureDetector(
-                    onTap: () async {
-                      await SearchAPI().delSavedSearch(_suggestions[index]!.id!, '0');
-                      setState(() {
-                        _suggestions.removeWhere((item) => item!.id == _suggestions[index]!.id);
-                      });
-                    },
-                      child: const Icon(Icons.close)
-                  ),
+                      onTap: () async {
+                        await SearchAPI()
+                            .delSavedSearch(_suggestions[index]!.id!, '0');
+                        setState(() {
+                          _suggestions.removeWhere(
+                              (item) => item!.id == _suggestions[index]!.id);
+                        });
+                      },
+                      child: const Icon(Icons.close)),
                   onTap: () {
                     _performSearch();
                   },
@@ -195,19 +188,29 @@ class _FacebookSearchScreenState extends State<FacebookSearchScreen> {
   }
 
   Widget _buildPostList() {
-    // Replace this with your logic to display posts
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: const Column(
-        children: [
-          _searchedPosts.map((search) => SearchPostWidget(post: search));
-        ],
-      ),
-    );
+    return _searchedPosts.isNotEmpty
+        ? ListView.builder(
+            shrinkWrap: true,
+            // Ensures that the ListView only occupies the required space
+            physics: NeverScrollableScrollPhysics(),
+            // Disables scrolling within the ListView
+            itemCount: _searchedPosts.length,
+            itemBuilder: (context, index) {
+              return SearchPostWidget(
+                searchPost: _searchedPosts[index],
+                uid: uid!, // Assuming uid is non-null
+                loadPosts: () {
+                  // Define how to reload posts
+                },
+                addMark: (String id, String mark) {
+                  // Define how to add a mark
+                },
+              );
+            },
+          )
+        : const Center(
+            child: Text('No posts found'),
+          );
   }
 
   Widget _buildFriendsList() {

@@ -1,11 +1,16 @@
 import 'package:fb_app/models/post_detail_model.dart';
+import 'package:fb_app/widgets/report_post_widget.dart';
 import 'package:fb_app/widgets/video_post.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_image_layout/image_model.dart';
 import 'package:multi_image_layout/multi_image_viewer.dart';
 
+import '../core/pallete.dart';
 import '../models/search_model.dart';
-import '../services/api/post.dart'; // Import your SearchPost model
+import '../screens/edit_post_screen.dart';
+import '../services/api/block.dart';
+import '../services/api/post.dart';
+import '../utils/converter.dart'; // Import your SearchPost model
 // Import other necessary packages and models
 
 class SearchPostWidget extends StatefulWidget {
@@ -83,7 +88,54 @@ class _SearchPostWidgetState extends State<SearchPostWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ... Rest of the widget code
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 20.0,
+                      backgroundImage: NetworkImage(widget.searchPost.author!.avatar ?? "assets/avatar.png"),
+                    ),
+                    const SizedBox(width: 8.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.searchPost.author!.name ?? "Loading Username",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "- is feeling ${searchPostDetail.state}",
+                          style: const TextStyle(
+                              color: Palette.facebookBlue
+                          ),
+                        ),
+                        Text(
+                          convertTimestamp(widget.searchPost.created!),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                IconButton(
+                  icon: const Icon(Icons.more_horiz_outlined),
+                  onPressed: () {
+                    searchPostDetail.canEdit == "1" ?
+                    _showUserPostOption(postContext) : _showNonUserPostOption(context);
+                  },
+                  splashRadius: 20,
+                ),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(searchPostDetail.described ?? "Loading ..."),
@@ -96,4 +148,169 @@ class _SearchPostWidgetState extends State<SearchPostWidget> {
       ),
     );
   }
+
+  void _showNonUserPostOption(BuildContext postContext) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          minChildSize: 0.15,
+          maxChildSize: 0.2,
+          initialChildSize: 0.2,
+          builder: (context, scrollController)
+          => SingleChildScrollView(
+            controller: scrollController,
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  TextButton(
+                    style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
+                    onPressed: () {
+                      showReportModal(context, widget.searchPost.id!);
+                    },
+                    child: const Row(
+                      children: [
+                        Icon(Icons.report_problem_rounded, size: 35,),
+                        SizedBox(width: 25,),
+                        Text("Report post", style: TextStyle(fontSize: 15),)
+                      ],
+                    ),
+                  ),
+                  const Divider(height: 1.5, color: Colors.black54,),
+                  TextButton(
+                    style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder:
+                              (BuildContext
+                          context) {
+                            return  AlertDialog(
+                              title: Text(
+                                "Block \"${searchPostDetail.user!.name!}\"",
+                              ),
+                              content: Text(
+                                  "Are you sure to block \"${searchPostDetail.user!.name!}\""),
+                              actions: [
+                                TextButton(
+                                    onPressed:
+                                        () async {
+                                      await BlockAPI().setBlock(searchPostDetail.user!.id!);
+                                      widget.loadPosts();
+                                      Navigator.of(context).pop();
+                                      Navigator.of(postContext).pop();
+                                    },
+                                    child: const Text("Block")
+                                ),
+                                TextButton(
+                                    onPressed:
+                                        () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text(
+                                        "Cancel")),
+                              ],
+                            );
+                          });
+                    },
+                    child: Row(
+                      children: [
+                        const Icon(Icons.block_sharp, size: 35,),
+                        const SizedBox(width: 25,),
+                        Text("Block \"${searchPostDetail.user!.name}\"", style: const TextStyle(fontSize: 15),)
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showUserPostOption(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          minChildSize: 0.2,
+          maxChildSize: 0.25,
+          initialChildSize: 0.25,
+          builder: (context, scrollController)
+          => SingleChildScrollView(
+            controller: scrollController,
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  TextButton(
+                    style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
+                    onPressed: () {  },
+                    child: const Row(
+
+                      children: [
+                        Icon(Icons.delete,  size: 35,),
+                        SizedBox(width: 25,),
+                        Text("Delete post", style: TextStyle(fontSize: 15),)
+                      ],
+                    ),
+                  ),
+                  const Divider(height: 1.5, color: Colors.grey,),
+                  TextButton(
+                    style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+                        return EditPostScreen(postDetail: searchPostDetail, reloadPost: getPost);
+                      }));
+                    },
+                    child: const Row(
+                      children: [
+                        Icon(Icons.edit,  size: 35,),
+                        SizedBox(width: 25,),
+                        Text("Edit post", style: TextStyle(fontSize: 15),)
+                      ],
+                    ),
+                  ),
+                  const Divider(height: 3, color: Colors.grey,),
+                  TextButton(
+                    style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
+                    onPressed: () {  },
+                    child: const Row(
+                      children: [
+                        Icon(Icons.link,  size: 35,),
+                        SizedBox(width: 25,),
+                        Text("Copy link address", style: TextStyle(fontSize: 15),)
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+  void showReportModal(BuildContext context, String postId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ReportModal(id: postId,);
+      },
+    );
+  }
+
 }

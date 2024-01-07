@@ -3,7 +3,7 @@ class SearchPost {
   String? name;
   List<Image>? image;
   String? described;
-  DateTime? created;
+  String? created;
   String? feel;
   String? markComment;
   String? isFelt;
@@ -31,7 +31,7 @@ class SearchPost {
       name: json['name'],
       image: json['image'] != null ? (json['image'] as List).map((i) => Image.fromJson(i)).toList() : null,
       described: json['described'],
-      created: json['created'] != null ? DateTime.parse(json['created']) : null,
+      created: json['created'],
       feel: json['feel'],
       markComment: json['mark_comment'],
       isFelt: json['is_felt'],
