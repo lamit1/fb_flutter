@@ -395,8 +395,8 @@ class _PersonalPageState extends State<PersonalPage> {
                 ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    primary:Colors.grey[250],
-                    textStyle: TextStyle(color: Colors.black),),
+                    primary:Colors.black45,
+                    textStyle: TextStyle(color: Colors.grey[250]),),
                   child: Row(
                     children: const [
                       Icon(Icons.edit),
@@ -419,7 +419,6 @@ class _PersonalPageState extends State<PersonalPage> {
                 )
               ],
             ),
-
 
             // TextButton(
             //     style: ButtonStyle(
