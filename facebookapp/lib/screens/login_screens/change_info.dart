@@ -40,21 +40,28 @@ class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
     setState(() {
       _avatar = pickedFile != null ? File(pickedFile.path) : file;
     });
+    print("avata: $_avatar");
   }
 
   Future<void> _submitForm() async {
     final String username = _usernameController.text;
-    File submitAvatar = _avatar as File;
-    var response = await ProfileAPI().changeProfileAfterSignup(username, submitAvatar);
-    print(response);
+    var response = await ProfileAPI().changeProfileAfterSignup(username, _avatar!);
+
   }
 
   @override
   Widget build(BuildContext context) {
-    double imageWidth = 400;
+    double imageWidth = 200;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Change Info'),
+        title: Text(
+          'Change Info',
+          style: TextStyle(
+            color: Colors.white, // Set the text color to white
+          ),
+        ),
+        backgroundColor: Colors.blue, // Set the background color to blue
+        centerTitle: true, // Center the title horizontally
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -64,25 +71,30 @@ class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
               Column(
                 children: [
                   if (_avatar != null)
-                    Image.file(
-                      _avatar!,
-                      width: imageWidth,
-                      height: imageWidth,
-                      fit: BoxFit.cover,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: ClipOval(
+                        child: Image.file(
+                          _avatar!,
+                          width: imageWidth,
+                          height: imageWidth,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   const SizedBox(height: 16.0),
                   Row(
                     children: [
-                      const Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              labelText: 'Enter your username',
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 2, color: Colors.blue),
-                              ),
+                      Expanded(
+                        child: TextField(
+                          controller: _usernameController,
+                          decoration: InputDecoration(
+                            labelText: 'Enter your username',
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(width: 2, color: Colors.blue),
                             ),
-                          )
+                          ),
+                        ),
                       ),
                       const SizedBox(width: 15,),
                       ElevatedButton(

@@ -5,6 +5,7 @@ import 'package:fb_app/models/user_info_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
 import 'package:fb_app/utils/get_device_uuid.dart';
+import 'package:http_parser/http_parser.dart';
 
 class ProfileAPI {
   final DioClient dio = DioClient();
@@ -57,21 +58,41 @@ class ProfileAPI {
     return EditProfileResponse.fromJson(response.data['data']);
   }
 
-  Future<String?> changeProfileAfterSignup(
-    String username,
-    File avatar,
-  ) async {
+  Future<String?> changeProfileAfterSignup(String username, File avatar ) async {
     String? token = await Storage().getToken();
-    FormData data = FormData.fromMap({
-      "username": username,
-      "avatar": avatar,
-    });
-    var response = await DioClient().formDataCall(
-      url: "https://it4788.catan.io.vn/change_profile_after_signup",
-      requestType: RequestType.POST,
-      formData: data,
-      header: {'Authorization': 'Bearer $token'},
-    );
-    return response.data['code'];
+
+    MultipartFile multipartFile;
+    String fileExtension = avatar.path
+        .split('.')
+        .last
+        .toLowerCase(); // Get the file extension
+    if (fileExtension == 'png') {
+      multipartFile = await MultipartFile.fromFile(
+        avatar.path,
+        filename: avatar.path
+            .split('/')
+            .last,
+        contentType: MediaType('image', 'png'),
+      );
+    } else if (fileExtension == 'jpg' || fileExtension == 'jpeg') {
+      multipartFile = await MultipartFile.fromFile(
+        avatar.path,
+        filename: avatar.path
+            .split('/')
+            .last,
+        contentType: MediaType('image', 'jpeg'),
+      );
+      FormData data = FormData.fromMap({
+        "username": username,
+        "avatar": multipartFile,
+      });
+      var response = await DioClient().formDataCall(
+        url: "https://it4788.catan.io.vn/change_profile_after_signup",
+        requestType: RequestType.POST,
+        formData: data,
+        header: {'Authorization': 'Bearer $token'},
+      );
+      return response.data['code'];
+    }
   }
 }
