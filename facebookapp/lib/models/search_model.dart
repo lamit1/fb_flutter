@@ -1,7 +1,7 @@
 class SearchPost {
   String? id;
   String? name;
-  List<Image>? image;
+  List<ImageSearch>? image;
   String? described;
   String? created;
   String? feel;
@@ -29,7 +29,7 @@ class SearchPost {
     return SearchPost(
       id: json['id'],
       name: json['name'],
-      image: json['image'] != null ? (json['image'] as List).map((i) => Image.fromJson(i)).toList() : null,
+      image: json['image'] != null ? (json['image'] as List).map((i) => ImageSearch.fromJson(i)).toList() : null,
       described: json['described'],
       created: json['created'],
       feel: json['feel'],
@@ -68,17 +68,17 @@ class Author {
 
 }
 
-class Image {
+class ImageSearch {
   String? id;
   String? url;
 
-  Image({
+  ImageSearch({
     this.id,
     this.url,
   });
 
-  factory Image.fromJson(Map<String, dynamic> json) {
-    return Image(
+  factory ImageSearch.fromJson(Map<String, dynamic> json) {
+    return ImageSearch(
       id: json['id'],
       url: json['url'],
     );

@@ -13,8 +13,8 @@ import '../models/video_model.dart'; // Import your PostDetail model
 
 class EditPostScreen extends StatefulWidget {
   final PostDetail postDetail;
-  Function() reloadPost;
-  EditPostScreen({super.key, required this.postDetail, required  this.reloadPost});
+  Function()? reloadPost;
+  EditPostScreen({super.key, required this.postDetail, this.reloadPost});
 
   @override
   State<EditPostScreen> createState() => _EditPostScreenState();
@@ -287,7 +287,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
-                await widget.reloadPost();
+                await widget.reloadPost!();
               },
             ),
           ],

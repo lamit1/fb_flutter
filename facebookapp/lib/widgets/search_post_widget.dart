@@ -61,13 +61,12 @@ class _SearchPostWidgetState extends State<SearchPostWidget> {
     getPost();
   }
 
-  Widget _buildImageSection(List<String>? imageUrls, BuildContext context) {
+  Widget _buildMediaSection(List<String>? imageUrls, String? videoUrl, BuildContext context) {
     double imageWidth = MediaQuery.of(context).size.width;
-
+    print("POST: $videoUrl");
     // Check if there is a video
-    if (searchPostDetail.video != null && searchPostDetail.video!.url != null) {
-      // If there is a video, display it
-      return VideoPlayerWidget(videoUrl: searchPostDetail.video!.url!);
+    if (videoUrl != null) {
+      return VideoPlayerWidget(videoUrl: videoUrl);
     } else if (imageUrls!= null && imageUrls.isNotEmpty) {
       // If there are images, display them
       return MultiImageViewer(
@@ -140,10 +139,7 @@ class _SearchPostWidgetState extends State<SearchPostWidget> {
             padding: const EdgeInsets.all(8.0),
             child: Text(searchPostDetail.described ?? "Loading ..."),
           ),
-          // Assuming the _buildImageSection method is adapted for SearchPost
-          if (searchPostDetail.image != null && searchPostDetail.image!.isNotEmpty)
-            _buildImageSection(searchPostDetail.image!.map((i) => i.url!).toList(), postContext),
-          // ... Rest of the widget code
+          _buildMediaSection(searchPostDetail.image!.map((i) => i.url!).toList(), searchPostDetail.video?.url ?? Video().url, postContext),
         ],
       ),
     );
@@ -175,54 +171,9 @@ class _SearchPostWidgetState extends State<SearchPostWidget> {
                     },
                     child: const Row(
                       children: [
-                        Icon(Icons.report_problem_rounded, size: 35,),
+                        Icon(Icons.info, size: 35,),
                         SizedBox(width: 25,),
-                        Text("Report post", style: TextStyle(fontSize: 15),)
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 1.5, color: Colors.black54,),
-                  TextButton(
-                    style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder:
-                              (BuildContext
-                          context) {
-                            return  AlertDialog(
-                              title: Text(
-                                "Block \"${searchPostDetail.user!.name!}\"",
-                              ),
-                              content: Text(
-                                  "Are you sure to block \"${searchPostDetail.user!.name!}\""),
-                              actions: [
-                                TextButton(
-                                    onPressed:
-                                        () async {
-                                      await BlockAPI().setBlock(searchPostDetail.user!.id!);
-                                      widget.loadPosts();
-                                      Navigator.of(context).pop();
-                                      Navigator.of(postContext).pop();
-                                    },
-                                    child: const Text("Block")
-                                ),
-                                TextButton(
-                                    onPressed:
-                                        () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text(
-                                        "Cancel")),
-                              ],
-                            );
-                          });
-                    },
-                    child: Row(
-                      children: [
-                        const Icon(Icons.block_sharp, size: 35,),
-                        const SizedBox(width: 25,),
-                        Text("Block \"${searchPostDetail.user!.name}\"", style: const TextStyle(fontSize: 15),)
+                        Text("Go to post detail", style: TextStyle(fontSize: 15),)
                       ],
                     ),
                   ),

@@ -1,8 +1,12 @@
+import 'package:fb_app/core/pallete.dart';
+import 'package:fb_app/models/image_model.dart';
+import 'package:fb_app/screens/profile_screen.dart';
 import 'package:fb_app/widgets/search_post_widget.dart';
 import 'package:flutter/material.dart';
 
 import '../models/saved_search_model.dart';
 import '../models/search_model.dart';
+import '../models/user_search_model.dart';
 import '../services/api/search.dart';
 import '../services/storage.dart';
 
@@ -20,12 +24,12 @@ class _FacebookSearchScreenState extends State<FacebookSearchScreen> {
   String? uid = "";
 
   List<SearchPost> _searchedPosts = [];
+  List<SearchUser> _searchedUsers = [];
 
   @override
   void initState() {
     getSavedSearch();
   }
-
 
   void getSavedSearch() async {
     List<SavedSearch>? newSavedList =
@@ -68,6 +72,13 @@ class _FacebookSearchScreenState extends State<FacebookSearchScreen> {
             String keyword = _searchController.text;
             List<SearchPost>? newSearchs =
                 await SearchAPI().search(keyword, '0', '10');
+            List<SearchUser>? newSearchedUserList =
+                await SearchAPI().searchUser(keyword, '0', '5');
+            if (newSearchedUserList != null) {
+              setState(() {
+                _searchedUsers = newSearchedUserList;
+              });
+            }
             if (newSearchs != null) {
               setState(() {
                 _searchedPosts = newSearchs;
@@ -99,29 +110,32 @@ class _FacebookSearchScreenState extends State<FacebookSearchScreen> {
   Widget _buildSuggestions() {
     return _showSuggestionWidget
         ? Flexible(
-            child: ListView.separated(
-              itemCount: _suggestions.length,
-              separatorBuilder: (context, index) => const Divider(),
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_suggestions[index]!.keyword!),
-                  trailing: GestureDetector(
-                      onTap: () async {
-                        await SearchAPI()
-                            .delSavedSearch(_suggestions[index]!.id!, '0');
-                        setState(() {
-                          _suggestions.removeWhere(
-                              (item) => item!.id == _suggestions[index]!.id);
-                        });
-                      },
-                      child: const Icon(Icons.close)),
-                  onTap: () {
-                    _performSearch();
-                  },
-                );
-              },
-            ),
-          )
+          child: ListView.separated(
+            itemCount: _suggestions.length,
+            separatorBuilder: (context, index) => const Divider(),
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(_suggestions[index]!.keyword!),
+                trailing: GestureDetector(
+                    onTap: () async {
+                      await SearchAPI()
+                          .delSavedSearch(_suggestions[index]!.id!, '0');
+                      setState(() {
+                        _suggestions.removeWhere(
+                            (item) => item!.id == _suggestions[index]!.id);
+                      });
+                    },
+                    child: const Icon(Icons.close)),
+                onTap: () {
+                  _searchController.text = _suggestions[index]!.keyword!;
+                  setState(() {
+                    _showSuggestionWidget = false;
+                  });
+                },
+              );
+            },
+          ),
+        )
         : const SizedBox
             .shrink(); // Return an empty widget when _showSuggestions is false
   }
@@ -153,86 +167,115 @@ class _FacebookSearchScreenState extends State<FacebookSearchScreen> {
 
   Widget _buildSearchResults() {
     return _showResultWidget
-        ? Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Search Results',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+        ? Flexible(
+            // Wrap with Flexible
+            child: ListView(
+              children: [
+                const Text(
+                  'Search Results',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Friends',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                const SizedBox(height: 16),
+                const Text(
+                  'Peoples',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              _buildFriendsList(),
-              const SizedBox(height: 8),
-              const Text(
-                'Posts',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                _buildFriendsList(),
+                const SizedBox(height: 8),
+                const Text(
+                  'Posts',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              _buildPostList(), // Display list of posts
-            ],
+                _buildPostList(),
+              ],
+            ),
           )
-        : const SizedBox
-            .shrink(); // Return an empty widget when _showResult is false
+        : const SizedBox.shrink();
   }
 
   Widget _buildPostList() {
     return _searchedPosts.isNotEmpty
-        ? ListView.builder(
+        ? Flexible(
+          child: ListView.builder(
             shrinkWrap: true,
-            // Ensures that the ListView only occupies the required space
-            physics: NeverScrollableScrollPhysics(),
-            // Disables scrolling within the ListView
+            physics: const NeverScrollableScrollPhysics(),
             itemCount: _searchedPosts.length,
             itemBuilder: (context, index) {
               return SearchPostWidget(
                 searchPost: _searchedPosts[index],
                 uid: uid!, // Assuming uid is non-null
                 loadPosts: () {
-                  // Define how to reload posts
+                  /* ... */
                 },
                 addMark: (String id, String mark) {
-                  // Define how to add a mark
+                  /* ... */
                 },
               );
             },
-          )
+          ),
+        )
         : const Center(
             child: Text('No posts found'),
           );
   }
 
   Widget _buildFriendsList() {
-    // Replace this with your logic to display friends
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: const Column(
-        children: [
-          // Replace the following with your friend items
-          ListTile(
-            title: Text('Friend 1'),
-          ),
-          ListTile(
-            title: Text('Friend 2'),
-          ),
-          // Add more friend items as needed
-        ],
+    return Flexible(
+      child: ListView.builder(
+        shrinkWrap: true, // Add this
+        physics: const NeverScrollableScrollPhysics(), // Add this
+        itemCount: _searchedUsers.length,
+        itemBuilder: (context, index) {
+          SearchUser user = _searchedUsers[index];
+          return Card(
+            child: ListTile(
+              leading: user.avatar != null
+                  ? CircleAvatar(backgroundImage: NetworkImage(user.avatar!))
+                  : null,
+              title: Text(user.username ?? 'Unknown'),
+              subtitle: Text(user.sameFriends == "1" ? "Friend" : 'Stranger'),
+              trailing: GestureDetector(
+                onTap: ()=>navigateToUserProfile(user.id, user.sameFriends),
+                child: const Icon(Icons.person, color: Palette.facebookBlue,),
+              ),
+            ),
+          );
+        },
       ),
     );
+  }
+
+  void navigateToUserProfile(String? id, String? sameFriend) {
+    if(sameFriend == "1") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProfileScreen(
+            id: id!,
+            type: '2',
+          ),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProfileScreen(
+            id: id!,
+            type: '4',
+          ),
+        ),
+      );
+    }
+
   }
 }

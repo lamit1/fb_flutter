@@ -15,7 +15,7 @@ class DioClient {
     var dio = Dio(BaseOptions(
       baseUrl: "https://it4788.catan.io.vn/",
       receiveTimeout: const Duration(seconds: 20), // 20 seconds
-      connectTimeout: const Duration(seconds: 20),
+      connectTimeout: const Duration(minutes: 1),
       sendTimeout: const Duration(seconds: 20),
     ));
     return dio;

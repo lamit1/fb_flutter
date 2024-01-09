@@ -19,8 +19,8 @@ class PostScreen extends StatefulWidget {
 
 class _PostScreenState extends State<PostScreen> {
   final ScrollController _scrollController = ScrollController(keepScrollOffset: true);
-  late UserInfo user =  UserInfo();
-  late List<Post> posts = [];
+  UserInfo user =  UserInfo();
+  List<Post> posts = [];
   bool isLoadingPost = true;
   int index = 0;
   int count = 5;

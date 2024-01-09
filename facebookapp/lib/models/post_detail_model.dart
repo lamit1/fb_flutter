@@ -65,7 +65,7 @@ class PostDetail {
     Video? video;
     if (json.containsKey('video') && json['video'] != null) {
       video = Video.fromJson(json['video']);
-      Logger().d("NotNull video: $video");
+      Logger().d("Not Null video: $video");
     } else {
       Logger().d("Null video");
     }

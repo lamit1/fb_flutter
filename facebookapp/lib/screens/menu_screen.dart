@@ -56,27 +56,32 @@ class _MenuScreenState extends State<MenuScreen> {
           SliverList(
               delegate: SliverChildBuilderDelegate(
                       (BuildContext context, int index) {
-                    if (index == 0) return  MenuItem(icon: Icons.person, text: "Profile", function: (){
+                    if (index == 0) {
+                      return  MenuItem(icon: Icons.person, text: "Profile", function: (){
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => ProfileScreen(id: widget.uid!, type: '1')),
                       );
                     },);
+                    }
                     if (index == 1) return  MenuItem(icon: Icons.payment, text: "Deposit", function: (){},);
                     if (index == 2) return  MenuItem(icon: Icons.settings, text: "Settings", function: (){},);
-                    if (index == 3) return  MenuItem(icon: Icons.list, text: "List Blocks", function: (){
+                    if (index == 3) {
+                      return  MenuItem(icon: Icons.list, text: "List Blocks", function: (){
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => BlockScreen(key: PageStorageKey('blockScreen'))),
                       );
                     },);
-                    if (index == 4) return  MenuItem(icon: Icons.history, text: "History", function: (){},);
-                    if (index == 5) return  MenuItem(icon: Icons.change_circle, text: "Change Password", function: (){
+                    }
+                    if (index == 5) {
+                      return  MenuItem(icon: Icons.change_circle, text: "Change Password", function: (){
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => ChangePasswordScreen(key: PageStorageKey('changePasswordScreen'))),
                       );
                     },);
+                    }
                     if (index == 6) {
                       return  MenuItem(icon: Icons.logout, text: "Logout",
                       function: (){

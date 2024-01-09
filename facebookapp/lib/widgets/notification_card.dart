@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
+import '../screens/post_detail_screen.dart';
 import '../screens/profile_screen.dart';
 
 class NotificationCard extends StatefulWidget {
@@ -43,11 +44,11 @@ class _NotificationCardState extends State<NotificationCard> {
       if (resp != null) {
         Logger().d('Accept Friend');
         widget.reloadList!();
-        showTimedAlertDialog('Success', 'Friend request accepted successfully.', Duration(seconds: 2));
+        showTimedAlertDialog('Success', 'Friend request accepted successfully.', const Duration(seconds: 2));
       }
     } catch (error) {
       Logger().d('Error Accept: $error');
-      showTimedAlertDialog('Error', 'Failed to accept friend request.', Duration(seconds: 2));
+      showTimedAlertDialog('Error', 'Failed to accept friend request.', const Duration(seconds: 2));
     }
   }
 
@@ -74,12 +75,12 @@ class _NotificationCardState extends State<NotificationCard> {
                       || notification.type == '8'
                       || notification.type == '9'
                   ) {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => PostDetailScreen(userId: notification.user!.id),
-                    //   ),
-                    // );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PostDetailScreen(postId: notification.post!.id!,),
+                      ),
+                    );
                   }
                 },
                 child: Padding(
@@ -100,7 +101,7 @@ class _NotificationCardState extends State<NotificationCard> {
                                 bottom: 0,
                                 child: Container(
                                   padding: const EdgeInsets.all(4.0),
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: Colors.white,
                                   ),
@@ -125,7 +126,7 @@ class _NotificationCardState extends State<NotificationCard> {
                             children: [
                               Text(
                                 buildNotificationText(notification),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.w400,
                                   fontSize: 14,
                                   color: Colors.black,
@@ -133,7 +134,7 @@ class _NotificationCardState extends State<NotificationCard> {
                               ),
                               Text(
                                 buildTimeText(notification),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 12,
                                   color: Colors.black,
@@ -168,7 +169,7 @@ class _NotificationCardState extends State<NotificationCard> {
                                         ],
                                       ),
                                     ),
-                                    SizedBox(width: 5.0),
+                                    const SizedBox(width: 5.0),
                                     FilledButton(
                                         onPressed: () {
                                           accept(notification.user?.id,'0');

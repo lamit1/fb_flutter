@@ -19,9 +19,10 @@ class CommentBottomSheet extends StatefulWidget {
   final ScrollController scrollController;
   final String? id;
   final String? uid;
-  final Function updateMark;
+  final Function? updateMark;
+  final Function? reloadPost;
   const CommentBottomSheet(
-      {Key? key, required this.scrollController, this.id, this.uid, required this.updateMark})
+      {Key? key, required this.scrollController, this.id, this.uid, this.updateMark, this.reloadPost})
       : super(key: key);
 
   @override
@@ -32,7 +33,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
   String? selectedSortOption = "all";
   final _key = GlobalKey<FormState>();
   final TextEditingController commentController = TextEditingController();
-  late List<MarkComments>? marks = [];
+  List<MarkComments>? marks = [];
   bool loading = true;
   String? isReplying = "-1";
   UserInfo user = UserInfo();
@@ -129,7 +130,8 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                       marks = newMarks;
                       isReplying = "-1";
                     });
-                    widget.updateMark();
+                    widget.reloadPost?.call() ?? () {};
+                    widget.updateMark?.call() ?? () {};
                     commentController.clear();
                   } else {
                     print("Not validated");
