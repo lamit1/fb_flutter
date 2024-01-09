@@ -5,6 +5,7 @@ import 'package:fb_app/core/pallete.dart';
 import 'package:fb_app/models/kudos_dissapointed_model.dart';
 import 'package:fb_app/models/post_detail_model.dart';
 import 'package:fb_app/screens/edit_post_screen.dart';
+import 'package:fb_app/screens/profile_screen.dart';
 import 'package:fb_app/services/api/comment.dart';
 import 'package:fb_app/services/api/post.dart';
 import 'package:fb_app/utils/converter.dart';
@@ -18,10 +19,11 @@ import '../services/api/block.dart';
 class PostWidget extends StatefulWidget {
   final Post post;
   final String uid;
+  final String userId;
   final VoidCallback loadPosts;
   final Function(String, String) addMark;
 
-  PostWidget({required this.post, required this.uid, required this.loadPosts, required this.addMark});
+  PostWidget({required this.post, required this.uid, required this.userId, required this.loadPosts, required this.addMark});
 
   @override
   State<PostWidget> createState() => _PostWidgetState();
@@ -72,9 +74,15 @@ class _PostWidgetState extends State<PostWidget> {
               children: [
                  Row(
                   children: [
-                    CircleAvatar(
-                      radius: 20.0,
-                      backgroundImage: NetworkImage(widget.post.user!.avatar ?? "assets/avatar.png"),
+                    GestureDetector(
+                      onTap: () {
+                        // Navigate to the profile screen when tapped
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfileScreen(id: widget.post.user!.id!, type: widget.userId == widget.post.user!.id! ? '1' : '2')));
+                      },
+                      child: CircleAvatar(
+                        radius: 20.0,
+                        backgroundImage: NetworkImage(widget.post.user!.avatar ?? "assets/avatar.png"),
+                      ),
                     ),
                     const SizedBox(width: 8.0),
                     Column(
@@ -86,10 +94,15 @@ class _PostWidgetState extends State<PostWidget> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text(
-                          "- is feeling ${postDetail.state}",
-                          style: const TextStyle(
-                            color: Palette.facebookBlue
+                        Container(
+                          width: 264.0, // Set the maximum width
+                          child: Text(
+                            "- is feeling ${postDetail.state}",
+                            style: const TextStyle(
+                              color: Palette.facebookBlue,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2, // Set the maximum number of lines
                           ),
                         ),
                         Text(
@@ -102,13 +115,18 @@ class _PostWidgetState extends State<PostWidget> {
                     ),
                   ],
                 ),
-                IconButton(
-                  icon: const Icon(Icons.more_horiz_outlined),
-                  onPressed: () {
-                    postDetail.canEdit == "1" ?
-                    _showUserPostOption(postContext) : _showNonUserPostOption(context);
-                  },
-                  splashRadius: 20,
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                    icon: const Icon(Icons.more_horiz_outlined),
+                    onPressed: () {
+                      postDetail.canEdit == "1"
+                          ? _showUserPostOption(postContext)
+                          : _showNonUserPostOption(context);
+                    },
+                    splashRadius: 20,
+                  ),
                 ),
               ],
             ),
@@ -325,7 +343,7 @@ class _PostWidgetState extends State<PostWidget> {
           maxChildSize: 0.9,
           initialChildSize: 0.9,
           builder: (context, scrollController) =>
-              CommentBottomSheet(scrollController: scrollController, id: widget.post.id, uid : widget.uid, updateMark : updateMark),
+              CommentBottomSheet(scrollController: scrollController, id: widget.post.id,  userId : widget.userId, uid : widget.uid, updateMark : updateMark),
         );
       },
     );

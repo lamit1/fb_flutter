@@ -147,6 +147,7 @@ class _PostScreenState extends State<PostScreen> {
               PostWidget(
                   post: posts[index],
                   uid: widget.uid!,
+                  userId: user.id!,
                   loadPosts: loadPosts,
                   addMark: addMark,
               ) : Container();

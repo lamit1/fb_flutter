@@ -116,6 +116,7 @@ class _VideoScreenState extends State<VideoScreen> {
               PostWidget(
                 post: posts[index],
                 uid: widget.uid!,
+                userId: user.id!,
                 loadPosts: loadPosts,
                 addMark: addMark,
               ) : Container();

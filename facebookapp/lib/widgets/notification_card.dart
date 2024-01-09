@@ -90,10 +90,16 @@ class _NotificationCardState extends State<NotificationCard> {
                       children: [
                         Stack(
                           children: [
-                            CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                  notification.user?.avatar ?? ''),
-                              radius: 30.0,
+                            GestureDetector(
+                              onTap: () {
+                                // Navigate to the profile screen when tapped
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfileScreen(id: notification.user!.id!, type:'2')));
+                              },
+                              child: CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                    notification.user?.avatar ?? ''),
+                                radius: 30.0,
+                              ),
                             ),
                             if (notification.type == '5')
                               Positioned(

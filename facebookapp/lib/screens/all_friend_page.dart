@@ -7,9 +7,8 @@ import 'package:logger/logger.dart';
 import '../core/pallete.dart';
 
 class AllFriendPage extends StatefulWidget {
-  final List<Friend> userFriendList;
-  final Function()? reloadFriendsList;
-  const AllFriendPage({Key? key, required this.userFriendList, required this.reloadFriendsList})
+  final String id;
+  const AllFriendPage({Key? key, required this.id})
       : super(key: key);
 
   @override
@@ -17,6 +16,35 @@ class AllFriendPage extends StatefulWidget {
 }
 
 class _AllFriendPageState extends State<AllFriendPage> {
+  late List<Friend> friend;
+
+  @override
+  void initState() {
+    super.initState();
+    friend = [];
+    loadFriends();
+  }
+
+  void loadFriends() async {
+    try {
+      List<Friend>? fetchedFriends = await FriendAPI().getUserFriends(
+        '0',
+        '100',
+        widget.id,
+      );
+      if (fetchedFriends != null) {
+        setState(() {
+          friend = fetchedFriends;
+        });
+      }
+    } catch (error) {
+      Logger().d('Error loading friends: $error');
+    }
+  }
+
+  void reloadFriendList() {
+    loadFriends();
+  }
 
   void showTimedAlertDialog(String title, String content, Duration duration) {
     showDialog(
@@ -40,7 +68,7 @@ class _AllFriendPageState extends State<AllFriendPage> {
       );
       if (resp != null) {
         Logger().d('Unfriend');
-        widget.reloadFriendsList!();
+        reloadFriendList();
         showTimedAlertDialog('Success', 'Unfriended successfully.', Duration(seconds: 2));
       }
     } catch (error) {
@@ -51,8 +79,6 @@ class _AllFriendPageState extends State<AllFriendPage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Friend> userFriendList = widget.userFriendList;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Danh sách bạn bè')),
       body: SingleChildScrollView(
@@ -62,16 +88,16 @@ class _AllFriendPageState extends State<AllFriendPage> {
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: userFriendList.length,
+              itemCount: friend.length,
               itemBuilder: (BuildContext context, int index) {
-                Friend item = userFriendList[index];
+                Friend item = friend[index];
 
                 return Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: GestureDetector(
                     onTap: () {
                       // Navigate to the profile screen when tapped
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfileScreen(id: item.id!, type:'2')));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfileScreen(id: item.id!, type: widget.id == item.id! ? '1' : '2')));
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
