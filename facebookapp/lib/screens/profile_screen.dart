@@ -78,13 +78,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     UserInfo user = await ProfileAPI().getUserInfo(widget.id);
     List<Friend> friends =
     await FriendAPI().getUserFriends('0', '6', widget.id);
-
+    print("Cover image is: ${user}" );
     setState(() {
       userInfo = user;
       userFriends = friends;
-      // listPost = posts;
     });
-  }
+    }
 
   void reloadData() {
     getData();
