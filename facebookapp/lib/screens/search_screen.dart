@@ -212,7 +212,7 @@ class _FacebookSearchScreenState extends State<FacebookSearchScreen> {
             itemBuilder: (context, index) {
               return SearchPostWidget(
                 searchPost: _searchedPosts[index],
-                uid: uid!, // Assuming uid is non-null
+                uid: uid ?? '1', // Assuming uid is non-null
                 loadPosts: () {
                   /* ... */
                 },

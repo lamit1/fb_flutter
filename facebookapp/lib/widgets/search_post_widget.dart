@@ -139,7 +139,7 @@ class _SearchPostWidgetState extends State<SearchPostWidget> {
             padding: const EdgeInsets.all(8.0),
             child: Text(searchPostDetail.described ?? "Loading ..."),
           ),
-          _buildMediaSection(searchPostDetail.image!.map((i) => i.url!).toList(), searchPostDetail.video?.url ?? Video().url, postContext),
+          _buildMediaSection(searchPostDetail.image?.map((i) => i.url!).toList(), searchPostDetail.video?.url ?? Video().url, postContext),
         ],
       ),
     );

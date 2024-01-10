@@ -78,13 +78,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     UserInfo user = await ProfileAPI().getUserInfo(widget.id);
     List<Friend> friends =
     await FriendAPI().getUserFriends('0', '6', widget.id);
-
+    print("Cover image is: ${user}" );
     setState(() {
       userInfo = user;
       userFriends = friends;
-      // listPost = posts;
     });
-  }
+    }
 
   void reloadData() {
     getData();
@@ -198,12 +197,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Logger().d('Accept Friend');
         reloadData();
         showTimedAlertDialog('Success', 'Friend request accepted successfully.',
-            Duration(seconds: 2));
+            const Duration(seconds: 2));
       }
     } catch (error) {
       Logger().d('Error Accept: $error');
       showTimedAlertDialog(
-          'Error', 'Failed to accept friend request.', Duration(seconds: 2));
+          'Error', 'Failed to accept friend request.', const Duration(seconds: 2));
     }
   }
 
@@ -214,12 +213,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Logger().d('Unfriend');
         reloadData();
         showTimedAlertDialog(
-            'Success', 'Unfriended successfully.', Duration(seconds: 2));
+            'Success', 'Unfriended successfully.', const Duration(seconds: 2));
       }
     } catch (error) {
       Logger().d('Error Unfriend: $error');
       showTimedAlertDialog(
-          'Error', 'Failed to unfriend.', Duration(seconds: 2));
+          'Error', 'Failed to unfriend.', const Duration(seconds: 2));
     }
   }
 
@@ -242,12 +241,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Logger().d('add Friend');
         reloadData();
         showTimedAlertDialog('Success', 'Friend request sent successfully.',
-            Duration(seconds: 2));
+            const Duration(seconds: 2));
       }
     } catch (error) {
       Logger().d('Error Add: $error');
       showTimedAlertDialog(
-          'Error', 'Failed to send friend request.', Duration(seconds: 2));
+          'Error', 'Failed to send friend request.', const Duration(seconds: 2));
     }
   }
 
@@ -258,12 +257,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Logger().d('del Friend');
         reloadData();
         showTimedAlertDialog('Success', 'Cancel request sent successfully.',
-            Duration(seconds: 2));
+            const Duration(seconds: 2));
       }
     } catch (error) {
       Logger().d('Error Add: $error');
       showTimedAlertDialog(
-          'Error', 'Failed to cancel friend request.', Duration(seconds: 2));
+          'Error', 'Failed to cancel friend request.', const Duration(seconds: 2));
     }
   }
 
@@ -599,7 +598,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 primary: Colors.grey[250],
                                 textStyle: const TextStyle(color: Colors.black),
                               ),
-                              child: Row(
+                              child: const Row(
                                 children: [
                                   Icon(Icons.cancel),
                                   SizedBox(width: 10),

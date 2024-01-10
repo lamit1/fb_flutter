@@ -39,7 +39,7 @@ class UserInfo {
       created: json['created'] as String?,
       description: json['description'] as String?,
       avatar: json['avatar'] as String?,
-      coverAvatar: json['cover_avatar'] as String?,
+      coverAvatar: json['cover_image'] as String?,
       link: json['link'] as String?,
       address: json['address'] as String?,
       city: json['city'] as String?,

@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 class NotificationModel {
   String? type;
   String? objectId;
-  Title? title;
+  String? title;
   String? notificationId;
   String? created;
   String? avatar;
@@ -30,9 +30,9 @@ class NotificationModel {
   });
   NotificationModel.fromJson(Map<String, dynamic> json) {
     type = json['type'];
-    objectId = json['objectId'];
-    title = json['title'] != null ? Title.values.firstWhere((e) => e.toString().split('.').last == json['title']) : null;
-    notificationId = json['notificationId'];
+    objectId = json['object_id'];
+    title = json['title'];
+    notificationId = json['notification_id'];
     created = json['created'];
     avatar = json['avatar'];
     group = json['group']; // 0: notification; 1: action

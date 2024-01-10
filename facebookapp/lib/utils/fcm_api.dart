@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:fb_app/models/notification_model.dart';
 import 'package:fb_app/screens/profile_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -5,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import '../main.dart';
 import '../screens/home_screen.dart';
+import '../screens/post_detail_screen.dart';
 import '../services/storage.dart';
 enum NotificationType {
   FriendRequest,
@@ -70,7 +73,8 @@ class FirebaseMessage {
 navigateBasedOnMessage(Map<String, dynamic> messageData) {
   print("Attempting to navigate based on message data: $messageData");
   try {
-    NotificationModel notification = NotificationModel.fromJson(messageData);
+    Map<String, dynamic> notificationJson = json.decode(messageData['json']);
+    NotificationModel notification = NotificationModel.fromJson(notificationJson);
     NotificationType? notificationType = valueToNotificationType(int.tryParse(notification.type ?? '') ?? -1);
 
     print("Parsed notification type: $notificationType");
@@ -88,7 +92,6 @@ navigateBasedOnMessage(Map<String, dynamic> messageData) {
 
 
 MaterialPageRoute getRouteBasedOnNotificationType(NotificationType notificationType, NotificationModel notification) {
-  print("123 $notificationType");
   switch (notificationType) {
     case NotificationType.FriendRequest:
     case NotificationType.FriendAccepted:
@@ -101,7 +104,7 @@ MaterialPageRoute getRouteBasedOnNotificationType(NotificationType notificationT
     case NotificationType.PostMarked:
     case NotificationType.PostCommented:
     // TODO: Navigate to the post detail screen
-    //   return MaterialPageRoute(builder: (context) => PostDetailScreen(postId: notification.post!.id!));
+      return MaterialPageRoute(builder: (context) => PostDetailScreen(postId: notification.post!.id!));
 
     case NotificationType.MarkCommented:
     // TODO: Navigate to the mark commented notification screen
