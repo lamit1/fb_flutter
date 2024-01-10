@@ -145,7 +145,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                             deletedImages.remove(index);
                           } else {
                             deletedNetworkImageMap[image] = true;
-                            deletedImages.add(index);
+                            deletedImages.add(index+1);
                           }
                         } else {
                             images.removeAt(index);
