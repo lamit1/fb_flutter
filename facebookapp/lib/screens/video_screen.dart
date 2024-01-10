@@ -40,6 +40,18 @@ class _VideoScreenState extends State<VideoScreen> {
       }
     });
     loadPosts();
+    loadUserInfo();
+  }
+
+  void loadUserInfo() async {
+    try {
+      UserInfo userInfo = await ProfileAPI().getUserInfo(widget.uid!);
+      setState(() {
+        user = userInfo;
+      });
+    } catch (error) {
+      Logger().d('Error loading user info: $error');
+    }
   }
 
   void loadPosts() async {
@@ -53,15 +65,13 @@ class _VideoScreenState extends State<VideoScreen> {
           index.toString(),
           count.toString()
       );
-      if (postResponse != null) {
-        setState(() {
-          posts = postResponse.posts;
-          lastId = postResponse.lastId;
-          isLoadingPost = false;
-          index += count;
-        });
-      }
-    } catch (error) {
+      setState(() {
+        posts = postResponse.posts;
+        lastId = postResponse.lastId;
+        isLoadingPost = false;
+        index += count;
+      });
+        } catch (error) {
       Logger().d('Error loading posts: $error');
     }
   }
@@ -71,7 +81,7 @@ class _VideoScreenState extends State<VideoScreen> {
       PostResponse? postResponse = await PostAPI().getListVideos(
           '1', '1', '1.0', '1.0', lastId.toString(), index.toString(), count.toString()
       );
-      if (postResponse != null && postResponse.posts.isNotEmpty) {
+      if (postResponse.posts.isNotEmpty) {
         setState(() {
           posts.addAll(postResponse.posts);
           lastId = postResponse.lastId;
@@ -96,7 +106,6 @@ class _VideoScreenState extends State<VideoScreen> {
     setState(() {
       posts = posts.map((post) {
         if (post.id == postId) {
-          // Update the commentMark for the matching post
           post.commentMark = commentMark;
         }
         return post;
@@ -112,7 +121,7 @@ class _VideoScreenState extends State<VideoScreen> {
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-              return posts.isNotEmpty ?
+              return (posts.isNotEmpty && user.id != null ) ?
               PostWidget(
                 post: posts[index],
                 uid: widget.uid!,
