@@ -35,7 +35,7 @@ class SettingAPI {
     String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
-      url: "https://it4788.catan.io.vn/settings/buy_coins",
+      url: "https://it4788.catan.io.vn/buy_coins",
       requestType: RequestType.POST,
       body: {
         "code": code,
@@ -68,7 +68,7 @@ class SettingAPI {
   ) async {
     String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
-      url: "https://it4788.catan.io.vn/settings/set_devtoken",
+      url: "https://it4788.catan.io.vn/set_devtoken",
       requestType: RequestType.POST,
       body: {
         "devtype": devtype,

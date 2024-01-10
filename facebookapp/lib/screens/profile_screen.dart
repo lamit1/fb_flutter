@@ -198,12 +198,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Logger().d('Accept Friend');
         reloadData();
         showTimedAlertDialog('Success', 'Friend request accepted successfully.',
-            Duration(seconds: 2));
+            const Duration(seconds: 2));
       }
     } catch (error) {
       Logger().d('Error Accept: $error');
       showTimedAlertDialog(
-          'Error', 'Failed to accept friend request.', Duration(seconds: 2));
+          'Error', 'Failed to accept friend request.', const Duration(seconds: 2));
     }
   }
 
@@ -214,12 +214,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Logger().d('Unfriend');
         reloadData();
         showTimedAlertDialog(
-            'Success', 'Unfriended successfully.', Duration(seconds: 2));
+            'Success', 'Unfriended successfully.', const Duration(seconds: 2));
       }
     } catch (error) {
       Logger().d('Error Unfriend: $error');
       showTimedAlertDialog(
-          'Error', 'Failed to unfriend.', Duration(seconds: 2));
+          'Error', 'Failed to unfriend.', const Duration(seconds: 2));
     }
   }
 
@@ -242,12 +242,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Logger().d('add Friend');
         reloadData();
         showTimedAlertDialog('Success', 'Friend request sent successfully.',
-            Duration(seconds: 2));
+            const Duration(seconds: 2));
       }
     } catch (error) {
       Logger().d('Error Add: $error');
       showTimedAlertDialog(
-          'Error', 'Failed to send friend request.', Duration(seconds: 2));
+          'Error', 'Failed to send friend request.', const Duration(seconds: 2));
     }
   }
 
@@ -258,20 +258,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Logger().d('del Friend');
         reloadData();
         showTimedAlertDialog('Success', 'Cancel request sent successfully.',
-            Duration(seconds: 2));
+            const Duration(seconds: 2));
       }
     } catch (error) {
       Logger().d('Error Add: $error');
       showTimedAlertDialog(
-          'Error', 'Failed to cancel friend request.', Duration(seconds: 2));
+          'Error', 'Failed to cancel friend request.', const Duration(seconds: 2));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    Logger().d(userInfo.coverAvatar);
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Trang cá nhân'),
+          title: const Text('Profile'),
         ),
         body: SingleChildScrollView(
             physics: const ScrollPhysics(),
@@ -455,7 +456,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
               Text(
-                userInfo.username != null ? userInfo.username! : "unknow",
+                userInfo.username != null ? userInfo.username! : "",
                 style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -599,7 +600,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 primary: Colors.grey[250],
                                 textStyle: const TextStyle(color: Colors.black),
                               ),
-                              child: Row(
+                              child: const Row(
                                 children: [
                                   Icon(Icons.cancel),
                                   SizedBox(width: 10),
