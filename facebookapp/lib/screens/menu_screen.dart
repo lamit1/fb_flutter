@@ -178,19 +178,14 @@ class _MenuScreenState extends State<MenuScreen> {
                 ),
               );
             }
-            if (index == 1)
-              return MenuItem(
-                icon: Icons.payment,
-                text: "Deposit",
-                function: () {},
-              );
-            if (index == 2)
+            if (index == 1) {
               return MenuItem(
                 icon: Icons.settings,
                 text: "Settings",
                 function: () {},
               );
-            if (index == 3) {
+            }
+            if (index == 2) {
               return MenuItem(
                 icon: Icons.list,
                 text: "List Blocks",
@@ -199,12 +194,12 @@ class _MenuScreenState extends State<MenuScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            BlockScreen(key: PageStorageKey('blockScreen'))),
+                            const BlockScreen(key: PageStorageKey('blockScreen'))),
                   );
                 },
               );
             }
-            if (index == 5) {
+            if (index == 3) {
               return MenuItem(
                 icon: Icons.change_circle,
                 text: "Change Password",
@@ -212,13 +207,13 @@ class _MenuScreenState extends State<MenuScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ChangePasswordScreen(
+                        builder: (context) => const ChangePasswordScreen(
                             key: PageStorageKey('changePasswordScreen'))),
                   );
                 },
               );
             }
-            if (index == 6) {
+            if (index == 4) {
               return MenuItem(
                 icon: Icons.logout,
                 text: "Logout",
