@@ -343,7 +343,7 @@ class _PostWidgetState extends State<PostWidget> {
           maxChildSize: 0.9,
           initialChildSize: 0.9,
           builder: (context, scrollController) =>
-              CommentBottomSheet(scrollController: scrollController, id: widget.post.id,  userId : widget.userId, uid : widget.uid, updateMark : updateMark),
+              CommentBottomSheet(scrollController: scrollController, id: widget.post.id, uid : widget.uid, updateMark : updateMark),
         );
       },
     );
