@@ -49,7 +49,7 @@ class SettingAPI {
   Future<PushSetting?> getPushSettings() async {
     String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
-      url: "https://it4788.catan.io.vn/settings/get_push_settings",
+      url: "https://it4788.catan.io.vn/get_push_settings",
       requestType: RequestType.POST,
       header: {'Authorization': 'Bearer $token'},
     );
@@ -94,7 +94,7 @@ class SettingAPI {
   ) async {
     String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
-      url: "https://it4788.catan.io.vn/settings/set_push_settings",
+      url: "https://it4788.catan.io.vn/set_push_settings",
       requestType: RequestType.POST,
       body: {
         "like_comment": likeComment,

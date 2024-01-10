@@ -80,7 +80,7 @@ class _AllFriendPageState extends State<AllFriendPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Danh sách bạn bè')),
+      appBar: AppBar(title: const Text('All Friends')),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

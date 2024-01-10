@@ -1,8 +1,9 @@
 import 'package:fb_app/screens/change_password.dart';
 import 'package:fb_app/screens/profile_screen.dart';
 import 'package:fb_app/models/user_info_model.dart';
+import 'package:fb_app/screens/push_setting_screen.dart';
 import 'package:fb_app/services/api/profile.dart';
-import 'package:fb_app/widgets/add_coins.dart';
+import 'package:fb_app/screens/add_coins.dart';
 import 'package:fb_app/widgets/menu_item.dart';
 import 'package:fb_app/screens/block_screen.dart';
 import 'package:flutter/material.dart';
@@ -182,7 +183,14 @@ class _MenuScreenState extends State<MenuScreen> {
               return MenuItem(
                 icon: Icons.settings,
                 text: "Settings",
-                function: () {},
+                function: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                        const PushSettingPage(key: PageStorageKey('settingScreen'))),
+                  );
+                },
               );
             }
             if (index == 2) {
