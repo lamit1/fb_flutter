@@ -157,9 +157,10 @@ class _LoginPageState extends State<LoginPage> {
           return LoadingScreen();
         } else if (state is LoginChangeInfo) {
           Future.delayed(Duration.zero, () async {
-            Navigator.pushReplacementNamed(context, "/change_info", arguments: [state.uid]);
+            Navigator.pushReplacementNamed(context, "/change_info",
+                arguments: [state.uid]);
           });
-          return Scaffold(
+          return const Scaffold(
             body: Center(
               child: Text("Has'nt set user info, please change your info!"),
             ),
@@ -190,14 +191,48 @@ class _LoginPageState extends State<LoginPage> {
           );
         } else if (state is LoginFailure) {
           return Scaffold(
-            body: Text('Login Failed: ${state.error}'),
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Login Failed: Wrong password or Invalid user!',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, "/login");
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        elevation: 5,
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      ),
+                      child: const Text(
+                        "Back to login screen!",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
           );
         } else if (state is LoginOTP) {
           Future.delayed(Duration.zero, () async {
             Navigator.pushReplacementNamed(context, "/otp",
                 arguments: [_emailController.text, state.uid]);
           });
-          return Scaffold(
+          return const Scaffold(
             body: Center(
               child: Text("Redirect to OTP screen"),
             ),
