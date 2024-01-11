@@ -12,6 +12,7 @@ import 'package:fb_app/utils/converter.dart';
 import 'package:fb_app/widgets/comment_box.dart';
 import 'package:fb_app/widgets/report_post_widget.dart';
 import 'package:fb_app/widgets/video_post.dart';
+import 'package:logger/logger.dart';
 import 'package:multi_image_layout/multi_image_layout.dart';
 import '../models/post_model.dart';
 import '../services/api/block.dart';
@@ -53,6 +54,42 @@ class _PostWidgetState extends State<PostWidget> {
     });
   }
 
+  Future<void> deletePost() async {
+    String? code = await PostAPI().deletePost(postDetail.id!);
+    if (code == '1000') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Success'),
+            content: Text('Delete Post Successfully'),
+            actions: [
+              ElevatedButton(onPressed: () {
+                Navigator.of(context).pop();
+                widget.loadPosts!();
+                Navigator.of(context).pop();
+              }, child: Text('Ok'))
+            ],
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Delete Post Failed'),
+            actions: [
+              ElevatedButton(onPressed: () {
+                Navigator.of(context).pop();
+              }, child: Text('Ok'))
+            ],
+          );
+        },
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -370,9 +407,10 @@ class _PostWidgetState extends State<PostWidget> {
                 children: [
                   TextButton(
                     style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
-                    onPressed: () {  },
+                    onPressed: () {
+                      deletePost();
+                    },
                     child: const Row(
-
                       children: [
                         Icon(Icons.delete,  size: 35,),
                         SizedBox(width: 25,),

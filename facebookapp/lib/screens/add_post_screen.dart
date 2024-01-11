@@ -289,10 +289,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
                             child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const Icon(
-                              Icons.currency_bitcoin,
-                              size: 40,
-                              color: Colors.green,
+                            const CircleAvatar(
+                              radius: 15.0,
+                              backgroundImage: NetworkImage(
+                                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7rjB8BcKmkkifnTHKogjZ3WxZItOmGgRItiyH8g9ph4xbppnClyAJg5D7WyO6Rys-OBo&usqp=CAU'
+                              ),
                             ),
                             //coins
                             Text(

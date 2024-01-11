@@ -1,5 +1,6 @@
 import 'package:fb_app/models/post_detail_model.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:multi_image_layout/image_model.dart';
 import 'package:multi_image_layout/multi_image_viewer.dart';
 import '../core/pallete.dart';
@@ -45,6 +46,47 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       setState(() {
         postDetail = loadedPost;
       });
+    }
+  }
+
+  Future<void> deletePost() async {
+    Logger().d('code');
+    String? code = await PostAPI().deletePost(widget.postId);
+    Logger().d(code);
+    if (code == '1000') {
+      loadPost();
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Success'),
+            content: Text('Delete Post Successfully'),
+            actions: [
+              ElevatedButton(onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              }, child: Text('Ok'))
+            ],
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Delete Post Failed'),
+            actions: [
+              ElevatedButton(onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+              }, child: Text('Ok'))
+            ],
+          );
+        },
+      );
     }
   }
 
@@ -378,7 +420,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     style: const ButtonStyle(
                         foregroundColor:
                             MaterialStatePropertyAll(Colors.black54)),
-                    onPressed: () {},
+                    onPressed: () {
+                      deletePost();
+                    },
                     child: const Row(
                       children: [
                         Icon(
