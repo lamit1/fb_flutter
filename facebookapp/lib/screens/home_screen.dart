@@ -3,6 +3,8 @@ import 'package:fb_app/core/pallete.dart';
 import 'package:fb_app/screens/friend_screen.dart';
 import 'package:fb_app/screens/notifications_screen.dart';
 import 'package:fb_app/screens/post_screen.dart';
+import 'package:fb_app/screens/search_screen.dart';
+import 'package:fb_app/screens/video_screen.dart';
 import 'package:fb_app/widgets/circle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -17,7 +19,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
   int _selectedIndex = 0;
+  Key _postScreenKey = UniqueKey();
 
+  void _resetPostScreen() {
+    setState(() {
+      _postScreenKey = UniqueKey(); // Generate a new key
+    });
+  }
 
   @override
   void dispose() {
@@ -44,8 +52,11 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
-            child: CircleButton(icon: Icons.search, iconSize: 25.0, onPressed: () {
-              print("Search is clicked");
+            child: CircleButton(icon: Icons.search, iconSize: 25.0,
+                onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FacebookSearchScreen()));
             }),
           ),
         ],
@@ -53,16 +64,20 @@ class _HomeScreenState extends State<HomeScreen> {
       body: PageView(
           controller: _pageController,
           children: [
-            PostScreen(key: const PageStorageKey('postScreen'), uid: uid, ),
-            FriendScreen(key: const PageStorageKey('FriendScreen'), uid: uid, ),
-            const NotificationScreen(key: PageStorageKey('notificationScreen')),
-            const MenuScreen(key: PageStorageKey('menuScreen')),
+            PostScreen(key: _postScreenKey, uid: uid, ),
+            FriendScreen(key: PageStorageKey('friendScreen'), uid: uid),
+            VideoScreen(key: _postScreenKey, uid: uid,),
+            NotificationScreen(key: PageStorageKey('notificationScreen'), uid: uid),
+            MenuScreen(key: PageStorageKey('menuScreen'), uid:uid),
           ]
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed, // Allows more than 3 items
         currentIndex: _selectedIndex,
         onTap: (index){
+          if (_selectedIndex != 0 && index == 0) {
+            _resetPostScreen(); // Call this when navigating back to PostScreen
+          }
           setState(() {
             _selectedIndex = index;
           });
@@ -76,6 +91,10 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.people),
             label: 'Friends',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.video_collection),
+            label: 'Videos',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.notifications),

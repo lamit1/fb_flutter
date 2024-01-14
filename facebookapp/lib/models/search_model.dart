@@ -1,46 +1,100 @@
-import 'package:fb_app/models/image_model.dart';
-import 'package:fb_app/models/user_model.dart';
-import 'package:fb_app/models/video_model.dart';
+class SearchPost {
+  String? id;
+  String? name;
+  List<ImageSearch>? image;
+  String? described;
+  String? created;
+  String? feel;
+  String? markComment;
+  String? isFelt;
+  String? state;
+  Author? author;
+  Video? video;
 
-class Search {
-  final String? id;
-  final String? name;
-  final String? image;
-  final Video? video;
-  final String? described;
-  final String? feel;
-  final String? commentMark;
-  final String? isFelt;
-  final User? user;
-
-  const Search({
+  SearchPost({
     this.id,
     this.name,
-    this.described,
-    this.feel,
-    this.commentMark,
-    this.isFelt,
     this.image,
+    this.described,
+    this.created,
+    this.feel,
+    this.markComment,
+    this.isFelt,
+    this.state,
+    this.author,
     this.video,
-    this.user,
   });
 
-  factory Search.fromJson(Map<String, dynamic> json) {
-    return Search(
-      id: json['id'] as String?,
-      name: json['name'] as String?,
-      described: json['described'] as String?,
-      feel: json['feel'] as String?,
-      commentMark: json['comment_mark'] as String?,
-      isFelt: json['is_felt'] as String?,
-      image: json['image'] as String?,
-      video: Video.fromJson(json['video']),
-      user: User.fromJson(json['author']),
+  factory SearchPost.fromJson(Map<String, dynamic> json) {
+    return SearchPost(
+      id: json['id'],
+      name: json['name'],
+      image: json['image'] != null ? (json['image'] as List).map((i) => ImageSearch.fromJson(i)).toList() : null,
+      described: json['described'],
+      created: json['created'],
+      feel: json['feel'],
+      markComment: json['mark_comment'],
+      isFelt: json['is_felt'],
+      state: json['state'],
+      author: json['author'] != null ? Author.fromJson(json['author']) : null,
+      video: json['video'] != null ? Video.fromJson(json['video']) : null,
     );
   }
 
-  @override
-  String toString() {
-    return "$id, $name, $described, $feel, $commentMark, $isFelt, $image, $video, $user";
+  static List<SearchPost> fromJsonList(List<dynamic> jsonList) {
+    return jsonList.map((json) => SearchPost.fromJson(json)).toList();
+  }
+}
+
+class Author {
+  String? id;
+  String? name;
+  String? avatar;
+
+  Author({
+    this.id,
+    this.name,
+    this.avatar,
+  });
+
+  factory Author.fromJson(Map<String, dynamic> json) {
+    return Author(
+      id: json['id'],
+      name: json['name'],
+      avatar: json['avatar'],
+    );
+  }
+
+
+}
+
+class ImageSearch {
+  String? id;
+  String? url;
+
+  ImageSearch({
+    this.id,
+    this.url,
+  });
+
+  factory ImageSearch.fromJson(Map<String, dynamic> json) {
+    return ImageSearch(
+      id: json['id'],
+      url: json['url'],
+    );
+  }
+}
+
+class Video {
+  String? url;
+
+  Video({
+    this.url,
+  });
+
+  factory Video.fromJson(Map<String, dynamic> json) {
+    return Video(
+      url: json['url'],
+    );
   }
 }

@@ -1,12 +1,14 @@
+import 'package:fb_app/models/login_model.dart';
 import 'package:fb_app/models/user_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
 import 'package:fb_app/utils/get_device_uuid.dart';
+import 'package:logger/logger.dart';
 
 class Auth {
   final DioClient dio = DioClient();
 
-  Future<String?> login(String email, String password) async {
+  Future<LoginResponse?> login(String email, String password) async {
     String? deviceId = await getDeviceUUID();
     if (deviceId == null) throw Exception("Invalid device!");
     var resp = await DioClient().apiCall(
@@ -14,10 +16,12 @@ class Auth {
       url: 'https://it4788.catan.io.vn/login',
       body: {"email": email, "password": password, "uuid": deviceId},
     );
+    print(resp.data);
     if (resp.statusCode == 200) {
       var response = resp.data['data'];
       Storage().saveToken(response['token']);
-      return response['id'];
+      Storage().saveUID(response['id']);
+      return LoginResponse.fromJson(response);
     }
   }
 
@@ -47,7 +51,49 @@ class Auth {
     var response = await DioClient().apiCall(
       url: "https://it4788.catan.io.vn/get_verify_code",
       requestType: RequestType.POST,
-      queryParameters: {"email": email},
+      body: {"email": email},
+    );
+
+    print(response);
+
+    return response.data['code'];
+  }
+
+  Future<String?> getVerifyOTP(String email) async {
+    var response = await DioClient().apiCall(
+      url: "https://it4788.catan.io.vn/get_verify_code",
+      requestType: RequestType.POST,
+      body: {"email": email},
+    );
+
+    return response.data['data']['verify_code'];
+  }
+
+  Future<String?> checkEmail(String email) async {
+    var response = await DioClient().apiCall(
+      url: "https://it4788.catan.io.vn/check_email",
+      requestType: RequestType.POST,
+      body: {"email": email},
+    );
+    var responseData = response.data['data'];
+    return responseData['existed'];
+  }
+
+  Future<String?> deActiveUser() async {
+    String? token = await Storage().getToken();
+    var response = await DioClient().apiCall(
+      url: "https://it4788.catan.io.vn/deactive_user",
+      requestType: RequestType.POST,
+      header: {'Authorization': 'Bearer $token'});
+
+    return response.data['code'];
+  }
+
+  Future<String?> restoreUser(String email, String otp) async {
+    var response = await DioClient().apiCall(
+      url: "https://it4788.catan.io.vn/restore_user",
+      requestType: RequestType.POST,
+      queryParameters: {"email": email, 'code_verify': otp},
     );
 
     return response.data['code'];
@@ -58,6 +104,9 @@ class Auth {
         url: "https://it4788.catan.io.vn/check_verify_code",
         requestType: RequestType.POST,
         body: {"email": email, "code_verify": otp});
+
+    print(response);
+
     return response.data['code'];
   }
 
@@ -77,10 +126,23 @@ class Auth {
     String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
-        url: "https://it4788.catan.io.vn/change_pasword",
+        url: "https://it4788.catan.io.vn/change_password",
         requestType: RequestType.POST,
         body: {"password": password, "new_password": newPassword},
         header: {'Authorization': 'Bearer $token'});
+    Storage().saveToken(response.data['data']['token']);
     return response.data['code'];
+  }
+
+  Future<bool> checkEmailExisted(String email) async {
+    String? deviceId = await getDeviceUUID();
+    String? token = await Storage().getToken();
+    if (deviceId == null) throw Exception("Invalid device!");
+    var response = await DioClient().apiCall(
+        url: "https://it4788.catan.io.vn/change_pasword",
+        requestType: RequestType.POST,
+        body: {"email": email,},
+        header: {'Authorization': 'Bearer $token'});
+    return response.data['data']['existed'] == "0" ? false : true;
   }
 }

@@ -6,7 +6,7 @@ import 'package:logger/logger.dart';
 class Post {
   final String? id;
   final String? name;
-  final List<Image>? image;
+  final List<ImageNetwork>? image;
   final Video? video;
   final String? described;
   final String? created;
@@ -37,8 +37,8 @@ class Post {
   });
 
   factory Post.fromJson(Map<String?, dynamic> json) {
-    List<Image> images = (json['image'] as List?)
-            ?.map((item) => Image.fromJson(item))
+    List<ImageNetwork> images = (json['image'] as List?)
+            ?.map((item) => ImageNetwork.fromJson(item))
             .toList() ??
         [];
     Logger().d("Null image: $images");

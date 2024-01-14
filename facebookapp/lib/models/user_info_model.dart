@@ -1,20 +1,21 @@
 
 class UserInfo {
-  final String? id;
-  final String? username;
-  final String? created;
-  final String? description;
-  final String? avatar;
-  final String? coverAvatar;
-  final String? link;
-  final String? address;
-  final String? city;
-  final String? country;
-  final String? listing;
-  final String? isFriend;
-  final String? online;
-
-  const UserInfo({
+   String? id;
+   String? username;
+   String? created;
+   String? description;
+   String? avatar;
+   String? coverAvatar;
+   String? link;
+   String? address;
+   String? city;
+   String? country;
+   String? listing;
+   String? isFriend;
+   String? online;
+   String? coins;
+  
+   UserInfo({
     this.id,
     this.username,
     this.created,
@@ -28,6 +29,7 @@ class UserInfo {
     this.listing,
     this.isFriend,
     this.online,
+     this.coins
   });
 
   factory UserInfo.fromJson(Map<String, dynamic> json) {
@@ -37,7 +39,7 @@ class UserInfo {
       created: json['created'] as String?,
       description: json['description'] as String?,
       avatar: json['avatar'] as String?,
-      coverAvatar: json['cover_avatar'] as String?,
+      coverAvatar: json['cover_image'] as String?,
       link: json['link'] as String?,
       address: json['address'] as String?,
       city: json['city'] as String?,
@@ -45,10 +47,9 @@ class UserInfo {
       listing: json['listing'] as String?,
       isFriend: json['is_friend'] as String?,
       online: json['online'] as String?,
+      coins: json['coins'] as String?
     );
   }
-
-  static const empty = UserInfo();
 
   @override
   String toString() {

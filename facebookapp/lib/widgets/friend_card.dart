@@ -6,12 +6,26 @@ import 'package:logger/logger.dart';
 
 class FriendCard extends StatelessWidget {
   final Friend friend;
-
   final String tag;
-
   final Function()? reloadFriendList;
+  final BuildContext context;
 
-  FriendCard({required this.friend, required this.tag, this.reloadFriendList});
+  FriendCard({required this.friend, required this.tag, required this.context, this.reloadFriendList});
+
+  void showTimedAlertDialog(String title, String content, Duration duration) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        Future.delayed(duration, () {
+          Navigator.of(context).pop(true);
+        });
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+        );
+      },
+    );
+  }
 
   void accept(userId, isAccept) async {
     try {
@@ -22,9 +36,11 @@ class FriendCard extends StatelessWidget {
       if (resp != null) {
         Logger().d('Accept Friend');
         reloadFriendList!();
+        showTimedAlertDialog('Success', 'Friend request accepted successfully.', Duration(seconds: 2));
       }
     } catch (error) {
       Logger().d('Error Accept: $error');
+      showTimedAlertDialog('Error', 'Failed to accept friend request.', Duration(seconds: 2));
     }
   }
 
@@ -36,9 +52,11 @@ class FriendCard extends StatelessWidget {
       if (resp != null) {
         Logger().d('Unfriend');
         reloadFriendList!();
+        showTimedAlertDialog('Success', 'Unfriended successfully.', Duration(seconds: 2));
       }
     } catch (error) {
       Logger().d('Error Unfriend: $error');
+      showTimedAlertDialog('Error', 'Failed to unfriend.', Duration(seconds: 2));
     }
   }
 
@@ -50,9 +68,11 @@ class FriendCard extends StatelessWidget {
       if (resp != null) {
         Logger().d('add Friend');
         reloadFriendList!();
+        showTimedAlertDialog('Success', 'Friend request sent successfully.', Duration(seconds: 2));
       }
     } catch (error) {
       Logger().d('Error Add: $error');
+      showTimedAlertDialog('Error', 'Failed to send friend request.', Duration(seconds: 2));
     }
   }
 
@@ -141,7 +161,7 @@ class FriendCard extends StatelessWidget {
                             },
                             style: ButtonStyle(
                               backgroundColor:
-                              MaterialStateProperty.all(Palette.scaffold),
+                              MaterialStateProperty.all(Colors.grey),
                               foregroundColor:
                               MaterialStateProperty.all(Colors.black),
                               overlayColor:
@@ -170,7 +190,7 @@ class FriendCard extends StatelessWidget {
                             },
                             style: ButtonStyle(
                               backgroundColor:
-                              MaterialStateProperty.all(Palette.scaffold),
+                              MaterialStateProperty.all(Colors.grey),
                               foregroundColor:
                               MaterialStateProperty.all(Colors.black),
                               overlayColor:

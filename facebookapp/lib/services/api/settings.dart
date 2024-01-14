@@ -3,8 +3,29 @@ import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
 import 'package:fb_app/utils/get_device_uuid.dart';
 
-class SearchAPI {
+class SettingAPI {
   final DioClient dio = DioClient();
+
+  Future<String?> setDevToken() async {
+    String? deviceId = await getDeviceUUID();
+    String? token = await Storage().getToken();
+    String? devToken = await Storage().getDevToken();
+    print("Dev token is $devToken");
+    if (deviceId == null) throw Exception("Invalid device!");
+    var response = await DioClient().apiCall(
+      url: "https://it4788.catan.io.vn/set_devtoken",
+      requestType: RequestType.POST,
+      body: {
+        "devtype": "1",
+        "devtoken": devToken
+      },
+      header: {'Authorization': 'Bearer $token'},
+    );
+    if(response.data['code'] != "1000") {
+      return null;
+    }
+    return response.data['code'];
+  }
 
   Future<String?> buyCoins(
     String code,
@@ -14,7 +35,7 @@ class SearchAPI {
     String? token = await Storage().getToken();
     if (deviceId == null) throw Exception("Invalid device!");
     var response = await DioClient().apiCall(
-      url: "https://it4788.catan.io.vn/settings/buy_coins",
+      url: "https://it4788.catan.io.vn/buy_coins",
       requestType: RequestType.POST,
       body: {
         "code": code,
@@ -28,7 +49,7 @@ class SearchAPI {
   Future<PushSetting?> getPushSettings() async {
     String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
-      url: "https://it4788.catan.io.vn/settings/get_push_settings",
+      url: "https://it4788.catan.io.vn/get_push_settings",
       requestType: RequestType.POST,
       header: {'Authorization': 'Bearer $token'},
     );
@@ -47,7 +68,7 @@ class SearchAPI {
   ) async {
     String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
-      url: "https://it4788.catan.io.vn/settings/set_devtoken",
+      url: "https://it4788.catan.io.vn/set_devtoken",
       requestType: RequestType.POST,
       body: {
         "devtype": devtype,
@@ -73,7 +94,7 @@ class SearchAPI {
   ) async {
     String? token = await Storage().getToken();
     var response = await DioClient().apiCall(
-      url: "https://it4788.catan.io.vn/settings/set_push_settings",
+      url: "https://it4788.catan.io.vn/set_push_settings",
       requestType: RequestType.POST,
       body: {
         "like_comment": likeComment,

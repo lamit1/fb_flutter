@@ -7,18 +7,19 @@ import 'package:fb_app/services/api/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class OTPScreen extends StatefulWidget {
-  const OTPScreen({super.key});
+class OTPForgotPassScreen extends StatefulWidget {
+  const OTPForgotPassScreen({super.key});
 
   @override
-  _OTPScreenState createState() => _OTPScreenState();
+  _OTPForgotPassScreenState createState() => _OTPForgotPassScreenState();
 }
 
-class _OTPScreenState extends State<OTPScreen> {
+class _OTPForgotPassScreenState extends State<OTPForgotPassScreen> {
   static const maxSeconds = 120;
   bool canSendOTP = true;
   int seconds = 0;
   Timer? timer;
+  final List<TextEditingController> _controllers = List.generate(6, (index) => TextEditingController());
 
   void startTimer() {
     setState(() {
@@ -35,8 +36,6 @@ class _OTPScreenState extends State<OTPScreen> {
     });
   }
 
-  final List<TextEditingController> _controllers =
-      List.generate(6, (index) => TextEditingController());
 
   // Function to get the complete 6-digit OTP
   String getOtp() {
@@ -83,6 +82,9 @@ class _OTPScreenState extends State<OTPScreen> {
                         onChanged: (value) {
                           if (value.length == 1 && index < 5) {
                             FocusScope.of(context).nextFocus();
+                          } else if (value.isEmpty && index > 0) {
+                            FocusScope.of(context).previousFocus();
+                            _controllers[index].clear();
                           }
                         },
                         onSaved: (value) {},
@@ -149,13 +151,12 @@ class _OTPScreenState extends State<OTPScreen> {
                                             ),
                                           ),
                                         ));
-                                // TODO: Intergrate verify OTP
                                 String? code = await Auth()
                                     .checkVerifyCode(email, otp);
                                 Navigator.pop(context);
                                 if (code == "1000") {
-                                  Navigator.pushNamed(context, "/change_info",
-                                      arguments: [email]);
+                                  Navigator.pushReplacementNamed(context, "/change_forgot_pass",
+                                      arguments: [email, otp]);
                                 } else if (code == "9993") {
                                   showDialog(
                                       context: context,
@@ -214,7 +215,6 @@ class _OTPScreenState extends State<OTPScreen> {
                                               ),
                                             ),
                                           ));
-                                  // TODO: Call the verify_code api
                                   String? code = await Auth()
                                       .getVerifyCode(email.toString());
                                   Navigator.pop(context);

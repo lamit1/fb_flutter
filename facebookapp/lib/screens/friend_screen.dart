@@ -1,5 +1,6 @@
+import 'package:fb_app/core/pallete.dart';
 import 'package:fb_app/models/friend_model.dart';
-import 'package:fb_app/models/suggested_friends_model.dart';
+import 'package:fb_app/screens/profile_screen.dart';
 import 'package:fb_app/services/api/friend.dart';
 import 'package:fb_app/widgets/friend_card.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class FriendScreen extends StatefulWidget {
 class _FriendScreenState extends State<FriendScreen>
     with SingleTickerProviderStateMixin {
   final ScrollController _scrollController =
-  ScrollController(keepScrollOffset: true);
+      ScrollController(keepScrollOffset: true);
   late List<Friend> friend;
   late List<Friend> reqFriend;
   late List<Friend> sugFriend;
@@ -87,8 +88,7 @@ class _FriendScreenState extends State<FriendScreen>
 
   void loadSugFriends() async {
     try {
-      List<Friend>? fetchedSugFriends =
-      await FriendAPI().getSuggestedFriends(
+      List<Friend>? fetchedSugFriends = await FriendAPI().getSuggestedFriends(
         '0',
         '100',
       );
@@ -123,59 +123,41 @@ class _FriendScreenState extends State<FriendScreen>
       body: Column(
         children: [
           Container(
+            margin: const EdgeInsets.only(top: 5.0),
             padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  offset: const Offset(0.0, 1.0),
-                  blurRadius: 4.0,
-                ),
+            child: Row(
+              children: [
+                for (int i = 0; i < 3; i++)
+                  Expanded(
+                    child: Container(
+                      height: 40.0, // Adjust the height as needed
+                      margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(18.0),
+                        color: _tabController?.index == i
+                            ? Colors.lightBlue
+                            : Palette.scaffold,
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          _tabController?.animateTo(i);
+                        },
+                        child: Center(
+                          child: Text(
+                            i == 0 ? 'Lời mời' : (i == 1 ? 'Gợi ý' : 'Bạn bè'),
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: _tabController?.index == i
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
-            ),
-            child: TabBar(
-              controller: _tabController,
-              tabs: const [
-                Tab(
-                  child: Text(
-                    'Lời mời',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white, // Selected label color
-                    ),
-                  ),
-                ),
-                Tab(
-                  child: Text(
-                    'Gợi ý',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white, // Unselected label color
-                    ),
-                  ),
-                ),
-                Tab(
-                  child: Text(
-                    'Bạn bè',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white, // Unselected label color
-                    ),
-                  ),
-                ),
-              ],
-              labelColor: Colors.white,
-              // Selected label color
-              unselectedLabelColor: Colors.white.withOpacity(0.7),
-              // Unselected label color
-              indicator: const BoxDecoration(
-                color:
-                Colors.lightBlue, // Color for the selected tab's background
-              ),
             ),
           ),
           Expanded(
@@ -200,40 +182,56 @@ class _FriendScreenState extends State<FriendScreen>
       slivers: [
         SliverList(
           delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
+            (BuildContext context, int index) {
               if (index >= friends.length) {
                 return Container();
               }
-              if (index < visibleFriendsCount) {
-                return FriendCard(friend: friends[index], tag: tag, reloadFriendList: reloadFriendList);
-              } else if (index == visibleFriendsCount &&
-                  index != maxVisibleFriendCount) {
-                return Column(
-                  children: [
-                    ElevatedButton(
-                      onPressed: loadMoreFriends,
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                          BorderRadius.circular(24.0), // Rounded corners
-                        ),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Text('Load More'),
+
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProfileScreen(
+                        id: friends[index].id!,
+                        type: '4',
                       ),
                     ),
-                    const SizedBox(
-                      height: 10.0,
-                    )
-                  ],
-                );
-              } else {
-                return Container(); // Empty container for other indexes
-              }
+                  );
+                },
+                child: index < visibleFriendsCount
+                    ? FriendCard(
+                        friend: friends[index],
+                        context: context,
+                        tag: tag,
+                        reloadFriendList: reloadFriendList,
+                      )
+                    : (index == visibleFriendsCount &&
+                            index != maxVisibleFriendCount)
+                        ? Column(
+                            children: [
+                              ElevatedButton(
+                                onPressed: loadMoreFriends,
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24.0),
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Text('Load More'),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10.0,
+                              ),
+                            ],
+                          )
+                        : Container(),
+              );
             },
             childCount:
-            visibleFriendsCount + 1, // Add 1 for the "Load More" button
+                visibleFriendsCount + 1, // Add 1 for the "Load More" button
           ),
         ),
       ],
@@ -247,38 +245,54 @@ class _FriendScreenState extends State<FriendScreen>
       slivers: [
         SliverList(
           delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
+            (BuildContext context, int index) {
               if (index >= friends.length) return Container();
-              if (index < visibleFriendsCount) {
-                return FriendCard(friend: friends[index], tag: tag, reloadFriendList: reloadFriendList);
-              } else if (index == visibleFriendsCount &&
-                  index != maxVisibleFriendCount) {
-                return Column(
-                  children: [
-                    ElevatedButton(
-                      onPressed: loadMoreFriends,
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                          BorderRadius.circular(24.0), // Rounded corners
-                        ),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Text('Load More'),
+
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProfileScreen(
+                        id: friends[index].id!,
+                        type: '3',
                       ),
                     ),
-                    const SizedBox(
-                      height: 10.0,
-                    )
-                  ],
-                );
-              } else {
-                return Container(); // Empty container for other indexes
-              }
+                  );
+                },
+                child: index < visibleFriendsCount
+                    ? FriendCard(
+                        friend: friends[index],
+                        context: context,
+                        tag: tag,
+                        reloadFriendList: reloadFriendList,
+                      )
+                    : (index == visibleFriendsCount &&
+                            index != maxVisibleFriendCount)
+                        ? Column(
+                            children: [
+                              ElevatedButton(
+                                onPressed: loadMoreFriends,
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24.0),
+                                  ),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Text('Load More'),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10.0,
+                              )
+                            ],
+                          )
+                        : Container(),
+              );
             },
             childCount:
-            visibleFriendsCount + 1, // Add 1 for the "Load More" button
+                visibleFriendsCount + 1, // Add 1 for the "Load More" button
           ),
         ),
       ],
@@ -291,8 +305,22 @@ class _FriendScreenState extends State<FriendScreen>
       slivers: [
         SliverList(
           delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-              return FriendCard(friend: friends[index], tag: tag, reloadFriendList: reloadFriendList);
+            (BuildContext context, int index) {
+              return GestureDetector(
+                onTap: () {
+                  // Xử lý sự kiện nhấn vào ảnh ở đây
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ProfileScreen(
+                              id: friends[index].id!, type: '2')));
+                },
+                child: FriendCard(
+                  friend: friends[index],
+                  context: context,
+                  tag: tag,
+                ),
+              );
             },
             childCount: friends.length,
           ),

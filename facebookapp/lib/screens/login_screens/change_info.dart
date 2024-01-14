@@ -15,6 +15,7 @@ class ChangeInfoScreen extends StatefulWidget {
 class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
   late TextEditingController _usernameController;
   File? _avatar;
+  late String? uid;
 
   @override
   void initState() {
@@ -40,21 +41,80 @@ class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
     setState(() {
       _avatar = pickedFile != null ? File(pickedFile.path) : file;
     });
+    print("avata: $_avatar");
   }
 
   Future<void> _submitForm() async {
     final String username = _usernameController.text;
-    File submitAvatar = _avatar as File;
-    var response = await ProfileAPI().changeProfileAfterSignup(username, submitAvatar);
+
+    showDialog(
+        context: context,
+        builder: (_) => const AlertDialog(
+          content: SizedBox(
+            width: 50.0, // Set the width to your desired size
+            height: 50.0, // Set the height to your desired size
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10.0), // Adjust the radius as needed
+            ),
+          ),
+        )
+    );
+
+    var response = await ProfileAPI().changeProfileAfterSignup(username, _avatar!);
     print(response);
+    if(response == '1000'){
+      showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text("Update information successfully"),
+            content:
+            const Text("You have restored your password"),
+            actions: [
+              TextButton(
+                  onPressed: (){Navigator.pop(context, 'OK');},
+                  child: const Text("OK"))
+            ],
+          )
+      );
+      Navigator.pushReplacementNamed(context, "/home", arguments: uid);
+    }
+    else{
+      showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text("Failed"),
+            content:
+            const Text("Updated again your information"),
+            actions: [
+              TextButton(
+                  onPressed: (){Navigator.pop(context, 'OK');},
+                  child: const Text("OK"))
+            ],
+          )
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    double imageWidth = 400;
+    final dynamic data = ModalRoute.of(context)?.settings.arguments;
+    uid = data[0];
+    double imageWidth = 200;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Change Info'),
+        title: Text(
+          'Change Info',
+          style: TextStyle(
+            color: Colors.white, // Set the text color to white
+          ),
+        ),
+        backgroundColor: Colors.blue, // Set the background color to blue
+        centerTitle: true, // Center the title horizontally
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -64,25 +124,30 @@ class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
               Column(
                 children: [
                   if (_avatar != null)
-                    Image.file(
-                      _avatar!,
-                      width: imageWidth,
-                      height: imageWidth,
-                      fit: BoxFit.cover,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: ClipOval(
+                        child: Image.file(
+                          _avatar!,
+                          width: imageWidth,
+                          height: imageWidth,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   const SizedBox(height: 16.0),
                   Row(
                     children: [
-                      const Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              labelText: 'Enter your username',
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 2, color: Colors.blue),
-                              ),
+                      Expanded(
+                        child: TextField(
+                          controller: _usernameController,
+                          decoration: InputDecoration(
+                            labelText: 'Enter your username',
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(width: 2, color: Colors.blue),
                             ),
-                          )
+                          ),
+                        ),
                       ),
                       const SizedBox(width: 15,),
                       ElevatedButton(
@@ -102,7 +167,8 @@ class _ChangeInfoScreenState extends State<ChangeInfoScreen> {
                 child: const SizedBox(
                     width: double.infinity,
                     height: 50,
-                    child: Center(child: Text('Continue'))
+                    child: Center(child: Text('Continue')),
+
                 ),
               ),
             ],

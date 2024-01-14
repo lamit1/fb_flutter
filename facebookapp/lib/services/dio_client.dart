@@ -15,7 +15,7 @@ class DioClient {
     var dio = Dio(BaseOptions(
       baseUrl: "https://it4788.catan.io.vn/",
       receiveTimeout: const Duration(seconds: 20), // 20 seconds
-      connectTimeout: const Duration(seconds: 20),
+      connectTimeout: const Duration(minutes: 1),
       sendTimeout: const Duration(seconds: 20),
     ));
     return dio;
@@ -69,6 +69,15 @@ class DioClient {
 
       return result;
     } on DioException catch (error) {
+      if (error.response != null) {
+        print(error.response?.data);
+        print(error.response?.headers);
+        print(error.response?.requestOptions);
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        print(error.requestOptions);
+        print(error.message);
+      }
       if (error.response != null && error.response!.statusCode == 400) {
         return error.response!;
       }
@@ -86,7 +95,6 @@ class DioClient {
   }) async {
     try {
       late Response result;
-
       switch (requestType) {
         case RequestType.GET:
           {
@@ -124,6 +132,15 @@ class DioClient {
 
       return result;
     } on DioException catch (error) {
+      if (error.response != null) {
+        print(error.response?.data);
+        print(error.response?.headers);
+        print(error.response?.requestOptions);
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        print(error.requestOptions);
+        print(error.message);
+      }
       if (error.response != null && error.response!.statusCode == 400) {
         return error.response!;
       }

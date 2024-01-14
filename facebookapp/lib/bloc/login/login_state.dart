@@ -21,6 +21,24 @@ class LoginSuccess extends LoginState {
   List<Object> get props => [uid];
 }
 
+class LoginChangeInfo extends LoginState {
+  final String uid;
+
+  LoginChangeInfo({required this.uid});
+  @override
+  List<Object> get props => [];
+}
+
+class LoginOTP extends LoginState {
+  final String uid;
+
+  LoginOTP({required this.uid});
+
+  @override
+  List<Object> get props => [];
+
+}
+
 class LoginFailure extends LoginState {
   final String error;
 

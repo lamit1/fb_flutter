@@ -4,11 +4,15 @@ import 'dart:ffi';
 import 'package:fb_app/core/pallete.dart';
 import 'package:fb_app/models/kudos_dissapointed_model.dart';
 import 'package:fb_app/models/post_detail_model.dart';
+import 'package:fb_app/screens/edit_post_screen.dart';
+import 'package:fb_app/screens/profile_screen.dart';
 import 'package:fb_app/services/api/comment.dart';
 import 'package:fb_app/services/api/post.dart';
 import 'package:fb_app/utils/converter.dart';
 import 'package:fb_app/widgets/comment_box.dart';
+import 'package:fb_app/widgets/report_post_widget.dart';
 import 'package:fb_app/widgets/video_post.dart';
+import 'package:logger/logger.dart';
 import 'package:multi_image_layout/multi_image_layout.dart';
 import '../models/post_model.dart';
 import '../services/api/block.dart';
@@ -16,26 +20,28 @@ import '../services/api/block.dart';
 class PostWidget extends StatefulWidget {
   final Post post;
   final String uid;
+  final String userId;
   final VoidCallback loadPosts;
   final Function(String, String) addMark;
 
-  PostWidget({required this.post, required this.uid, required this.loadPosts, required this.addMark});
+  PostWidget({required this.post, required this.uid, required this.userId, required this.loadPosts, required this.addMark});
 
   @override
   State<PostWidget> createState() => _PostWidgetState();
 }
 
 class _PostWidgetState extends State<PostWidget> {
-  late PostDetail postDetail = PostDetail();
+  PostDetail postDetail = PostDetail();
 
   Future<void> getPost() async {
     try {
-      PostDetail? posts = await PostAPI().getPost(widget.post!.id!);
-      if (posts != null) {
+      PostDetail? post = await PostAPI().getPost(widget.post.id!);
+      if (post != null) {
         setState(() {
-          postDetail = posts;
+          postDetail = post;
         });
       }
+      print(post);
     } catch (e) {
       print("Error fetching post: $e");
     }
@@ -48,6 +54,42 @@ class _PostWidgetState extends State<PostWidget> {
     });
   }
 
+  Future<void> deletePost() async {
+    String? code = await PostAPI().deletePost(postDetail.id!);
+    if (code == '1000') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Success'),
+            content: Text('Delete Post Successfully'),
+            actions: [
+              ElevatedButton(onPressed: () {
+                Navigator.of(context).pop();
+                widget.loadPosts!();
+                Navigator.of(context).pop();
+              }, child: Text('Ok'))
+            ],
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Delete Post Failed'),
+            actions: [
+              ElevatedButton(onPressed: () {
+                Navigator.of(context).pop();
+              }, child: Text('Ok'))
+            ],
+          );
+        },
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -69,18 +111,35 @@ class _PostWidgetState extends State<PostWidget> {
               children: [
                  Row(
                   children: [
-                    CircleAvatar(
-                      radius: 20.0,
-                      backgroundImage: NetworkImage(widget.post.user?.avatar ?? "/assets/avatar.png"),
+                    GestureDetector(
+                      onTap: () {
+                        // Navigate to the profile screen when tapped
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfileScreen(id: widget.post.user!.id!, type: widget.userId == widget.post.user!.id! ? '1' : '2')));
+                      },
+                      child: CircleAvatar(
+                        radius: 20.0,
+                        backgroundImage: NetworkImage(widget.post.user!.avatar ?? "assets/avatar.png"),
+                      ),
                     ),
                     const SizedBox(width: 8.0),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.post.user?.name ?? "Username",
+                          widget.post.user!.name ?? "Loading Username",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Container(
+                          width: 264.0, // Set the maximum width
+                          child: Text(
+                            "- is feeling ${postDetail.state}",
+                            style: const TextStyle(
+                              color: Palette.facebookBlue,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2, // Set the maximum number of lines
                           ),
                         ),
                         Text(
@@ -93,23 +152,28 @@ class _PostWidgetState extends State<PostWidget> {
                     ),
                   ],
                 ),
-                IconButton(
-                  icon: const Icon(Icons.more_horiz_outlined),
-                  onPressed: () {
-                    postDetail.canEdit == "1" ?
-                    _showUserPostOption(postContext) : _showNonUserPostOption(context);
-                  },
-                  splashRadius: 20,
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                    icon: const Icon(Icons.more_horiz_outlined),
+                    onPressed: () {
+                      postDetail.canEdit == "1"
+                          ? _showUserPostOption(postContext)
+                          : _showNonUserPostOption(context);
+                    },
+                    splashRadius: 20,
+                  ),
                 ),
               ],
             ),
           ),
            Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(widget.post.described!),
+            child: Text(postDetail.described ?? "Loading ..."),
           ),
           if (true)
-            _buildImageSection(widget.post.image!.map((i) => i.url!).toList(), postContext),
+            _buildImageSection(postDetail.image?.map((i) => i.url!).toList(), postContext),
           Padding(
             padding: const EdgeInsets.fromLTRB(10.0,15.0,20.0,10),
             child: Row(
@@ -119,24 +183,24 @@ class _PostWidgetState extends State<PostWidget> {
                   onTap: (){},
                   child: Row(
                     children: [
-                      (int.parse(postDetail!.disappointed ?? "0") + int.parse(postDetail!.kudos ?? "0")) == 0 ?
+                      (int.parse(postDetail.disappointed ?? "0") + int.parse(postDetail.kudos ?? "0")) == 0 ?
                           const Icon(Icons.sentiment_neutral_sharp,
                             size: 30,
                             color: Palette.facebookBlue,) : Container(),
-                      (int.parse(postDetail!.kudos ?? "0") > 0) ? const Icon(
+                      (int.parse(postDetail.kudos ?? "0") > 0) ? const Icon(
                         Icons.sentiment_very_satisfied,
                         size: 30,
                         color: Palette.facebookBlue,
                         fill: 1,
                       ) : Container(),
-                      (int.parse(postDetail!.disappointed ?? "0") > 0) ? const Icon(
+                      (int.parse(postDetail.disappointed ?? "0") > 0) ? const Icon(
                         Icons.sentiment_dissatisfied_rounded,
                         size: 30,
                         color: Palette.facebookBlue,
                       ) : Container(),
                       const SizedBox(width: 8,),
                       Text(
-                        (int.parse(postDetail!.disappointed ?? "0") + int.parse(postDetail!.kudos ?? "0")).toString(),
+                        (int.parse(postDetail.disappointed ?? "0") + int.parse(postDetail.kudos ?? "0")).toString(),
                         style: const TextStyle(fontSize: 20, color: Colors.grey),
                       )
                     ],
@@ -146,14 +210,10 @@ class _PostWidgetState extends State<PostWidget> {
                   onTap: (){},
                   child: Row(
                     children: [
-                      const Icon(
-                          Icons.insert_comment_rounded,
-                          color: Palette.facebookBlue,
-                      ),
                       const SizedBox(width: 15,),
                       Text(
-                          widget.post!.commentMark!,
-                          style: const TextStyle(fontSize: 20, color: Colors.grey),
+                        "${widget.post.commentMark!} comments",
+                          style: const TextStyle(fontSize: 16, color: Colors.grey),
                       )
                     ],
                   ),
@@ -175,7 +235,7 @@ class _PostWidgetState extends State<PostWidget> {
                       onPressed: () async {
                         Like like;
                         if(postDetail.isFelt == "1") {
-                          like =  await CommentAPI().deleteFeel(widget.post!.id!);
+                          like =  await CommentAPI().deleteFeel(widget.post.id!);
                           if (like != null) {
                             setState(() {
                               postDetail.disappointed = like.disappointed;
@@ -184,7 +244,7 @@ class _PostWidgetState extends State<PostWidget> {
                             });
                           }
                         } else {
-                          like = await CommentAPI().feel(widget.post!.id!, "1");
+                          like = await CommentAPI().feel(widget.post.id!, "1");
                           if (like != null) {
                             setState(() {
                               postDetail.disappointed = like.disappointed;
@@ -199,19 +259,19 @@ class _PostWidgetState extends State<PostWidget> {
                         children: [
                            Icon(
                             Icons.sentiment_very_satisfied_sharp,
-                            color: postDetail!.isFelt == "1" ?
+                            color: postDetail.isFelt == "1" ?
                             Colors.orange : null,
                           ),
                           const SizedBox(
                             width: 10.0,
                           ),
-                          Text(postDetail!.kudos ?? "loading..."),
+                          Text(postDetail.kudos ?? "loading"),
                         ],
                       ),
                     ),
                   ),
                   const VerticalDivider(
-                    width: 20,
+                    width: 0.1,
                     thickness: 1,
                   ),
                   Expanded(
@@ -221,7 +281,7 @@ class _PostWidgetState extends State<PostWidget> {
                       onPressed: () async {
                         Like like;
                         if(postDetail.isFelt == "0") {
-                          like =  await CommentAPI().deleteFeel(widget.post!.id!);
+                          like =  await CommentAPI().deleteFeel(widget.post.id!);
                           if (like != null) {
                             setState(() {
                               postDetail.disappointed = like.disappointed;
@@ -230,7 +290,7 @@ class _PostWidgetState extends State<PostWidget> {
                             });
                           }
                         } else {
-                          like = await CommentAPI().feel(widget.post!.id!, "0");
+                          like = await CommentAPI().feel(widget.post.id!, "0");
                           if (like != null) {
                             setState(() {
                               postDetail.disappointed = like.disappointed;
@@ -245,19 +305,19 @@ class _PostWidgetState extends State<PostWidget> {
                         children: [
                           Icon(
                             Icons.sentiment_dissatisfied_rounded,
-                            color: postDetail!.isFelt == "0" ?
+                            color: postDetail.isFelt == "0" ?
                             Colors.deepPurpleAccent : null,
                           ),
                           const SizedBox(
                             width: 10.0,
                           ),
-                          Text(postDetail!.disappointed ?? "loading"),
+                          Text(postDetail.disappointed ?? "loading"),
                         ],
                       ),
                     ),
                   ),
                   const VerticalDivider(
-                    width: 20,
+                    width: 0.1,
                     thickness: 1,
                   ),
                   Expanded(
@@ -288,14 +348,14 @@ class _PostWidgetState extends State<PostWidget> {
     );
   }
 
-  Widget _buildImageSection(List<String> imageUrls, BuildContext context) {
+  Widget _buildImageSection(List<String>? imageUrls, BuildContext context) {
     double imageWidth = MediaQuery.of(context).size.width;
 
     // Check if there is a video
-    if (widget.post.video != null && widget.post.video!.url != null) {
+    if (postDetail.video != null && postDetail.video!.url != null) {
       // If there is a video, display it
-      return VideoPlayerWidget(videoUrl: widget.post.video!.url!);
-    } else if (imageUrls.isNotEmpty) {
+      return VideoPlayerWidget(videoUrl: postDetail.video!.url!);
+    } else if (imageUrls!= null && imageUrls.isNotEmpty) {
       // If there are images, display them
       return MultiImageViewer(
         images: imageUrls.map((url) => ImageModel(imageUrl: url)).toList(),
@@ -347,9 +407,10 @@ class _PostWidgetState extends State<PostWidget> {
                 children: [
                   TextButton(
                     style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
-                    onPressed: () {  },
+                    onPressed: () {
+                      deletePost();
+                    },
                     child: const Row(
-
                       children: [
                         Icon(Icons.delete,  size: 35,),
                         SizedBox(width: 25,),
@@ -360,7 +421,11 @@ class _PostWidgetState extends State<PostWidget> {
                   const Divider(height: 1.5, color: Colors.grey,),
                   TextButton(
                     style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
-                    onPressed: () {  },
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+                        return EditPostScreen(postDetail: postDetail, reloadPost: getPost);
+                      }));
+                    },
                     child: const Row(
                       children: [
                         Icon(Icons.edit,  size: 35,),
@@ -399,9 +464,9 @@ class _PostWidgetState extends State<PostWidget> {
       builder: (BuildContext context) {
         return DraggableScrollableSheet(
           expand: false,
-          minChildSize: 0.2,
-          maxChildSize: 0.3,
-          initialChildSize: 0.3,
+          minChildSize: 0.15,
+          maxChildSize: 0.2,
+          initialChildSize: 0.2,
           builder: (context, scrollController)
           => SingleChildScrollView(
             controller: scrollController,
@@ -411,12 +476,14 @@ class _PostWidgetState extends State<PostWidget> {
                 children: [
                   TextButton(
                     style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
-                    onPressed: () {  },
+                    onPressed: () {
+                      showReportModal(context, widget.post.id!);
+                    },
                     child: const Row(
                       children: [
-                        Icon(Icons.circle_notifications_rounded, size: 35,),
+                        Icon(Icons.report_problem_rounded, size: 35,),
                         SizedBox(width: 25,),
-                        Text("Turn on notification", style: TextStyle(fontSize: 15),)
+                        Text("Report post", style: TextStyle(fontSize: 15),)
                       ],
                     ),
                   ),
@@ -465,35 +532,20 @@ class _PostWidgetState extends State<PostWidget> {
                       ],
                     ),
                   ),
-                  const Divider(height: 1.5, color: Colors.black54,),
-                  TextButton(
-                    style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
-                    onPressed: () {  },
-                    child: const Row(
-                      children: [
-                        Icon(Icons.save_alt, size: 35,),
-                        SizedBox(width: 25,),
-                        Text("Save post", style: TextStyle(fontSize: 15),)
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 1.5, color: Colors.black54,),
-                  TextButton(
-                    style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black54)),
-                    onPressed: () {  },
-                    child: const Row(
-                      children: [
-                        Icon(Icons.link,  size: 35,),
-                        SizedBox(width: 25,),
-                        Text("Copy link address", style: TextStyle(fontSize: 15),)
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
           ),
         );
+      },
+    );
+  }
+
+  void showReportModal(BuildContext context, String postId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ReportModal(id: postId,);
       },
     );
   }

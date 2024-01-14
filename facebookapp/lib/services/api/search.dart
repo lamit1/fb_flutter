@@ -1,5 +1,6 @@
 import 'package:fb_app/models/saved_search_model.dart';
 import 'package:fb_app/models/search_model.dart';
+import 'package:fb_app/models/user_search_model.dart';
 import 'package:fb_app/services/dio_client.dart';
 import 'package:fb_app/services/storage.dart';
 import 'package:fb_app/utils/get_device_uuid.dart';
@@ -7,8 +8,7 @@ import 'package:fb_app/utils/get_device_uuid.dart';
 class SearchAPI {
   final DioClient dio = DioClient();
 
-  Future<List<Search>?> search(
-    String userId,
+  Future<List<SearchPost>?> search(
     String keyword,
     String index,
     String count,
@@ -20,7 +20,6 @@ class SearchAPI {
       url: "https://it4788.catan.io.vn/search",
       requestType: RequestType.POST,
       body: {
-        "userId": userId,
         "keyword": keyword,
         "index": index,
         "count": count,
@@ -29,10 +28,47 @@ class SearchAPI {
     );
     if (response.statusCode == 200) {
       var responseData = response.data['data'];
-      List<Search> list = [];
-      for (var item in responseData) {
-        Search temp = Search.fromJson(item);
-        list.add(temp);
+      List<SearchPost> list = [];
+      if(responseData != null ){
+        for (var item in responseData) {
+          SearchPost temp = SearchPost.fromJson(item);
+          list.add(temp);
+        }
+      }
+      return list;
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<SearchUser>?> searchUser(
+      String keyword,
+      String index,
+      String count,
+      ) async {
+    String? deviceId = await getDeviceUUID();
+    String? token = await Storage().getToken();
+    if (deviceId == null) throw Exception("Invalid device!");
+    var response = await DioClient().apiCall(
+      url: "https://it4788.catan.io.vn/search_user",
+      requestType: RequestType.POST,
+      body: {
+        "keyword": keyword,
+        "index": index,
+        "count": count,
+      },
+      header: {'Authorization': 'Bearer $token'},
+    );
+    if (response.statusCode == 200) {
+      var responseData = response.data['data'];
+      List<SearchUser> list = [];
+      print("User searched!");
+      print(responseData);
+      if(responseData != null ){
+        for (var item in responseData) {
+          SearchUser temp = SearchUser.fromJson(item);
+          list.add(temp);
+        }
       }
       return list;
     } else {
